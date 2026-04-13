@@ -20,6 +20,21 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
+    @Operation(summary = "ACTUALIZAR USUARIO - SOLO ADMIN")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}")
+    public User actualizar(@PathVariable Long id, @RequestBody User userDetalles) {
+        log.info("Cinema Monarca: Actualizando usuario ID: {}", id);
+
+        return userRepository.findById(id).map(user -> {
+            // Actualiza los campos necesarios
+            user.setNombre(userDetalles.getNombre());
+            user.setEmail(userDetalles.getEmail());
+            // No olvides actualizar otros campos que tengas en tu entidad User
+            return userRepository.save(user);
+        }).orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
+    }
+
     @Operation(summary = "LISTAR USUARIOS - SOLO ADMIN")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping

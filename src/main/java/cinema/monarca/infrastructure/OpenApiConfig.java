@@ -11,16 +11,13 @@ import java.util.List;
 public class OpenApiConfig {
     @Bean
     public OpenAPI customOpenAPI() {
-        Server productionServer = new Server();
-        productionServer.setUrl("https://oasis-cinema-v2-production.up.railway.app");
-        productionServer.setDescription("Servidor de Producción en Railway");
-
-        Server localServer = new Server();
-        localServer.setUrl("http://localhost:8080");
-        localServer.setDescription("Servidor Local");
+        // Al usar "/" se adapta automáticamente a Localhost o a Railway
+        Server server = new Server();
+        server.setUrl("/");
+        server.setDescription("Servidor de Cinema Monarca");
 
         return new OpenAPI()
-                .servers(List.of(productionServer, localServer))
+                .servers(List.of(server))
                 .info(new Info()
                         .title("Cinema Monarca API")
                         .version("1.0")
