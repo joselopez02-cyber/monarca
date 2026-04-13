@@ -31,8 +31,8 @@ public class UserController {
     @Operation(summary = "REGISTRO DE USUARIO - PÚBLICO")
     @PostMapping("/registro")
     public User registrar(@RequestBody User user) {
-        // CORRECCIÓN: Se cambia getUsername() por getEmail()
-        // para coincidir con tu clase User.java
+        // CORRECCIÓN: Se usa getEmail() porque en tu User.java
+        // definiste el campo como 'email', no 'username'.
         log.info("Cinema Monarca: Registrando nuevo usuario con email: {}", user.getEmail());
         return userRepository.save(user);
     }
