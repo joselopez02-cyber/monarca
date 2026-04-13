@@ -1,63 +1,47 @@
 package cinema.monarca.infrastructure;
 
-// CORRECCIÓN DE PAQUETES:
 import cinema.monarca.domain.User;
 import cinema.monarca.domain.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.extern.slf4j.Slf4j; // Uso de Slf4j de Lombok para simplificar el log
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-@Slf4j // Esto reemplaza la línea del LoggerFactory
 public class UserController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    private final UserRepository userRepository;
 
-    @Operation(summary = "REGISTRO - Libre para todos 🆕")
-    @PostMapping
-    public User register(@RequestBody User newUser) {
-        log.info("Cinema Monarca: Intentando registrar usuario DNI: {}", newUser.getDni());
-        newUser.setRole("USER");
-        return userRepository.save(newUser);
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    @Operation(summary = "LISTAR - Solo ADMIN 📋")
+    @Operation(summary = "LISTAR USUARIOS - SOLO ADMIN")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public List<User> getAll() {
-        log.info("Cinema Monarca: ADMIN consultando lista de usuarios.");
+    public List<User> listar() {
+        log.info("Cinema Monarca: Consultando lista de usuarios");
         return userRepository.findAll();
     }
 
-    @Operation(summary = "ACTUALIZAR - Solo ADMIN 🔄")
-    @PutMapping("/{id}")
-    public User update(@PathVariable Long id, @RequestBody User userDetails) {
-        log.info("Cinema Monarca: ADMIN actualizando usuario ID: {}", id);
-
-        return userRepository.findById(id).map(user -> {
-            user.setNombre(userDetails.getNombre());
-            user.setApellido(userDetails.getApellido());
-            user.setDni(userDetails.getDni());
-            user.setTelefono(userDetails.getTelefono());
-            user.setEmail(userDetails.getEmail());
-            return userRepository.save(user);
-        }).orElseThrow(() -> new RuntimeException("Usuario no encontrado en Monarca"));
+    @Operation(summary = "REGISTRO DE USUARIO - PÚBLICO")
+    @PostMapping("/registro")
+    public User registrar(@RequestBody User user) {
+        // CORRECCIÓN: Se cambia getUsername() por getEmail()
+        // para coincidir con tu clase User.java
+        log.info("Cinema Monarca: Registrando nuevo usuario con email: {}", user.getEmail());
+        return userRepository.save(user);
     }
 
-    @Operation(summary = "ELIMINAR - Solo ADMIN 🗑️")
+    @Operation(summary = "ELIMINAR USUARIO - SOLO ADMIN")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        log.warn("Cinema Monarca: ADMIN eliminando usuario ID: {}", id);
+    public void borrar(@PathVariable Long id) {
+        log.warn("Cinema Monarca: Eliminando usuario ID: {}", id);
         userRepository.deleteById(id);
-    }
-
-    @Operation(summary = "Cerrar sesión 🚪")
-    @PostMapping("/logout-manual")
-    public void logoutManual() {
-        log.info("Cinema Monarca: Cierre de sesión solicitado.");
     }
 }

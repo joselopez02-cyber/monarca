@@ -3,7 +3,7 @@ package cinema.monarca.domain;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "cine_users") // Usamos un nombre específico para evitar errores en SQL 🗄️
+@Table(name = "cine_users")
 public class User {
 
     @Id
@@ -21,34 +21,22 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    // El rol por defecto será USER. Solo el ADMIN podrá cambiarlo después. 👤
     private String role = "USER";
 
-    // Constructor vacío (obligatorio para Spring Boot)
-    public User() {
-    }
+    public User() {}
 
-    // --- Getters y Setters ---
-    // Permiten que el sistema lea y escriba los datos correctamente
-
+    // --- GETTERS Y SETTERS ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public String getApellido() { return apellido; }
-    public void setApellido(String apellido) { this.apellido = apellido; }
-
-    public String getDni() { return dni; }
-    public void setDni(String dni) { this.dni = dni; }
-
-    public String getTelefono() { return telefono; }
-    public void setTelefono(String telefono) { this.telefono = telefono; }
-
-    public String getEmail() { return email; }
+    public String getEmail() { return email; } // <-- USAREMOS ESTE
     public void setEmail(String email) { this.email = email; }
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    // Agrega los demás (dni, apellido, telefono) igual que estos...
 }
