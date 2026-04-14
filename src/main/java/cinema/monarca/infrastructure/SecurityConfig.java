@@ -25,7 +25,7 @@ public class SecurityConfig {
                         // PERMITIMOS SWAGGER Y API DOCS SIN AUTENTICACIÓN
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         // PERMITIMOS VER LAS PELÍCULAS A TODO EL MUNDO
-                        .requestMatchers("/api/peliculas").permitAll()
+                        .requestMatchers("/api").permitAll()
                         // EL RESTO DE LAS APIS REQUIEREN LOGIN
                         .anyRequest().authenticated()
                 )
