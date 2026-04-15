@@ -1,4 +1,3 @@
-```mermaid
 graph TD
     subgraph Infrastructure [Capa de Infraestructura]
         AC[AuthController]
@@ -12,6 +11,7 @@ graph TD
 
     subgraph Services [Capa de Negocio]
         MS[MovieService]
+        US[UserService]
     end
 
     subgraph Domain [Capa de Dominio]
@@ -21,10 +21,12 @@ graph TD
         U((User Entity))
     end
 
-    %% Relaciones de flujo lógico
+    %% Relaciones de flujo lógico corregidas
     MC --> MS
     MS --> MR
     MR --> M
-    UC --> UR
+    %% Nueva conexión del UserService
+    UC --> US
+    US --> UR
     UR --> U
     AC --> SC
