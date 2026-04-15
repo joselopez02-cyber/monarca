@@ -11,18 +11,16 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-    // Ahora inyectamos el UserService en lugar del UserRepository
     private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @Operation(summary = "ACTUALIZAR USUARIO - SOLO ADMIN")
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
-    public User actualizar(@PathVariable Long id, @RequestBody User userDetalles) {
-        return userService.actualizar(id, userDetalles);
+    @Operation(summary = "REGISTRO DE USUARIO - PÚBLICO")
+    @PostMapping("/registro")
+    public User registrar(@RequestBody User user) {
+        return userService.registrar(user);
     }
 
     @Operation(summary = "LISTAR USUARIOS - SOLO ADMIN")
@@ -32,10 +30,11 @@ public class UserController {
         return userService.listar();
     }
 
-    @Operation(summary = "REGISTRO DE USUARIO - PÚBLICO")
-    @PostMapping("/registro")
-    public User registrar(@RequestBody User user) {
-        return userService.registrar(user);
+    @Operation(summary = "ACTUALIZAR USUARIO - SOLO ADMIN")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}")
+    public User actualizar(@PathVariable Long id, @RequestBody User userDetalles) {
+        return userService.actualizar(id, userDetalles);
     }
 
     @Operation(summary = "ELIMINAR USUARIO - SOLO ADMIN")
