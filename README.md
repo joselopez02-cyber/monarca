@@ -1,3 +1,4 @@
+```mermaid
 graph TD
     subgraph Infrastructure [Capa de Infraestructura]
         AC[AuthController]
@@ -20,7 +21,7 @@ graph TD
         U((User Entity))
     end
 
-    %% Relaciones de flujo
+    %% Relaciones de flujo lógico
     MC --> MS
     MS --> MR
     MR --> M
