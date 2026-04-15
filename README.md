@@ -1,3 +1,4 @@
+```mermaid
 graph TD
     subgraph Infrastructure [Capa de Infraestructura]
         AC[AuthController]
