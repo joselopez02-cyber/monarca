@@ -871,7 +871,7 @@
   <div style="background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);
     width:100%;max-width:440px;padding:32px;position:relative;box-shadow:0 20px 40px rgba(0,0,0,.6)">
     <button onclick="document.getElementById('modalSillas').style.display='none'"
-      style="position:absolute;top:16px;right:16px;background:transparent;border:none;
+            style="position:absolute;top:16px;right:16px;background:transparent;border:none;
       color:var(--c-muted);font-size:18px;cursor:pointer">✕</button>
     <h3 id="ms_titulo" style="font-family:var(--f-head);font-size:22px;margin-bottom:8px;color:var(--c-gold)">SILLAS RESERVADAS</h3>
     <p id="ms_sub" style="font-size:12px;color:var(--c-muted);margin-bottom:20px"></p>
@@ -1266,11 +1266,11 @@
     const [vSuc, vGen, vCla] = [selSuc.value, selGenero.value, selClasif.value];
 
     selSuc.innerHTML    = '<option value="">— Todas las sucursales —</option>' +
-      Array.from(sucursales.entries()).map(([id,loc]) => `<option value="${id}">${loc}</option>`).join('');
+            Array.from(sucursales.entries()).map(([id,loc]) => `<option value="${id}">${loc}</option>`).join('');
     selGenero.innerHTML = '<option value="">— Todos los géneros —</option>' +
-      Array.from(generos).sort().map(g => `<option value="${g}">${g}</option>`).join('');
+            Array.from(generos).sort().map(g => `<option value="${g}">${g}</option>`).join('');
     selClasif.innerHTML = '<option value="">— Todas —</option>' +
-      Array.from(clasifs).sort().map(c => `<option value="${c}">${c}</option>`).join('');
+            Array.from(clasifs).sort().map(c => `<option value="${c}">${c}</option>`).join('');
 
     if (vSuc) selSuc.value = vSuc;
     if (vGen) selGenero.value = vGen;
@@ -1419,8 +1419,8 @@
     const filtroId = document.getElementById('filtro-suc-funciones').value;
     const tbody = document.getElementById('funcionesTable');
     const lista = filtroId
-      ? funcionesCache.filter(f => String(f.sala?.sucursal?.branId) === String(filtroId))
-      : funcionesCache;
+            ? funcionesCache.filter(f => String(f.sala?.sucursal?.branId) === String(filtroId))
+            : funcionesCache;
 
     if (!lista.length) {
       tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No hay funciones para esta sucursal.</td></tr>';
@@ -1461,8 +1461,8 @@
 
       // USER solo ve sus propias reservas
       reservasBaseCache = rol === 'ADMIN' ? data
-        : data.filter(r => r.nombre?.toLowerCase() === username.toLowerCase()
-            || r.cliente?.nombreCliente?.toLowerCase() === username.toLowerCase());
+              : data.filter(r => r.nombre?.toLowerCase() === username.toLowerCase()
+                      || r.cliente?.nombreCliente?.toLowerCase() === username.toLowerCase());
 
       _poblarFiltrosReservas();
       renderTablaReservas();
@@ -1490,11 +1490,11 @@
     const [vSuc, vGen, vCla] = [selSuc.value, selGenero.value, selClasif.value];
 
     selSuc.innerHTML    = '<option value="">— Todas —</option>' +
-      Array.from(sucursales.entries()).map(([id,loc]) => `<option value="${id}">${loc}</option>`).join('');
+            Array.from(sucursales.entries()).map(([id,loc]) => `<option value="${id}">${loc}</option>`).join('');
     selGenero.innerHTML = '<option value="">— Todos —</option>' +
-      Array.from(generos).sort().map(g => `<option value="${g}">${g}</option>`).join('');
+            Array.from(generos).sort().map(g => `<option value="${g}">${g}</option>`).join('');
     selClasif.innerHTML = '<option value="">— Todas —</option>' +
-      Array.from(clasifs).sort().map(c => `<option value="${c}">${c}</option>`).join('');
+            Array.from(clasifs).sort().map(c => `<option value="${c}">${c}</option>`).join('');
 
     if (vSuc) selSuc.value = vSuc;
     if (vGen) selGenero.value = vGen;
@@ -1504,7 +1504,7 @@
   function filtrarReservas()       { renderTablaReservas(); }
   function limpiarFiltrosReservas() {
     ['filtro-res-suc','filtro-res-nombre','filtro-res-genero','filtro-res-clasif','filtro-res-estado']
-      .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+            .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
     renderTablaReservas();
   }
 
@@ -1556,7 +1556,7 @@
           <td>
             ${(r.sillasSeleccionadas||[]).length
               ? (r.sillasSeleccionadas||[]).map(s =>
-                  `<span style="display:inline-block;background:rgba(245,197,24,0.12);border:1px solid rgba(245,197,24,0.35);
+                      `<span style="display:inline-block;background:rgba(245,197,24,0.12);border:1px solid rgba(245,197,24,0.35);
                    color:var(--c-gold);border-radius:4px;padding:2px 6px;font-family:var(--f-mono);
                    font-size:11px;margin:2px;font-weight:600">${s}</span>`).join('')
               : '<span style="color:var(--c-muted);font-size:12px">—</span>'}
@@ -1634,7 +1634,7 @@
     const filasOrdenadas = Array.from(porFila.keys()).sort();
     filasOrdenadas.forEach(letra => {
       const sillasDeEstaFila = porFila.get(letra)
-        .sort((a, b) => a.numero - b.numero);
+              .sort((a, b) => a.numero - b.numero);
       const cols = sillasDeEstaFila.length;
 
       const filaDiv = document.createElement('div');
@@ -2375,8 +2375,8 @@
     const filtroId = document.getElementById('filtro-suc-salas').value;
     const tbody = document.getElementById('salasTable');
     const lista = filtroId
-      ? salasCache.filter(s => String(s.sucursal?.branId) === String(filtroId))
-      : salasCache;
+            ? salasCache.filter(s => String(s.sucursal?.branId) === String(filtroId))
+            : salasCache;
 
     if (!lista.length) {
       tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No hay salas para esta sucursal.</td></tr>';
@@ -2474,7 +2474,7 @@
     document.getElementById('ms_sub').textContent     = sillasArr.length + ' asiento(s) seleccionado(s)';
     const mapa = document.getElementById('ms_mapa');
     mapa.innerHTML = sillasArr.length
-      ? sillasArr.map(s => `
+            ? sillasArr.map(s => `
           <div style="width:52px;height:52px;border-radius:8px 8px 6px 6px;
             background:rgba(245,197,24,0.15);border:2px solid var(--c-gold);
             display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -2484,7 +2484,7 @@
             <span style="font-size:9px;opacity:0.7">${s.charAt(0)}</span>
             <span style="font-size:16px;font-weight:bold;line-height:1">${s.slice(1)}</span>
           </div>`).join('')
-      : '<span style="color:var(--c-muted);font-size:13px">Sin sillas registradas</span>';
+            : '<span style="color:var(--c-muted);font-size:13px">Sin sillas registradas</span>';
     document.getElementById('modalSillas').style.display = 'flex';
   }
 
