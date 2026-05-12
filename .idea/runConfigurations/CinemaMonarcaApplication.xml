@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="CinemaMonarcaApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="cinema-monarca" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.cinemamonarca.CinemaMonarcaApplication" />
+    <option name="PROGRAM_PARAMETERS" value="" />
+    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=default" />
+    <option name="ACTIVE_PROFILES" value="default" />
+    <RunnerSettings RunnerId="Run" />
+    <ConfigurationWrapper RunnerId="Run" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

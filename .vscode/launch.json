@@ -1,0 +1,28 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "🎬 Cinema Monarca — Run",
+      "request": "launch",
+      "mainClass": "com.cinemamonarca.CinemaMonarcaApplication",
+      "projectName": "cinema-monarca",
+      "args": "",
+      "vmArgs": "-Dspring.profiles.active=dev",
+      "env": {
+        "SPRING_PROFILES_ACTIVE": "dev"
+      }
+    },
+    {
+      "type": "java",
+      "name": "🎬 Cinema Monarca — Debug",
+      "request": "launch",
+      "mainClass": "com.cinemamonarca.CinemaMonarcaApplication",
+      "projectName": "cinema-monarca",
+      "vmArgs": "-Dspring.profiles.active=dev -Xdebug",
+      "env": {
+        "SPRING_PROFILES_ACTIVE": "dev"
+      }
+    }
+  ]
+}

@@ -1,0 +1,2493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cinema Monarca — App Producción</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --c-bg:      #0a0a0f;
+      --c-surface: #12121a;
+      --c-card:    #18182a;
+      --c-border:  rgba(255,255,255,0.08);
+      --c-gold:    #f5c518;
+      --c-gold2:   #e6b800;
+      --c-red:     #e53935;
+      --c-green:   #00e676;
+      --c-blue:    #2979ff;
+      --c-text:    #f0f0f8;
+      --c-muted:   rgba(240,240,248,0.45);
+      --c-dim:     rgba(240,240,248,0.15);
+
+      --f-head:    'Bebas Neue', cursive;
+      --f-body:    'Inter', sans-serif;
+      --f-mono:    'JetBrains Mono', monospace;
+
+      --radius-sm: 4px;
+      --radius:    8px;
+      --radius-lg: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--c-bg);
+      color: var(--c-text);
+      font-family: var(--f-body);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      font-size: 14px;
+      overflow-x: hidden;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4, .brand-text { font-family: var(--f-head); letter-spacing: 1px; font-weight: normal; }
+    .mono { font-family: var(--f-mono); font-size: 0.85em; }
+    .text-gold { color: var(--c-gold); }
+    .text-muted { color: var(--c-muted); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--c-bg); }
+    ::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--c-dim); }
+
+    /* Elements */
+    .btn {
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      color: var(--c-text);
+      font-family: var(--f-body);
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: 13px;
+    }
+    .btn:hover { border-color: var(--c-gold); color: var(--c-gold); background: rgba(245, 197, 24, 0.05); }
+    .btn-primary { background: var(--c-gold); color: var(--c-bg); border: none; font-weight: 600; }
+    .btn-primary:hover { background: var(--c-gold2); color: var(--c-bg); transform: translateY(-1px); }
+    .btn-danger { background: rgba(229, 57, 53, 0.1); color: var(--c-red); border-color: transparent; }
+    .btn-danger:hover { background: var(--c-red); color: white; }
+    .btn-sm { padding: 4px 10px; font-size: 12px; }
+
+    .input-group { margin-bottom: 16px; width: 100%; }
+    .input-group label { display: block; margin-bottom: 6px; color: var(--c-muted); font-size: 12px; font-weight: 500; }
+    input, select, textarea {
+      width: 100%;
+      background: var(--c-card);
+      border: 1px solid var(--c-border);
+      color: var(--c-text);
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-family: var(--f-body);
+      font-size: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    input:focus, select:focus { border-color: var(--c-gold); box-shadow: 0 0 0 2px rgba(245, 197, 24, 0.1); }
+
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .badge-green { background: rgba(0, 230, 118, 0.1); color: var(--c-green); }
+    .badge-red { background: rgba(229, 57, 53, 0.1); color: var(--c-red); }
+    .badge-blue { background: rgba(41, 121, 255, 0.1); color: var(--c-blue); }
+    .badge-gold { background: rgba(245, 197, 24, 0.1); color: var(--c-gold); }
+
+    /* Layout */
+    .sidebar {
+      width: 250px;
+      background: var(--c-surface);
+      border-right: 1px solid var(--c-border);
+      display: flex; flex-direction: column;
+      position: fixed; height: 100vh; z-index: 100;
+    }
+
+    .brand-header {
+      padding: 24px; border-bottom: 1px solid var(--c-border);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .brand-icon {
+      width: 32px; height: 32px; background: var(--c-gold); border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--c-bg); font-weight: bold; font-family: var(--f-head); font-size: 20px;
+    }
+
+    .nav-menu { flex: 1; padding: 24px 12px; overflow-y: auto; }
+    .nav-item {
+      padding: 10px 12px; border-radius: var(--radius-sm); color: var(--c-muted);
+      cursor: pointer; display: flex; align-items: center; gap: 12px;
+      transition: all 0.2s; margin-bottom: 4px; font-weight: 500; font-size: 13px;
+    }
+    .nav-item:hover { background: var(--c-dim); color: var(--c-text); }
+    .nav-item.active { background: rgba(245, 197, 24, 0.1); color: var(--c-gold); }
+
+    .main-content {
+      flex: 1; margin-left: 250px; display: flex; flex-direction: column; min-height: 100vh;
+    }
+
+    .topbar {
+      height: 60px; border-bottom: 1px solid var(--c-border); padding: 0 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--c-bg); position: sticky; top: 0; z-index: 90;
+    }
+
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--c-muted);
+      display: inline-block; box-shadow: 0 0 8px currentColor;
+    }
+    .status-dot.online { background: var(--c-green); }
+    .status-dot.offline { background: var(--c-red); }
+
+    .content-area { padding: 32px; max-width: 1200px; width: 100%; margin: 0 auto; }
+
+    .view-section { display: none; animation: fadeIn 0.3s ease; }
+    .view-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Headers */
+    .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
+    .section-title h2 { font-size: 32px; margin-bottom: 4px; }
+    .section-title p { color: var(--c-muted); font-size: 13px; }
+
+    /* Cards & Grids */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+
+    .card {
+      background: var(--c-surface); border: 1px solid var(--c-border);
+      border-radius: var(--radius); padding: 20px;
+    }
+
+    /* Tables */
+    .table-container {
+      background: var(--c-surface); border: 1px solid var(--c-border);
+      border-radius: var(--radius); overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th {
+      padding: 12px 16px; border-bottom: 1px solid var(--c-border);
+      color: var(--c-muted); font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.5px; font-weight: 600; background: var(--c-card);
+    }
+    td { padding: 16px; border-bottom: 1px solid var(--c-border); vertical-align: middle; font-size: 13px; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* Cartelera */
+    .funcion-card { display: flex; flex-direction: column; height: 100%; padding: 0; overflow: hidden; }
+    .funcion-header {
+      height: 120px; background: var(--c-card); border-bottom: 1px solid var(--c-border);
+      display: flex; align-items: center; justify-content: center; position: relative;
+    }
+    .funcion-header h3 { font-size: 32px; color: var(--c-text); text-shadow: 0 2px 10px rgba(0,0,0,0.5); z-index: 2; text-align: center; padding: 0 16px; }
+    .funcion-header::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, var(--c-surface) 0%, transparent 100%); opacity: 0.8; }
+
+    .funcion-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+    .funcion-meta { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .funcion-details { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .detail-item { font-size: 12px; }
+    .detail-item span { display: block; color: var(--c-muted); margin-bottom: 2px; }
+    .detail-item strong { color: var(--c-text); font-weight: 500; }
+
+    /* Ocupación */
+    .ocup-bar { height: 4px; background: var(--c-border); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+    .ocup-fill { height: 100%; width: 0%; transition: width 0.5s ease; background: var(--c-gold); }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(10,10,15,0.85); backdrop-filter: blur(4px);
+      z-index: 1000; display: none; align-items: center; justify-content: center;
+    }
+    .modal {
+      background: var(--c-surface); border: 1px solid var(--c-border);
+      border-radius: var(--radius-lg); width: 100%; max-width: 900px;
+      max-height: 90vh; display: flex; flex-direction: column;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+    .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--c-border); display: flex; justify-content: space-between; align-items: center; }
+    .modal-body { padding: 0; overflow: hidden; display: flex; flex: 1; min-height: 500px; }
+
+    /* Seat Map Layout */
+    .map-section { flex: 2; padding: 32px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; background: var(--c-bg); border-bottom-left-radius: var(--radius-lg); }
+    .sidebar-section { flex: 1; background: var(--c-surface); border-left: 1px solid var(--c-border); padding: 24px; display: flex; flex-direction: column; border-bottom-right-radius: var(--radius-lg); }
+
+    @media(max-width: 768px) { .modal-body { flex-direction: column; } .sidebar-section { border-left: none; border-top: 1px solid var(--c-border); } }
+
+    /* Map UI */
+    .screen-curve {
+      width: 80%; height: 40px; margin-bottom: 50px; border-top: 3px solid var(--c-gold);
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0; position: relative;
+      box-shadow: 0 -20px 40px rgba(245, 197, 24, 0.05);
+      display: flex; justify-content: center;
+    }
+    .screen-curve::after { content: 'PANTALLA'; position: absolute; top: -12px; font-size: 10px; color: var(--c-gold); letter-spacing: 2px; background: var(--c-bg); padding: 0 10px; font-family: var(--f-mono); font-weight: 500; }
+
+    .rows-container { display: flex; flex-direction: column; gap: 12px; }
+    .seat-row { display: flex; gap: 12px; align-items: center; justify-content: center; }
+    .row-label { width: 20px; color: var(--c-muted); font-family: var(--f-mono); font-size: 12px; text-align: center; font-weight: bold; }
+    .seat-group { display: flex; gap: 8px; }
+    .seat-group.aisle { margin: 0 20px; } /* Pasillo */
+
+    .seat {
+      width: 32px; height: 32px;
+      border-radius: 6px 6px 4px 4px;
+      background: var(--c-card); border: 1px solid var(--c-border);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-family: var(--f-mono); color: var(--c-muted);
+      transition: all 0.15s ease; position: relative;
+    }
+    .seat::before { content: ''; position: absolute; bottom: 4px; left: 4px; right: 4px; height: 2px; background: var(--c-border); border-radius: 2px; }
+    .seat:hover:not(.occupied) { border-color: var(--c-gold); color: var(--c-gold); transform: translateY(-2px); }
+    .seat.selected { background: rgba(245, 197, 24, 0.15); border-color: var(--c-gold); color: var(--c-gold); box-shadow: 0 0 10px rgba(245, 197, 24, 0.2); }
+    .seat.selected::before { background: var(--c-gold); }
+    .seat.occupied { background: #1a1a24; border-color: transparent; color: rgba(240,240,248,0.2); cursor: not-allowed; opacity: 0.7; }
+    .seat.occupied::before { display: none; }
+
+    .legend { display: flex; justify-content: center; gap: 20px; margin-top: 40px; font-size: 12px; color: var(--c-muted); padding-top: 20px; border-top: 1px dashed var(--c-border); width: 100%;}
+    .leg-item { display: flex; align-items: center; gap: 8px; }
+    .leg-box { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--c-border); }
+    .leg-box.free { background: var(--c-card); }
+    .leg-box.sel { background: rgba(245, 197, 24, 0.15); border-color: var(--c-gold); }
+    .leg-box.occ { background: #1a1a24; border-color: transparent; }
+
+    /* Login */
+    .login-screen {
+      position: fixed; inset: 0; background: var(--c-bg); z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.5s, visibility 0.5s;
+    }
+    .login-box {
+      background: var(--c-surface); padding: 40px; border-radius: var(--radius-lg);
+      border: 1px solid var(--c-border); width: 100%; max-width: 400px;
+      text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .auth-tabs { display: flex; gap: 0; margin-bottom: 28px; border-bottom: 1px solid var(--c-border); }
+    .auth-tab {
+      flex: 1; padding: 10px; background: transparent; border: none;
+      color: var(--c-muted); font-family: var(--f-body); font-size: 14px;
+      font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent;
+      margin-bottom: -1px; transition: all 0.2s;
+    }
+    .auth-tab.active { color: var(--c-gold); border-bottom-color: var(--c-gold); }
+    .auth-form { display: none; }
+    .auth-form.active { display: block; }
+
+    /* Toasts */
+    #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+    .toast {
+      background: var(--c-surface); border: 1px solid var(--c-border); border-left: 3px solid var(--c-gold);
+      padding: 14px 20px; border-radius: var(--radius); color: var(--c-text);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-size: 13px; font-weight: 500;
+      animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .toast.error { border-left-color: var(--c-red); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    .empty-state { padding: 40px; text-align: center; color: var(--c-muted); border: 1px dashed var(--c-border); border-radius: var(--radius); font-size: 13px; }
+
+    /* Util classes */
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    .mb-1 { margin-bottom: 8px; }
+    .mb-2 { margin-bottom: 16px; }
+    .mb-3 { margin-bottom: 24px; }
+    .mt-auto { margin-top: auto; }
+    .w-full { width: 100%; }
+
+    .ticket-summary { background: var(--c-card); padding: 16px; border-radius: var(--radius); border: 1px solid var(--c-border); margin-bottom: 24px; }
+    .total-price { font-size: 28px; font-weight: bold; color: var(--c-gold); font-family: var(--f-head); letter-spacing: 1px; }
+
+  </style>
+</head>
+<body>
+
+<!-- Notificaciones -->
+<div id="toast-container"></div>
+
+<!-- Login -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <div class="brand-icon" style="margin: 0 auto 16px auto; width: 48px; height: 48px; font-size: 28px;">M</div>
+    <h2 class="mb-1" style="font-size: 26px;">CINEMA MONARCA</h2>
+    <p class="text-muted mb-3" style="font-size: 12px; letter-spacing: 0.1em;">CALI · SISTEMA DE GESTIÓN</p>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login', this)">Iniciar Sesión</button>
+      <button class="auth-tab" onclick="switchAuthTab('register', this)">Registrarse</button>
+    </div>
+
+    <!-- LOGIN -->
+    <form id="loginForm" class="auth-form active">
+      <div class="input-group" style="text-align:left">
+        <label>Usuario</label>
+        <input type="text" id="l_user" placeholder="admin" required>
+      </div>
+      <div class="input-group" style="text-align:left">
+        <label>Contraseña</label>
+        <input type="password" id="l_pass" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-full" style="padding:12px;margin-top:8px;font-size:14px">
+        Iniciar Sesión
+      </button>
+      <p style="font-size:11px;color:var(--c-muted);margin-top:12px">
+        Por defecto: <span style="color:var(--c-gold);font-family:var(--f-mono)">admin / monarca123</span>
+      </p>
+    </form>
+
+    <!-- REGISTRO -->
+    <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)" style="max-height:420px;overflow-y:auto;padding-right:4px">
+      <div class="input-group" style="text-align:left">
+        <label>Usuario *</label>
+        <input type="text" id="r_username" placeholder="Ej: juan_garcia" required>
+      </div>
+      <div class="input-group" style="text-align:left">
+        <label>Nombre completo *</label>
+        <input type="text" id="r_nombreCompleto" placeholder="Juan García Pérez" required>
+      </div>
+      <div class="input-group" style="text-align:left">
+        <label>Email *</label>
+        <input type="email" id="r_email" placeholder="correo@ejemplo.com" required>
+      </div>
+      <div class="input-group" style="text-align:left">
+        <label>Cédula *</label>
+        <input type="text" id="r_cedula" placeholder="Ej: 1144024680" required>
+      </div>
+      <div class="input-group" style="text-align:left">
+        <label>Teléfono</label>
+        <input type="text" id="r_telefono" placeholder="3001234567">
+      </div>
+      <div class="input-group" style="text-align:left">
+        <label>Dirección</label>
+        <input type="text" id="r_direccion" placeholder="Cra 5 # 10-20, Cali">
+      </div>
+      <div class="input-group" style="text-align:left">
+        <label>Fecha de nacimiento</label>
+        <input type="date" id="r_fechaNac">
+      </div>
+      <div class="input-group" style="text-align:left">
+        <label>Contraseña *</label>
+        <input type="password" id="r_password" placeholder="Mínimo 6 caracteres" required minlength="6">
+      </div>
+      <div class="input-group" style="text-align:left">
+        <label>Confirmar contraseña *</label>
+        <input type="password" id="r_password2" placeholder="Repite la contraseña" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-full" style="padding:12px;margin-top:8px;font-size:14px">
+        Crear Cuenta
+      </button>
+      <p id="registerError" style="font-size:12px;color:var(--c-red);margin-top:10px;display:none"></p>
+    </form>
+
+  </div>
+</div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="brand-header">
+    <div class="brand-icon">M</div>
+    <div>
+      <div class="brand-text" style="font-size: 20px; line-height: 1;">CINEMA MONARCA</div>
+      <div class="mono text-muted" style="font-size: 10px;">Cali • Admin Console</div>
+    </div>
+  </div>
+  <nav class="nav-menu">
+    <div class="nav-item active" data-view="dashboard" onclick="switchView('dashboard', this)">❖ Panel Principal</div>
+    <div class="nav-item" data-view="cartelera" onclick="switchView('cartelera', this)">🎟 Taquilla</div>
+    <div class="nav-item" data-view="peliculas" data-rol="ADMIN" onclick="switchView('peliculas', this)">🎬 Catálogo Películas</div>
+    <div class="nav-item" data-view="salas" data-rol="ADMIN" onclick="switchView('salas', this)">🏛 Programar Salas</div>
+    <div class="nav-item" data-view="funciones" data-rol="ADMIN" onclick="switchView('funciones', this)">🕒 Programar Funciones</div>
+    <div class="nav-item" data-view="reservas" onclick="switchView('reservas', this)">📋 Historial</div>
+    <div class="nav-item" data-view="sucursales" data-rol="ADMIN" onclick="switchView('sucursales', this)">🏢 Cines & Sucursales</div>
+    <div class="nav-item" data-view="usuarios" data-rol="ADMIN" onclick="switchView('usuarios', this)">👥 Gestión de Usuarios</div>
+    <div style="height: 24px;"></div>
+    <div class="nav-item" data-view="config" onclick="switchView('config', this)">⚙️ Configuración API</div>
+    <div class="nav-item" style="color: var(--c-red);" onclick="logout()">🚪 Cerrar Sesión</div>
+  </nav>
+</aside>
+
+<!-- Main -->
+<main class="main-content">
+  <header class="topbar">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span id="apiStatusDot" class="status-dot offline"></span>
+      <span id="apiStatusText" class="mono" style="color:var(--c-red); font-size: 12px;">API Desconectada</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <span class="mono text-gold" id="userDisplay">@admin</span>
+    </div>
+  </header>
+
+  <div class="content-area">
+
+    <!-- DASHBOARD -->
+    <section id="view-dashboard" class="view-section active">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Resumen Operativo</h2>
+          <p>Estadísticas actuales conectadas a la base de datos de producción.</p>
+        </div>
+        <button class="btn" onclick="cargarDashboard()">↻ Actualizar</button>
+      </div>
+
+      <div class="grid-4 mb-3">
+        <div class="card">
+          <div class="mono text-muted mb-1" style="font-size: 11px;">TÍTULOS ACTIVOS</div>
+          <h3 style="font-size: 36px; line-height: 1;" id="stat-pelis">-</h3>
+        </div>
+        <div class="card">
+          <div class="mono text-muted mb-1" style="font-size: 11px;">FUNCIONES</div>
+          <h3 style="font-size: 36px; line-height: 1;" id="stat-funcs">-</h3>
+        </div>
+        <div class="card">
+          <div class="mono text-muted mb-1" style="font-size: 11px;">CLIENTES REGISTRADOS</div>
+          <h3 style="font-size: 36px; line-height: 1;" id="stat-clis">-</h3>
+        </div>
+        <div class="card" style="border-color: rgba(245, 197, 24, 0.3);">
+          <div class="mono text-muted mb-1" style="font-size: 11px; color: var(--c-gold);">RESERVAS TOTALES</div>
+          <h3 style="font-size: 36px; line-height: 1; color: var(--c-gold);" id="stat-res">-</h3>
+        </div>
+      </div>
+    </section>
+
+    <!-- CARTELERA / TAQUILLA -->
+    <section id="view-cartelera" class="view-section">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Taquilla de Ventas</h2>
+          <p>Selecciona una función para abrir el mapa de la sala y emitir tiquetes.</p>
+        </div>
+        <button class="btn" onclick="cargarCartelera()">↻ Refrescar Ocupación</button>
+      </div>
+
+      <!-- ── Barra de filtros ── -->
+      <div class="card mb-3" style="padding:14px 16px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;align-items:end">
+          <div class="input-group" style="margin:0">
+            <label>🏢 Sucursal</label>
+            <select id="filtro-car-suc" onchange="filtrarCartelera()">
+              <option value="">— Todas las sucursales —</option>
+            </select>
+          </div>
+          <div class="input-group" style="margin:0">
+            <label>🔍 Buscar película</label>
+            <input type="text" id="filtro-car-nombre" placeholder="Nombre de la película..." oninput="filtrarCartelera()">
+          </div>
+          <div class="input-group" style="margin:0">
+            <label>🎭 Género</label>
+            <select id="filtro-car-genero" onchange="filtrarCartelera()">
+              <option value="">— Todos los géneros —</option>
+            </select>
+          </div>
+          <div class="input-group" style="margin:0">
+            <label>🔞 Clasificación</label>
+            <select id="filtro-car-clasif" onchange="filtrarCartelera()">
+              <option value="">— Todas —</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:flex-end">
+            <button class="btn" style="width:100%;font-size:12px" onclick="limpiarFiltrosCartelera()">✕ Limpiar filtros</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="carteleraList" class="grid-2">
+        <!-- Cards generados por JS -->
+      </div>
+    </section>
+
+    <!-- PELÍCULAS -->
+    <section id="view-peliculas" class="view-section">
+      <div class="section-header">
+        <div class="section-title"><h2>Catálogo de Películas</h2><p>Administra y edita los títulos disponibles en tu cine.</p></div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="flex-between mb-2">
+          <h4 style="font-family: var(--f-body); font-weight: 600; font-size: 14px;" id="lbl-form-pelicula">Registrar Nuevo Título</h4>
+        </div>
+        <form id="formPelicula" class="grid-4" style="align-items: end;">
+          <input type="hidden" id="p_id">
+          <div class="input-group" style="margin:0"><label>Título</label><input type="text" id="p_titulo" required></div>
+          <div class="input-group" style="margin:0"><label>Género principal</label><input type="text" id="p_genero" placeholder="Ej: Ciencia Ficción" required></div>
+          <div class="input-group" style="margin:0"><label>Duración (min)</label><input type="number" id="p_duracion" required min="1"></div>
+          <div class="input-group" style="margin:0">
+            <label>Clasificación</label>
+            <select id="p_clasif">
+              <option value="A">A - Todo Público</option>
+              <option value="B">B - +12 Años</option>
+              <option value="B15">B15 - +15 Años</option>
+              <option value="C">C - Adultos</option>
+            </select>
+          </div>
+          <div style="grid-column: 1 / -1; display:flex; justify-content: flex-end; margin-top: 8px; gap: 8px;">
+            <button type="button" class="btn" id="btn-cancel-p" style="display:none;" onclick="cancelarEdicionPelicula()">Cancelar</button>
+            <button type="submit" class="btn btn-primary" id="btn-save-p">Guardar Película</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead><tr><th>ID</th><th>Título</th><th>Género</th><th>Duración</th><th>Clasificación</th><th>Acciones</th></tr></thead>
+          <tbody id="peliculasTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FUNCIONES -->
+    <!-- ══ PROGRAMAR SALAS ══ -->
+    <section id="view-salas" class="view-section">
+      <div class="section-header">
+        <div class="section-title"><h2>Programar Salas</h2><p>Define el nombre, tipo y distribución de cada sala.</p></div>
+        <button class="btn" onclick="cargarSalasAdmin()">↻ Actualizar</button>
+      </div>
+
+      <div class="card mb-3">
+        <h4 class="mb-2" style="font-family:var(--f-body);font-weight:600;font-size:14px" id="lbl-form-sala">Nueva Sala</h4>
+        <div class="grid-4" style="align-items:end;gap:12px">
+          <input type="hidden" id="s_id">
+
+          <div class="input-group" style="margin:0">
+            <label>Nombre de la sala *</label>
+            <input type="text" id="s_nombre" placeholder="Ej: Sala 1, Sala VIP...">
+          </div>
+
+          <div class="input-group" style="margin:0">
+            <label>Tipo *</label>
+            <select id="s_tipo" onchange="calcularCapacidad()">
+              <option value="">-- Tipo --</option>
+              <option value="PRO">PRO</option>
+              <option value="TRES_D">3D</option>
+              <option value="DOS_D">2D</option>
+            </select>
+          </div>
+
+          <div class="input-group" style="margin:0">
+            <label>Filas (A, B, C…) *</label>
+            <input type="number" id="s_filas" min="1" max="26" value="5" onchange="calcularCapacidad()">
+          </div>
+
+          <div class="input-group" style="margin:0">
+            <label>Columnas por fila *</label>
+            <input type="number" id="s_columnas" min="1" max="30" value="10" onchange="calcularCapacidad()">
+          </div>
+
+          <div class="input-group" style="margin:0">
+            <label>Capacidad total (auto)</label>
+            <input type="number" id="s_capacidad" readonly style="opacity:0.6;cursor:not-allowed">
+          </div>
+
+          <div class="input-group" style="margin:0">
+            <label>Sucursal</label>
+            <select id="s_sucursal" required><option value="">-- Seleccionar sucursal --</option></select>
+          </div>
+
+          <div style="grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px;margin-top:4px">
+            <button class="btn" id="btn-cancel-s" style="display:none" onclick="cancelarEdicionSala()">Cancelar</button>
+            <button class="btn btn-primary" onclick="saveSala()">Guardar Sala</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vista previa del mapa de la sala -->
+      <div id="sala-preview-wrap" style="display:none;margin-bottom:24px">
+        <div class="card">
+          <h4 style="font-family:var(--f-body);font-weight:600;font-size:13px;margin-bottom:12px;color:var(--c-gold)">
+            Vista previa — <span id="sala-preview-label">Sala</span>
+          </h4>
+          <div style="text-align:center;margin-bottom:10px">
+            <div style="height:4px;background:linear-gradient(90deg,transparent,rgba(245,197,24,0.5),transparent);border-radius:50%;width:60%;margin:0 auto 6px"></div>
+            <span style="font-family:var(--f-mono);font-size:10px;color:rgba(245,197,24,0.5);letter-spacing:3px">PANTALLA</span>
+          </div>
+          <div id="sala-preview-grid" style="display:flex;flex-direction:column;align-items:center;gap:4px"></div>
+          <div style="display:flex;justify-content:center;gap:20px;margin-top:12px;font-size:11px;color:var(--c-muted)">
+            <span>🟦 Disponible &nbsp; 🟨 Seleccionada &nbsp; 🟥 Ocupada</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtro de sucursal para la tabla de salas -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <label style="font-size:13px;color:var(--c-muted);white-space:nowrap;font-family:var(--f-body)">🔍 Filtrar por sucursal:</label>
+        <select id="filtro-suc-salas" style="max-width:300px" onchange="filtrarTablaSalas()">
+          <option value="">— Todas las sucursales —</option>
+        </select>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead><tr><th>ID</th><th>Nombre</th><th>Tipo</th><th>Filas</th><th>Columnas</th><th>Capacidad</th><th>Sucursal</th><th>Acciones</th></tr></thead>
+          <tbody id="salasTable"><tr><td colspan="8" class="empty-state">Cargando…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══ PROGRAMAR FUNCIONES ══ -->
+    <section id="view-funciones" class="view-section">
+      <div class="section-header">
+        <div class="section-title"><h2>Programar Funciones</h2><p>Asigna películas a salas, edita fechas y define precios.</p></div>
+      </div>
+
+      <div class="card mb-3">
+        <h4 class="mb-2" style="font-family:var(--f-body);font-weight:600;font-size:14px" id="lbl-form-funcion">Programar Nueva Función</h4>
+        <form id="formFuncion" class="grid-4" style="align-items:end">
+          <input type="hidden" id="f_id">
+          <div class="input-group" style="margin:0"><label>Película</label><select id="f_peli" required></select></div>
+          <div class="input-group" style="margin:0">
+            <label>Sucursal</label>
+            <select id="f_sucursal" onchange="filtrarSalasPorSucursal()"><option value="">— Todas —</option></select>
+          </div>
+          <div class="input-group" style="margin:0">
+            <label>Sala</label>
+            <select id="f_sala" required><option value="">-- Selecciona sala --</option></select>
+          </div>
+          <div class="input-group" style="margin:0"><label>Fecha y Hora</label><input type="datetime-local" id="f_fecha" required></div>
+          <div class="input-group" style="margin:0"><label>Precio Entrada (COP)</label><input type="number" id="f_precio" value="18000" step="500" required></div>
+          <div style="grid-column:1/-1;display:flex;justify-content:flex-end;margin-top:8px;gap:8px">
+            <button type="button" class="btn" id="btn-cancel-f" style="display:none" onclick="cancelarEdicionFuncion()">Cancelar</button>
+            <button type="submit" class="btn btn-primary" id="btn-save-f">Publicar Función</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Filtro de sucursal para la tabla de funciones -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <label style="font-size:13px;color:var(--c-muted);white-space:nowrap;font-family:var(--f-body)">🔍 Filtrar por sucursal:</label>
+        <select id="filtro-suc-funciones" style="max-width:300px" onchange="filtrarTablaFunciones()">
+          <option value="">— Todas las sucursales —</option>
+        </select>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead><tr><th>ID</th><th>Película</th><th>Sala</th><th>Sucursal</th><th>Tipo</th><th>Fecha / Hora</th><th>Precio Base</th><th>Acciones</th></tr></thead>
+          <tbody id="funcionesTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RESERVAS -->
+    <section id="view-reservas" class="view-section">
+      <div class="section-header">
+        <div class="section-title"><h2>Historial de Ventas</h2><p>Registro de todas las transacciones y emisiones de tiquetes.</p></div>
+        <button class="btn" onclick="cargarReservas()">↻ Actualizar</button>
+      </div>
+
+      <!-- ── Barra de filtros ── -->
+      <div class="card mb-3" style="padding:14px 16px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;align-items:end">
+          <div class="input-group" style="margin:0">
+            <label>🏢 Sucursal</label>
+            <select id="filtro-res-suc" onchange="filtrarReservas()">
+              <option value="">— Todas —</option>
+            </select>
+          </div>
+          <div class="input-group" style="margin:0">
+            <label>🔍 Película</label>
+            <input type="text" id="filtro-res-nombre" placeholder="Buscar por película..." oninput="filtrarReservas()">
+          </div>
+          <div class="input-group" style="margin:0">
+            <label>🎭 Género</label>
+            <select id="filtro-res-genero" onchange="filtrarReservas()">
+              <option value="">— Todos —</option>
+            </select>
+          </div>
+          <div class="input-group" style="margin:0">
+            <label>🔞 Clasificación</label>
+            <select id="filtro-res-clasif" onchange="filtrarReservas()">
+              <option value="">— Todas —</option>
+            </select>
+          </div>
+          <div class="input-group" style="margin:0">
+            <label>📋 Estado</label>
+            <select id="filtro-res-estado" onchange="filtrarReservas()">
+              <option value="">— Todos —</option>
+              <option value="CONFIRMADA">Confirmada</option>
+              <option value="CANCELADA">Cancelada</option>
+              <option value="PENDIENTE">Pendiente</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:flex-end">
+            <button class="btn" style="width:100%;font-size:12px" onclick="limpiarFiltrosReservas()">✕ Limpiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="res-contador" style="font-size:12px;color:var(--c-muted);margin-bottom:8px;font-family:var(--f-body)"></div>
+
+      <div class="table-container">
+        <table>
+          <thead><tr><th>Ticket #</th><th>Fecha Op.</th><th>Cliente</th><th>Película</th><th>Sala / Sucursal</th><th>Sillas</th><th>Total (COP)</th><th>Estado</th><th>Acción</th></tr></thead>
+          <tbody id="reservasTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══ CINES & SUCURSALES ══ -->
+    <section id="view-sucursales" class="view-section">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Cines &amp; Sucursales</h2>
+          <p>Gestiona la red de sedes y sus ubicaciones.</p>
+        </div>
+        <button class="btn" onclick="cargarSucursales()">↻ Actualizar</button>
+      </div>
+
+      <!-- Formulario Cine -->
+      <div class="card" style="margin-bottom:24px">
+        <h3 style="font-family:var(--f-head);font-size:18px;margin-bottom:16px;color:var(--c-gold)">+ NUEVO CINE</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="input-group">
+            <label>Nombre del cine *</label>
+            <input type="text" id="cineNombre" placeholder="Cinema Monarca Norte">
+          </div>
+          <div class="input-group">
+            <label>Contacto / Teléfono</label>
+            <input type="text" id="cineCont" placeholder="3001234567">
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="crearCine()">Guardar Cine</button>
+      </div>
+
+      <!-- Tabla Cines -->
+      <div class="table-container" style="margin-bottom:24px">
+        <table>
+          <thead><tr><th>ID</th><th>Nombre del Cine</th><th>Contacto</th><th>Acciones</th></tr></thead>
+          <tbody id="tbl-cines"><tr><td colspan="4" style="text-align:center;color:var(--c-muted)">Cargando…</td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- Formulario Sucursal -->
+      <div class="card" style="margin-bottom:24px">
+        <h3 style="font-family:var(--f-head);font-size:18px;margin-bottom:16px;color:var(--c-gold)">+ NUEVA SUCURSAL</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="input-group">
+            <label>Cine al que pertenece *</label>
+            <select id="sucCineId" style="background:var(--c-bg);color:var(--c-text);border:1px solid var(--c-border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;width:100%">
+              <option value="">— Seleccionar cine —</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Ubicación / Dirección *</label>
+            <input type="text" id="sucUbicacion" placeholder="Cra 5 # 10-20, Cali">
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="crearSucursal()">Guardar Sucursal</button>
+      </div>
+
+      <!-- Tabla Sucursales -->
+      <div class="table-container">
+        <table>
+          <thead><tr><th>ID</th><th>Ubicación</th><th>Cine</th><th>Salas</th><th>Acciones</th></tr></thead>
+          <tbody id="tbl-sucursales"><tr><td colspan="5" style="text-align:center;color:var(--c-muted)">Cargando…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══ CLIENTES ══ -->
+    <section id="view-usuarios" class="view-section">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Gestión de Usuarios</h2>
+          <p>Administra cuentas, roles y datos personales.</p>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn" onclick="cargarUsuarios()">↻ Actualizar</button>
+          <button class="btn btn-primary" onclick="abrirModalNuevoUsuario()">+ Registrar Usuario</button>
+        </div>
+      </div>
+
+      <!-- Tabla Usuarios -->
+      <div class="table-container">
+        <table>
+          <thead><tr>
+            <th>ID</th><th>Username</th><th>Email</th><th>Cédula</th>
+            <th>Teléfono</th><th>Rol</th><th>Estado</th><th>Acciones</th>
+          </tr></thead>
+          <tbody id="tbl-usuarios"><tr><td colspan="8" style="text-align:center;color:var(--c-muted)">Cargando…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- MODAL DETALLE USUARIO -->
+    <div id="modalUsuario" style="display:none;position:fixed;inset:0;background:rgba(10,10,15,.85);backdrop-filter:blur(4px);z-index:2000;align-items:center;justify-content:center">
+      <div style="background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);width:100%;max-width:520px;padding:32px;position:relative;box-shadow:0 20px 40px rgba(0,0,0,.6)">
+        <button onclick="cerrarModalUsuario()" style="position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--c-muted);font-size:18px;cursor:pointer">✕</button>
+        <h3 id="mu_titulo" style="font-family:var(--f-head);font-size:24px;margin-bottom:20px;color:var(--c-gold)">DETALLE DE USUARIO</h3>
+        <div id="mu_contenido"></div>
+        <div style="display:flex;gap:10px;margin-top:20px" id="mu_acciones"></div>
+      </div>
+    </div>
+
+    <!-- MODAL NUEVO USUARIO (admin) -->
+    <div id="modalNuevoUsuario" style="display:none;position:fixed;inset:0;background:rgba(10,10,15,.85);backdrop-filter:blur(4px);z-index:2000;align-items:center;justify-content:center">
+      <div style="background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);width:100%;max-width:520px;padding:32px;position:relative;max-height:90vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,.6)">
+        <button onclick="cerrarModalNuevoUsuario()" style="position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--c-muted);font-size:18px;cursor:pointer">✕</button>
+        <h3 style="font-family:var(--f-head);font-size:24px;margin-bottom:20px;color:var(--c-gold)" id="mnu_titulo">REGISTRAR USUARIO</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="input-group"><label>Username *</label><input type="text" id="nu_username" placeholder="juan_garcia"></div>
+          <div class="input-group"><label>Nombre completo</label><input type="text" id="nu_nombre" placeholder="Juan García Pérez"></div>
+          <div class="input-group"><label>Email *</label><input type="email" id="nu_email" placeholder="correo@ejemplo.com"></div>
+          <div class="input-group"><label>Cédula</label><input type="text" id="nu_cedula" placeholder="1144024680"></div>
+          <div class="input-group"><label>Teléfono</label><input type="text" id="nu_tel" placeholder="3001234567"></div>
+          <div class="input-group"><label>Dirección</label><input type="text" id="nu_dir" placeholder="Cra 5 # 10-20"></div>
+          <div class="input-group"><label>Fecha nacimiento</label><input type="date" id="nu_fnac"></div>
+          <div class="input-group"><label>Contraseña *</label><input type="password" id="nu_pass" placeholder="Mín 6 caracteres" minlength="6"></div>
+        </div>
+        <input type="hidden" id="nu_id">
+        <p id="nu_error" style="font-size:12px;color:var(--c-red);margin-top:8px;display:none"></p>
+        <button class="btn btn-primary" style="margin-top:16px;width:100%;padding:12px" id="nu_btn" onclick="guardarNuevoUsuario()">Registrar Usuario</button>
+      </div>
+    </div>
+
+    <!-- CONFIGURACIÓN API -->
+    <section id="view-config" class="view-section">
+      <div class="section-header">
+        <div class="section-title"><h2>Configuración de Conexión</h2></div>
+      </div>
+      <div class="card" style="max-width: 500px;">
+        <div class="input-group">
+          <label>URL Base del API REST (Spring Boot)</label>
+          <input type="text" id="apiBaseInput" class="mono" value="http://localhost:8080/api">
+        </div>
+        <p style="color:var(--c-muted); font-size:12px; margin-bottom: 24px;">Asegúrate de que no termine con '/' y que CORS esté configurado en tu servidor.</p>
+        <div style="display:flex; gap:12px;">
+          <button class="btn btn-primary" onclick="guardarConfig()">Guardar y Probar Conexión</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- MODAL DETALLE SILLAS RESERVA -->
+<div id="modalSillas" style="display:none;position:fixed;inset:0;background:rgba(10,10,15,.85);
+  backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center">
+  <div style="background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);
+    width:100%;max-width:440px;padding:32px;position:relative;box-shadow:0 20px 40px rgba(0,0,0,.6)">
+    <button onclick="document.getElementById('modalSillas').style.display='none'"
+            style="position:absolute;top:16px;right:16px;background:transparent;border:none;
+      color:var(--c-muted);font-size:18px;cursor:pointer">✕</button>
+    <h3 id="ms_titulo" style="font-family:var(--f-head);font-size:22px;margin-bottom:8px;color:var(--c-gold)">SILLAS RESERVADAS</h3>
+    <p id="ms_sub" style="font-size:12px;color:var(--c-muted);margin-bottom:20px"></p>
+    <div id="ms_mapa" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+      background:var(--c-card);border-radius:var(--radius);padding:20px;
+      border:1px solid var(--c-border);min-height:80px"></div>
+    <div style="margin-top:20px;text-align:right">
+      <button class="btn btn-primary" onclick="document.getElementById('modalSillas').style.display='none'">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VENTA (MAPA SILLAS) — 2 pasos -->
+<div id="modalReserva" class="modal-overlay">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-header">
+      <div>
+        <h3 id="m_tituloPeli" style="font-size: 28px; line-height: 1;">Cargando...</h3>
+        <div class="mono text-muted" style="margin-top: 6px;" id="m_infoFuncion"></div>
+      </div>
+      <button class="btn btn-sm btn-danger" onclick="cerrarModal()">Cerrar ✕</button>
+    </div>
+
+    <!-- PASO 1: Mapa de asientos -->
+    <div id="paso1Modal" class="modal-body" style="flex-direction:column;padding:0">
+      <div class="map-section" style="border-radius:0 0 var(--radius-lg) var(--radius-lg)">
+        <div class="screen-curve"></div>
+        <div class="rows-container" id="mapaContenedor"></div>
+        <div class="legend">
+          <div class="leg-item"><div class="leg-box free"></div> Disponible</div>
+          <div class="leg-item"><div class="leg-box sel"></div> Seleccionada</div>
+          <div class="leg-item"><div class="leg-box occ"></div> Ocupada</div>
+        </div>
+      </div>
+      <!-- Barra inferior paso 1 -->
+      <div style="padding:16px 24px;background:var(--c-surface);border-top:1px solid var(--c-border);display:flex;align-items:center;justify-content:space-between;border-radius:0 0 var(--radius-lg) var(--radius-lg)">
+        <div>
+          <span class="text-muted" style="font-size:12px">Seleccionadas (máx 4): </span>
+          <span class="mono text-gold" id="r_sillasSel" style="font-size:14px">Ninguna</span>
+        </div>
+        <button class="btn btn-primary" style="padding:10px 28px;font-size:14px" onclick="irPaso2()">Continuar pago →</button>
+      </div>
+    </div>
+
+    <!-- PASO 2: Datos del cliente y pago -->
+    <div id="paso2Modal" style="display:none;flex-direction:column">
+      <div style="padding:24px;border-bottom:1px solid var(--c-border);display:flex;align-items:center;gap:12px">
+        <button class="btn btn-sm" onclick="volverPaso1()">← Volver al mapa</button>
+        <span class="text-muted" style="font-size:13px">Asientos: <strong class="text-gold" id="p2_sillas"></strong></span>
+      </div>
+      <div style="padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:12px;overflow-y:auto;max-height:60vh">
+        <div style="grid-column:1/-1">
+          <div class="ticket-summary">
+            <div class="flex-between mb-1">
+              <span class="text-muted" style="font-size:12px">Precio Unitario:</span>
+              <span class="mono" id="r_precioBase">$0</span>
+            </div>
+            <div class="flex-between mb-2 pb-2" style="border-bottom:1px dashed var(--c-border)">
+              <span class="text-muted" style="font-size:12px">Asientos seleccionados:</span>
+              <span class="mono text-gold" id="p2_num">0</span>
+            </div>
+            <div style="text-align:right">
+              <div class="text-muted" style="font-size:11px;text-transform:uppercase">Total a Cobrar</div>
+              <div class="total-price" id="r_total">$0</div>
+            </div>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Cédula del Cliente *</label>
+          <input type="text" id="r_cliDoc" required placeholder="Ej: 1144...">
+        </div>
+        <div class="input-group">
+          <label>Nombre del Cliente *</label>
+          <input type="text" id="r_cliNom" placeholder="Nombre completo" required>
+        </div>
+        <div class="input-group">
+          <label>Teléfono / Contacto</label>
+          <input type="text" id="r_cliTel" placeholder="3001234567">
+        </div>
+        <div class="input-group">
+          <label>Dirección</label>
+          <input type="text" id="r_cliDir" placeholder="Cra 5 # 10-20, Cali">
+        </div>
+        <div style="grid-column:1/-1">
+          <input type="hidden" id="r_funcionId">
+          <button type="button" class="btn btn-primary w-full" style="padding:14px;font-size:14px" onclick="procesarPago()">💳 Confirmar Pago y Emitir Tiquetes</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ══════════════════════════════════════════════
+     CONFIGURACIÓN Y ESTADO
+  ══════════════════════════════════════════════ */
+  let API_BASE = localStorage.getItem('monarca_api_base') || 'http://localhost:8080/api';
+  let JWT_TOKEN = sessionStorage.getItem('monarca_token') || null;
+
+  // Caché local para evitar llamar a la API innecesariamente al editar
+  let peliculasCache = [];
+  let funcionesCache = [];
+  let carteleraCache = []; // funciones con datos de ocupación para la taquilla
+
+  let seleccionActual = [];
+  let funcionActual = null;
+  let ocupadasTemp = [];
+
+  const MAPA_CONFIG = {
+    filas: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
+    bloques: [4, 6, 4]
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('apiBaseInput').value = API_BASE;
+
+    if (!JWT_TOKEN) {
+      document.getElementById('loginScreen').style.opacity = '1';
+      document.getElementById('loginScreen').style.visibility = 'visible';
+    } else {
+      iniciarApp();
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    document.getElementById('formPelicula').addEventListener('submit', savePelicula);
+    document.getElementById('formFuncion').addEventListener('submit', saveFuncion);
+  });
+
+  /* ══════════════════════════════════════════════
+     COMUNICACIÓN API (FETCH)
+  ══════════════════════════════════════════════ */
+  async function api(path, method = 'GET', body = null) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (JWT_TOKEN) headers['Authorization'] = `Bearer ${JWT_TOKEN}`;
+
+    try {
+      const res = await fetch(`${API_BASE}${path}`, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : null
+      });
+
+      if (res.status === 401 || res.status === 403) {
+        logout();
+        throw new Error("Sesión expirada o sin permisos de administrador.");
+      }
+
+      if (!res.ok) {
+        const errorData = await res.text();
+        throw new Error(errorData || `Error HTTP: ${res.status}`);
+      }
+
+      setStatus(true);
+
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        return await res.json();
+      } else {
+        return await res.text();
+      }
+
+    } catch (error) {
+      setStatus(false);
+      throw error;
+    }
+  }
+
+  function setStatus(isOnline) {
+    const dot = document.getElementById('apiStatusDot');
+    const txt = document.getElementById('apiStatusText');
+    if (isOnline) {
+      dot.className = 'status-dot online';
+      txt.textContent = 'API Conectada';
+      txt.style.color = 'var(--c-green)';
+    } else {
+      dot.className = 'status-dot offline';
+      txt.textContent = 'API Desconectada';
+      txt.style.color = 'var(--c-red)';
+    }
+  }
+
+  /* ══════════════════════════════════════════════
+     LÓGICA UI & NAVEGACIÓN
+  ══════════════════════════════════════════════ */
+  async function handleLogin(e) {
+    e.preventDefault();
+    const u = document.getElementById('l_user').value;
+    const p = document.getElementById('l_pass').value;
+
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: u, password: p })
+      });
+
+      if(!res.ok) throw new Error("Credenciales inválidas");
+
+      const data = await res.json();
+      JWT_TOKEN = data.token;
+      sessionStorage.setItem('monarca_token', JWT_TOKEN);
+      sessionStorage.setItem('monarca_email', data.email || '');
+      sessionStorage.setItem('monarca_rol', data.rol || 'USER');
+      sessionStorage.setItem('monarca_username', data.username || '');
+
+      // Mostrar usuario y email en el header
+      document.getElementById('userDisplay').innerText = '@' + data.username + (data.email ? ' · ' + data.email : '');
+      document.getElementById('loginScreen').style.opacity = '0';
+      setTimeout(() => document.getElementById('loginScreen').style.visibility = 'hidden', 500);
+
+      iniciarApp();
+      showAlert('Autenticación exitosa.');
+    } catch (error) {
+      showAlert('Fallo de inicio de sesión. Verifica el backend y CORS.', 'error');
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem('monarca_token');
+    location.reload();
+  }
+
+  function iniciarApp() {
+    testConexion();
+    aplicarNavPorRol();
+    cargarDashboard();
+  }
+
+  function aplicarNavPorRol() {
+    const rol = sessionStorage.getItem('monarca_rol') || 'USER';
+    const isAdmin = rol === 'ADMIN';
+
+    // Ocultar pestañas ADMIN si el usuario es USER
+    document.querySelectorAll('.nav-item[data-rol]').forEach(el => {
+      el.style.display = el.getAttribute('data-rol') === 'ADMIN' && !isAdmin ? 'none' : '';
+    });
+
+    // ADMIN ve nombres extendidos, USER ve nombres cortos
+    const navTaquilla = document.querySelector('.nav-item[data-view="cartelera"]');
+    const navHistorial = document.querySelector('.nav-item[data-view="reservas"]');
+    if (navTaquilla)  navTaquilla.innerHTML  = isAdmin ? '🎟 Taquilla & Ventas' : '🎟 Taquilla';
+    if (navHistorial) navHistorial.innerHTML = isAdmin ? '📋 Historial Ventas'  : '📋 Historial';
+  }
+
+  function switchAuthTab(tab, btn) {
+    document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(tab === 'login' ? 'loginForm' : 'registerForm').classList.add('active');
+    document.getElementById('registerError').style.display = 'none';
+  }
+
+  async function handleRegister(e) {
+    e.preventDefault();
+    const username        = document.getElementById('r_username').value.trim();
+    const nombreCompleto  = document.getElementById('r_nombreCompleto').value.trim();
+    const email           = document.getElementById('r_email').value.trim();
+    const cedula          = document.getElementById('r_cedula').value.trim();
+    const telefono        = document.getElementById('r_telefono').value.trim();
+    const direccion       = document.getElementById('r_direccion').value.trim();
+    const fechaNacimiento = document.getElementById('r_fechaNac').value;
+    const password        = document.getElementById('r_password').value;
+    const password2       = document.getElementById('r_password2').value;
+    const errEl           = document.getElementById('registerError');
+
+    errEl.style.display = 'none';
+
+    if (password !== password2) {
+      errEl.textContent = 'Las contraseñas no coinciden.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password, nombreCompleto,
+          cedula, telefono, direccion, fechaNacimiento })
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Error al registrar');
+      }
+
+      const data = await res.json();
+      JWT_TOKEN = data.token;
+      sessionStorage.setItem('monarca_token', JWT_TOKEN);
+      sessionStorage.setItem('monarca_rol', data.rol || 'USER');
+      sessionStorage.setItem('monarca_username', data.username || '');
+
+      document.getElementById('userDisplay').innerText = '@' + data.username + (data.email ? ' · ' + data.email : '');
+      document.getElementById('loginScreen').style.opacity = '0';
+      setTimeout(() => document.getElementById('loginScreen').style.visibility = 'hidden', 500);
+
+      iniciarApp();
+      showAlert('¡Cuenta creada! Bienvenido, ' + data.username);
+    } catch(err) {
+      errEl.textContent = err.message;
+      errEl.style.display = 'block';
+    }
+  }
+
+  function switchView(viewId, element) {
+    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+    document.getElementById('view-' + viewId).classList.add('active');
+    if(element) element.classList.add('active');
+
+    if (viewId === 'dashboard') cargarDashboard();
+    if (viewId === 'cartelera') cargarCartelera();
+    if (viewId === 'peliculas') cargarPeliculas();
+    if (viewId === 'salas')     cargarSalasAdmin();
+    if (viewId === 'funciones') cargarFunciones();
+    if (viewId === 'reservas')  cargarReservas();
+    if (viewId === 'sucursales') { _filtroSucCineId = null; cargarSucursales(); }
+    if (viewId === 'usuarios') cargarUsuarios();
+    if (viewId === 'config') testConexion();
+  }
+
+  /* ══════════════════════════════════════════════
+     RENDERING DE DATOS (PETICIONES GET)
+  ══════════════════════════════════════════════ */
+  async function cargarDashboard() {
+    try {
+      const pelis = await api('/peliculas').catch(()=>[]);
+      const funcs = await api('/funciones').catch(()=>[]);
+      const clis  = await api('/clientes').catch(()=>[]);
+      const resv  = await api('/reservas').catch(()=>[]);
+      document.getElementById('stat-pelis').innerText = pelis.length || 0;
+      document.getElementById('stat-funcs').innerText = funcs.length || 0;
+      document.getElementById('stat-clis').innerText  = clis.length  || 0;
+      document.getElementById('stat-res').innerText   = resv.length  || 0;
+    } catch (e) {
+      console.error(e);
+      showAlert("Error al cargar el panel de control.", "error");
+    }
+  }
+
+  async function cargarCartelera() {
+    const list = document.getElementById('carteleraList');
+    list.innerHTML = '<div class="empty-state" style="grid-column:1/-1">Cargando cartelera...</div>';
+    try {
+      funcionesCache = await api('/funciones');
+      carteleraCache = [];
+
+      if (!funcionesCache.length) {
+        list.innerHTML = '<div class="empty-state" style="grid-column:1/-1">No hay funciones programadas activas.</div>';
+        return;
+      }
+
+      // Precarga de sillas para cada función (con barra de progreso)
+      let count = 0;
+      for (const f of funcionesCache) {
+        if (!f.pelicula) continue;
+        count++;
+        list.innerHTML = `<div class="empty-state" style="grid-column:1/-1">Cargando ocupación (${count}/${funcionesCache.length})…</div>`;
+        const sillasData = await api(`/sillas/funcion/${f.funcionId}`).catch(()=>[]);
+        const ocupadas = sillasData.filter(s => s.estado !== 'DISPONIBLE').length;
+        const totalSillas = sillasData.length; // total real desde BD
+        carteleraCache.push({ ...f, _ocupadas: ocupadas, _total: totalSillas });
+      }
+
+      // Poblar filtros con valores únicos de los datos
+      _poblarFiltrosCartelera();
+      renderCartelera();
+
+    } catch(e) {
+      list.innerHTML = `<div class="empty-state" style="grid-column:1/-1">Error al cargar cartelera: ${e.message}</div>`;
+    }
+  }
+
+  function _poblarFiltrosCartelera() {
+    const sucursales = new Map();
+    const generos    = new Set();
+    const clasifs    = new Set();
+
+    carteleraCache.forEach(f => {
+      if (f.sala?.sucursal?.branId)
+        sucursales.set(f.sala.sucursal.branId, f.sala.sucursal.branLocation || 'Sucursal #'+f.sala.sucursal.branId);
+      if (f.pelicula?.genero)  generos.add(f.pelicula.genero);
+      if (f.pelicula?.clasificacion) clasifs.add(f.pelicula.clasificacion);
+    });
+
+    // Conservar selecciones actuales
+    const selSuc    = document.getElementById('filtro-car-suc');
+    const selGenero = document.getElementById('filtro-car-genero');
+    const selClasif = document.getElementById('filtro-car-clasif');
+    const [vSuc, vGen, vCla] = [selSuc.value, selGenero.value, selClasif.value];
+
+    selSuc.innerHTML    = '<option value="">— Todas las sucursales —</option>' +
+            Array.from(sucursales.entries()).map(([id,loc]) => `<option value="${id}">${loc}</option>`).join('');
+    selGenero.innerHTML = '<option value="">— Todos los géneros —</option>' +
+            Array.from(generos).sort().map(g => `<option value="${g}">${g}</option>`).join('');
+    selClasif.innerHTML = '<option value="">— Todas —</option>' +
+            Array.from(clasifs).sort().map(c => `<option value="${c}">${c}</option>`).join('');
+
+    if (vSuc) selSuc.value = vSuc;
+    if (vGen) selGenero.value = vGen;
+    if (vCla) selClasif.value = vCla;
+  }
+
+  function filtrarCartelera() { renderCartelera(); }
+
+  function limpiarFiltrosCartelera() {
+    document.getElementById('filtro-car-suc').value    = '';
+    document.getElementById('filtro-car-nombre').value = '';
+    document.getElementById('filtro-car-genero').value = '';
+    document.getElementById('filtro-car-clasif').value = '';
+    renderCartelera();
+  }
+
+  function renderCartelera() {
+    const list      = document.getElementById('carteleraList');
+    const vSuc      = document.getElementById('filtro-car-suc').value;
+    const vNombre   = document.getElementById('filtro-car-nombre').value.toLowerCase().trim();
+    const vGenero   = document.getElementById('filtro-car-genero').value;
+    const vClasif   = document.getElementById('filtro-car-clasif').value;
+    // total se toma de cada función individualmente (ver _total abajo)
+
+    let lista = carteleraCache;
+    if (vSuc)    lista = lista.filter(f => String(f.sala?.sucursal?.branId) === vSuc);
+    if (vNombre) lista = lista.filter(f => f.pelicula?.nombre?.toLowerCase().includes(vNombre));
+    if (vGenero) lista = lista.filter(f => f.pelicula?.genero === vGenero);
+    if (vClasif) lista = lista.filter(f => f.pelicula?.clasificacion === vClasif);
+
+    if (!lista.length) {
+      list.innerHTML = '<div class="empty-state" style="grid-column:1/-1">No hay funciones para los filtros seleccionados.</div>';
+      return;
+    }
+
+    list.innerHTML = '';
+    lista.forEach(f => {
+      const fechaStr = ((f.fecha||'') + ' ' + (f.horaInicio||'')).trim();
+      const ocupadas  = f._ocupadas || 0;
+      const total     = f._total || f.sala?.capacidad || 1; // real desde BD
+      const pct       = Math.min((ocupadas / total) * 100, 100);
+      const sucNombre = f.sala?.sucursal?.branLocation || '';
+
+      const card = document.createElement('div');
+      card.className = 'card funcion-card';
+      card.innerHTML = `
+        <div class="funcion-header">
+          <h3>${f.pelicula.nombre.toUpperCase()}</h3>
+          ${sucNombre ? `<div style="font-size:11px;color:var(--c-muted);margin-top:4px;font-family:var(--f-body)">📍 ${sucNombre}</div>` : ''}
+        </div>
+        <div class="funcion-body">
+          <div class="funcion-meta">
+            <span class="badge badge-blue">${f.pelicula.clasificacion||'?'}</span>
+            <span class="badge" style="background:var(--c-surface);border:1px solid var(--c-border)">${f.pelicula.duracionMin||'?'}m</span>
+            <span class="badge" style="background:var(--c-surface);border:1px solid var(--c-border)">${f.pelicula.genero||'?'}</span>
+          </div>
+          <div class="funcion-details">
+            <div class="detail-item"><span>Sala</span><strong>${f.sala?.nombre||'—'}</strong></div>
+            <div class="detail-item"><span>Fecha / Hora</span><strong class="mono">${fechaStr}</strong></div>
+            <div class="detail-item"><span>Entrada</span><strong class="text-gold mono">$${f.precioBoleto.toLocaleString()}</strong></div>
+            <div class="detail-item">
+              <span>Ocupación (${ocupadas}/${total})</span>
+              <div class="ocup-bar"><div class="ocup-fill" style="width:${pct}%;background:${pct>80?'var(--c-red)':pct>40?'var(--c-gold)':'var(--c-green)'}"></div></div>
+            </div>
+          </div>
+          <button class="btn btn-primary w-full mt-auto" style="padding:12px;font-size:14px" onclick="abrirTaquilla(${f.funcionId})">Vender Entradas</button>
+        </div>`;
+      list.appendChild(card);
+    });
+  }
+
+  async function cargarPeliculas() {
+    const tbody = document.getElementById('peliculasTable');
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Cargando catálogo...</td></tr>';
+
+    try {
+      peliculasCache = await api('/peliculas');
+      tbody.innerHTML = peliculasCache.map(p => `
+                    <tr>
+                        <td class="mono text-muted">#${p.movieId}</td>
+                        <td style="font-weight:600;">${p.nombre}</td>
+                        <td>${p.genero}</td>
+                        <td>${p.duracionMin} min</td>
+                        <td><span class="badge badge-blue">${p.clasificacion}</span></td>
+                        <td>
+                            <div style="display:flex; gap: 4px;">
+                                <button class="btn btn-sm" onclick="cargarEdicionPelicula(${p.movieId})">Editar</button>
+                                <button class="btn btn-sm btn-danger" onclick="eliminarEntidad('/peliculas/${p.movieId}', cargarPeliculas)">Eliminar</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+    } catch(e) {
+      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Error: ${e.message}</td></tr>`;
+    }
+  }
+
+  async function cargarFunciones() {
+    document.getElementById('funcionesTable').innerHTML = '<tr><td colspan="8" class="empty-state">Cargando...</td></tr>';
+
+    try {
+      const [funciones, peliculas, salas] = await Promise.all([
+        api('/funciones'),
+        api('/peliculas'),
+        api('/salas')
+      ]);
+
+      funcionesCache = funciones;
+      peliculasCache = peliculas;
+      salasCache = salas;
+
+      document.getElementById('f_peli').innerHTML = '<option value="">-- Selecciona --</option>' +
+              peliculas.map(p => `<option value="${p.movieId}">${p.nombre}</option>`).join('');
+
+      // Poblar sucursales deduplicadas desde salasCache (para el select del formulario)
+      const sucursalesVistas = new Map();
+      salas.forEach(s => {
+        if (s.sucursal?.branId && !sucursalesVistas.has(s.sucursal.branId)) {
+          sucursalesVistas.set(s.sucursal.branId, s.sucursal.branLocation || 'Sucursal #' + s.sucursal.branId);
+        }
+      });
+      const opcionesSuc = '<option value="">— Todas —</option>' +
+              Array.from(sucursalesVistas.entries())
+                      .map(([id, loc]) => `<option value="${id}">${loc}</option>`).join('');
+
+      document.getElementById('f_sucursal').innerHTML = opcionesSuc;
+
+      // Poblar filtro de tabla y conservar selección previa
+      const filtroSel = document.getElementById('filtro-suc-funciones');
+      const filtroActual = filtroSel.value;
+      filtroSel.innerHTML = '<option value="">— Todas las sucursales —</option>' +
+              Array.from(sucursalesVistas.entries())
+                      .map(([id, loc]) => `<option value="${id}">${loc}</option>`).join('');
+      if (filtroActual) filtroSel.value = filtroActual;
+
+      filtrarSalasPorSucursal();
+      renderTablaFunciones();
+    } catch(e) {
+      document.getElementById('funcionesTable').innerHTML = `<tr><td colspan="8" class="empty-state">Error: ${e.message}</td></tr>`;
+    }
+  }
+
+  function filtrarTablaFunciones() { renderTablaFunciones(); }
+
+  function renderTablaFunciones() {
+    const filtroId = document.getElementById('filtro-suc-funciones').value;
+    const tbody = document.getElementById('funcionesTable');
+    const lista = filtroId
+            ? funcionesCache.filter(f => String(f.sala?.sucursal?.branId) === String(filtroId))
+            : funcionesCache;
+
+    if (!lista.length) {
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No hay funciones para esta sucursal.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = lista.map(f => {
+      const fecha = ((f.fecha||'') + ' ' + (f.horaInicio||'')).trim();
+      const sucLoc = f.sala?.sucursal?.branLocation || '—';
+      return `
+        <tr>
+          <td class="mono text-muted">#${f.funcionId}</td>
+          <td style="font-weight:600">${f.pelicula?.nombre || '<span class="text-muted">(Eliminada)</span>'}</td>
+          <td>${f.sala?.nombre || '—'}</td>
+          <td style="font-size:12px;color:var(--c-muted)">${sucLoc}</td>
+          <td><span class="badge badge-blue">${tipoLabel(f.sala?.tipo)}</span></td>
+          <td class="mono">${fecha}</td>
+          <td class="mono text-gold">$${(f.precioBoleto||0).toLocaleString()}</td>
+          <td>
+            <div style="display:flex;gap:4px">
+              <button class="btn btn-sm" onclick="cargarEdicionFuncion(${f.funcionId})">Editar</button>
+              <button class="btn btn-sm btn-danger" onclick="eliminarEntidad('/funciones/${f.funcionId}', cargarFunciones)">Eliminar</button>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  let reservasBaseCache = []; // reservas filtradas por rol (base para los filtros de UI)
+
+  async function cargarReservas() {
+    const tbody = document.getElementById('reservasTable');
+    tbody.innerHTML = '<tr><td colspan="9" class="empty-state">Cargando registros...</td></tr>';
+    const rol = sessionStorage.getItem('monarca_rol') || 'USER';
+    const username = sessionStorage.getItem('monarca_username') || '';
+
+    try {
+      const data = await api('/reservas');
+
+      // USER solo ve sus propias reservas
+      reservasBaseCache = rol === 'ADMIN' ? data
+              : data.filter(r => r.nombre?.toLowerCase() === username.toLowerCase()
+                      || r.cliente?.nombreCliente?.toLowerCase() === username.toLowerCase());
+
+      _poblarFiltrosReservas();
+      renderTablaReservas();
+    } catch(e) {
+      tbody.innerHTML = `<tr><td colspan="9" class="empty-state">Error: ${e.message}</td></tr>`;
+    }
+  }
+
+  function _poblarFiltrosReservas() {
+    const sucursales = new Map();
+    const generos    = new Set();
+    const clasifs    = new Set();
+
+    reservasBaseCache.forEach(r => {
+      const suc = r.funcion?.sala?.sucursal;
+      if (suc?.branId) sucursales.set(suc.branId, suc.branLocation || 'Sucursal #'+suc.branId);
+      const peli = r.funcion?.pelicula;
+      if (peli?.genero) generos.add(peli.genero);
+      if (peli?.clasificacion) clasifs.add(peli.clasificacion);
+    });
+
+    const selSuc    = document.getElementById('filtro-res-suc');
+    const selGenero = document.getElementById('filtro-res-genero');
+    const selClasif = document.getElementById('filtro-res-clasif');
+    const [vSuc, vGen, vCla] = [selSuc.value, selGenero.value, selClasif.value];
+
+    selSuc.innerHTML    = '<option value="">— Todas —</option>' +
+            Array.from(sucursales.entries()).map(([id,loc]) => `<option value="${id}">${loc}</option>`).join('');
+    selGenero.innerHTML = '<option value="">— Todos —</option>' +
+            Array.from(generos).sort().map(g => `<option value="${g}">${g}</option>`).join('');
+    selClasif.innerHTML = '<option value="">— Todas —</option>' +
+            Array.from(clasifs).sort().map(c => `<option value="${c}">${c}</option>`).join('');
+
+    if (vSuc) selSuc.value = vSuc;
+    if (vGen) selGenero.value = vGen;
+    if (vCla) selClasif.value = vCla;
+  }
+
+  function filtrarReservas()       { renderTablaReservas(); }
+  function limpiarFiltrosReservas() {
+    ['filtro-res-suc','filtro-res-nombre','filtro-res-genero','filtro-res-clasif','filtro-res-estado']
+            .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    renderTablaReservas();
+  }
+
+  function renderTablaReservas() {
+    const tbody   = document.getElementById('reservasTable');
+    const vSuc    = document.getElementById('filtro-res-suc').value;
+    const vNombre = document.getElementById('filtro-res-nombre').value.toLowerCase().trim();
+    const vGenero = document.getElementById('filtro-res-genero').value;
+    const vClasif = document.getElementById('filtro-res-clasif').value;
+    const vEstado = document.getElementById('filtro-res-estado').value;
+
+    let lista = reservasBaseCache;
+    if (vSuc)    lista = lista.filter(r => String(r.funcion?.sala?.sucursal?.branId) === vSuc);
+    if (vNombre) lista = lista.filter(r => r.funcion?.pelicula?.nombre?.toLowerCase().includes(vNombre));
+    if (vGenero) lista = lista.filter(r => r.funcion?.pelicula?.genero === vGenero);
+    if (vClasif) lista = lista.filter(r => r.funcion?.pelicula?.clasificacion === vClasif);
+    if (vEstado) lista = lista.filter(r => r.estado === vEstado);
+
+    const contador = document.getElementById('res-contador');
+    if (contador) contador.textContent = `Mostrando ${lista.length} de ${reservasBaseCache.length} registros`;
+
+    if (!lista.length) {
+      tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No hay registros para los filtros seleccionados.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = lista.map(r => {
+      const fecha     = ((r.fecha||'') + ' ' + (r.tiempo||'')).trim();
+      const peli      = r.funcion?.pelicula?.nombre || 'Desconocida';
+      const sala      = r.funcion?.sala?.nombre || '—';
+      const sucNombre = r.funcion?.sala?.sucursal?.branLocation || '—';
+      const cliNombre = r.cliente ? r.cliente.nombreCliente : (r.nombre || '—');
+      const cliDoc    = r.cliente ? (r.cliente.numeroCliente || r.cliente.custId || '') : '';
+      const badgeCls  = r.estado === 'CONFIRMADA' ? 'badge-green' : r.estado === 'CANCELADA' ? 'badge-red' : 'badge-blue';
+
+      return `
+        <tr>
+          <td class="mono" style="font-weight:bold;font-size:15px">TK-${r.resCode}</td>
+          <td class="mono text-muted" style="font-size:12px">${fecha}</td>
+          <td>${cliNombre}<br><span class="mono text-muted" style="font-size:10px">CC: ${cliDoc}</span></td>
+          <td>
+            <strong style="color:var(--c-text)">${peli}</strong>
+            <br><span class="text-muted" style="font-size:11px">${r.funcion?.pelicula?.genero||''} · ${r.funcion?.pelicula?.clasificacion||''}</span>
+          </td>
+          <td>
+            <span style="font-size:13px">${sala}</span>
+            <br><span class="text-muted" style="font-size:11px">📍 ${sucNombre}</span>
+          </td>
+          <td>
+            ${(r.sillasSeleccionadas||[]).length
+              ? (r.sillasSeleccionadas||[]).map(s =>
+                      `<span style="display:inline-block;background:rgba(245,197,24,0.12);border:1px solid rgba(245,197,24,0.35);
+                   color:var(--c-gold);border-radius:4px;padding:2px 6px;font-family:var(--f-mono);
+                   font-size:11px;margin:2px;font-weight:600">${s}</span>`).join('')
+              : '<span style="color:var(--c-muted);font-size:12px">—</span>'}
+          </td>
+          <td class="mono" style="font-weight:600">$${(r.total||0).toLocaleString()}</td>
+          <td><span class="badge ${badgeCls}">${r.estado}</span></td>
+          <td style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+            <button class="btn btn-sm" title="Ver sillas" onclick="verSillasReserva(${r.resCode}, ${JSON.stringify(r.sillasSeleccionadas||[]).replace(/"/g,'&quot;')})">👁</button>
+            ${r.estado==='CONFIRMADA'
+              ? `<button class="btn btn-sm btn-danger" onclick="cancelarReserva(${r.resCode})">Anular</button>`
+              : '—'}
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  /* ══════════════════════════════════════════════
+     SISTEMA DE VENTA / MAPA DE ASIENTOS
+  ══════════════════════════════════════════════ */
+  async function abrirTaquilla(fId) {
+    funcionActual = funcionesCache.find(f => f.funcionId == fId);
+
+    if(!funcionActual || !funcionActual.pelicula) {
+      showAlert('No se encontró la información de la función.', 'error');
+      return;
+    }
+
+    document.getElementById('m_tituloPeli').innerText = funcionActual.pelicula.nombre;
+    document.getElementById('m_infoFuncion').innerText = `${funcionActual.sala?.nombre||''} — ${funcionActual.sala?.tipo||''} | ${funcionActual.fecha||''} ${funcionActual.horaInicio||''}`;
+    document.getElementById('r_precioBase').innerText = `$${funcionActual.precioBoleto.toLocaleString()} COP`;
+    document.getElementById('r_funcionId').value = funcionActual.funcionId;
+
+    seleccionActual = [];
+    actualizarTotales();
+
+    try {
+      // Obtener las sillas ocupadas en tiempo real desde el Backend
+      ocupadasTemp = await api(`/sillas/funcion/${fId}`);
+      dibujarMapa();
+      // Resetear a paso 1
+      document.getElementById('paso1Modal').style.display = 'flex';
+      document.getElementById('paso2Modal').style.display = 'none';
+      document.getElementById('modalReserva').style.display = 'flex';
+    } catch(e) {
+      showAlert('Error al cargar la ocupación de la sala.', 'error');
+    }
+  }
+
+  function cerrarModal() {
+    document.getElementById('modalReserva').style.display = 'none';
+    // limpiar campos paso 2
+    ['r_cliDoc','r_cliNom','r_cliTel','r_cliDir'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.value = '';
+    });
+  }
+
+  function dibujarMapa() {
+    const cont = document.getElementById('mapaContenedor');
+    cont.innerHTML = '';
+
+    // ── Fuente de verdad: las sillas que existen en la BD (ocupadasTemp) ──
+    // Nunca calculamos filas/columnas por nuestra cuenta; si no existe en BD no se muestra.
+    if (!ocupadasTemp.length) {
+      cont.innerHTML = '<div class="empty-state">No hay asientos registrados para esta función.</div>';
+      return;
+    }
+
+    // Agrupar sillas por fila, mantener orden A→Z y 1→N
+    const porFila = new Map();
+    ocupadasTemp.forEach(s => {
+      if (!porFila.has(s.fila)) porFila.set(s.fila, []);
+      porFila.get(s.fila).push(s);
+    });
+    // Ordenar filas alfabéticamente y columnas numéricamente
+    const filasOrdenadas = Array.from(porFila.keys()).sort();
+    filasOrdenadas.forEach(letra => {
+      const sillasDeEstaFila = porFila.get(letra)
+              .sort((a, b) => a.numero - b.numero);
+      const cols = sillasDeEstaFila.length;
+
+      const filaDiv = document.createElement('div');
+      filaDiv.className = 'seat-row';
+
+      const labelIzq = document.createElement('div');
+      labelIzq.className = 'row-label';
+      labelIzq.textContent = letra;
+      filaDiv.appendChild(labelIzq);
+
+      // Pasillo visual en el centro si hay más de 6 columnas
+      const mitad  = Math.floor(cols / 2);
+      const grupos = cols <= 6 ? [sillasDeEstaFila] : [sillasDeEstaFila.slice(0, mitad), sillasDeEstaFila.slice(mitad)];
+
+      grupos.forEach((grupo, idx) => {
+        const grupoDiv = document.createElement('div');
+        grupoDiv.className = 'seat-group' + (idx > 0 ? ' aisle' : '');
+
+        grupo.forEach(sillaData => {
+          const codigo = sillaData.codigo;          // ej: "E9"  — exactamente como está en BD
+          const isOcc  = sillaData.estado !== 'DISPONIBLE';
+
+          const silla = document.createElement('div');
+          silla.className = `seat ${isOcc ? 'occupied' : ''}`;
+          silla.innerText = sillaData.numero;       // muestra solo el número
+
+          if (!isOcc) silla.onclick = () => toggleSeleccion(silla, codigo);
+          grupoDiv.appendChild(silla);
+        });
+        filaDiv.appendChild(grupoDiv);
+      });
+
+      // Usar appendChild — nunca innerHTML += (destruiría los onclick)
+      const labelDer = document.createElement('div');
+      labelDer.className = 'row-label';
+      labelDer.textContent = letra;
+      filaDiv.appendChild(labelDer);
+      cont.appendChild(filaDiv);
+    });
+  }
+
+  function toggleSeleccion(el, id) {
+    const idx = seleccionActual.indexOf(id);
+    if(idx > -1) {
+      seleccionActual.splice(idx, 1);
+      el.classList.remove('selected');
+    } else {
+      if(seleccionActual.length >= 4) {
+        showAlert('Máximo 4 entradas permitidas por pago.', 'error');
+        return;
+      }
+      seleccionActual.push(id);
+      el.classList.add('selected');
+    }
+    actualizarTotales();
+  }
+
+  function actualizarTotales() {
+    if (!funcionActual) return;
+    const num = seleccionActual.length;
+    const tot = num * funcionActual.precioBoleto;
+
+    const resumen = num > 0 ? seleccionActual.join(', ') : 'Ninguna';
+    document.getElementById('r_sillasSel').innerText = resumen;
+    document.getElementById('r_total').innerText = `$${tot.toLocaleString()} COP`;
+    document.getElementById('r_precioBase').innerText = `$${(funcionActual.precioBoleto||0).toLocaleString()} COP`;
+  }
+
+  function irPaso2() {
+    if (seleccionActual.length === 0) {
+      showAlert('Selecciona al menos un asiento.', 'error');
+      return;
+    }
+    document.getElementById('paso1Modal').style.display = 'none';
+    const paso2 = document.getElementById('paso2Modal');
+    paso2.style.display = 'flex';
+    document.getElementById('p2_sillas').textContent = seleccionActual.join(', ');
+    document.getElementById('p2_num').textContent = seleccionActual.length;
+    if (funcionActual) {
+      const tot = seleccionActual.length * funcionActual.precioBoleto;
+      document.getElementById('r_total').innerText = `$${tot.toLocaleString()} COP`;
+      document.getElementById('r_precioBase').innerText = `$${(funcionActual.precioBoleto||0).toLocaleString()} COP`;
+    }
+  }
+
+  function volverPaso1() {
+    document.getElementById('paso2Modal').style.display = 'none';
+    document.getElementById('paso1Modal').style.display = 'flex';
+  }
+
+  async function procesarPago() {
+    if(seleccionActual.length === 0) {
+      showAlert('Debes seleccionar asientos en el mapa.', 'error');
+      return;
+    }
+
+    const doc = document.getElementById('r_cliDoc').value.trim();
+    const nom = document.getElementById('r_cliNom').value.trim();
+
+    if(!doc || !nom) {
+      showAlert('Datos del cliente incompletos.', 'error');
+      return;
+    }
+
+    // Buscar o crear cliente por cédula
+    let custId = null;
+    try {
+      const clientes = await api('/clientes');
+      const existente = clientes.find(c => c.numeroCliente === doc || c.custId == doc);
+      if (existente) {
+        custId = existente.custId;
+      } else {
+        const nuevoCliente = await api('/clientes', 'POST', {
+          nombreCliente: nom,
+          numeroCliente: doc,
+          direccionCliente: document.getElementById('r_cliDir').value.trim() || null,
+          numeroCliente: document.getElementById('r_cliTel').value.trim() || doc
+        });
+        custId = nuevoCliente.custId;
+      }
+    } catch(_) {
+      showAlert('Error al registrar el cliente.', 'error');
+      return;
+    }
+
+    const payload = {
+      custId:    custId,
+      funcionId: Number(document.getElementById('r_funcionId').value),
+      sillas:    seleccionActual,
+      fecha:     funcionActual.fecha || '',
+      tiempo:    funcionActual.horaInicio || ''
+    };
+
+    try {
+      await api('/reservas', 'POST', payload);
+      showAlert(`¡Pago aprobado y reserva registrada!`);
+      cerrarModal();
+      cargarCartelera();
+    } catch(e) {
+      showAlert('Error al procesar la reserva: ' + e.message, 'error');
+    }
+  }
+
+  /* ══════════════════════════════════════════════
+     EDICIÓN Y CREACIÓN (PELÍCULAS)
+  ══════════════════════════════════════════════ */
+  function cargarEdicionPelicula(id) {
+    const p = peliculasCache.find(x => x.movieId == id);
+    if(!p) return;
+
+    document.getElementById('p_id').value = p.movieId;
+    document.getElementById('p_titulo').value = p.nombre;
+    document.getElementById('p_genero').value = p.genero;
+    document.getElementById('p_duracion').value = p.duracionMin || '';
+    document.getElementById('p_clasif').value = p.clasificacion;
+
+    document.getElementById('lbl-form-pelicula').innerText = "Editar Título #" + p.movieId;
+    document.getElementById('btn-save-p').innerText = "Actualizar Película";
+    document.getElementById('btn-cancel-p').style.display = "inline-flex";
+    document.getElementById('p_titulo').focus();
+  }
+
+  function cancelarEdicionPelicula() {
+    document.getElementById('p_id').value = "";
+    document.getElementById('formPelicula').reset();
+    document.getElementById('lbl-form-pelicula').innerText = "Registrar Nuevo Título";
+    document.getElementById('btn-save-p').innerText = "Guardar Película en Catálogo";
+    document.getElementById('btn-cancel-p').style.display = "none";
+  }
+
+  async function savePelicula(e) {
+    e.preventDefault();
+    const id = document.getElementById('p_id').value;
+    const p = {
+      nombre: document.getElementById('p_titulo').value,
+      genero: document.getElementById('p_genero').value,
+      duracionMin: parseInt(document.getElementById('p_duracion').value),
+      clasificacion: document.getElementById('p_clasif').value
+    };
+
+    try {
+      if(id) {
+        await api(`/peliculas/${id}`, 'PUT', p);
+        showAlert('Película actualizada correctamente.');
+      } else {
+        await api('/peliculas', 'POST', p);
+        showAlert('Película guardada en base de datos.');
+      }
+      cancelarEdicionPelicula();
+      cargarPeliculas();
+      cargarFunciones(); // Refrescar combos
+    } catch(e) {
+      showAlert('Error al guardar película: ' + e.message, 'error');
+    }
+  }
+
+  /* ══════════════════════════════════════════════
+     EDICIÓN Y CREACIÓN (FUNCIONES)
+  ══════════════════════════════════════════════ */
+  function filtrarSalasPorSucursal() {
+    const sucId = document.getElementById('f_sucursal').value;
+    const selectSala = document.getElementById('f_sala');
+    const filtradas = sucId
+            ? salasCache.filter(s => String(s.sucursal?.branId) === sucId)
+            : salasCache;
+    selectSala.innerHTML = '<option value="">-- Selecciona sala --</option>' +
+            filtradas.map(s => `<option value="${s.salaId}">${s.nombre} — ${tipoLabel(s.tipo)} (${s.capacidad} asientos)</option>`).join('');
+  }
+
+  function cargarEdicionFuncion(id) {
+    // BUG CORREGIDO: era f.movieId, el campo correcto es f.funcionId
+    const f = funcionesCache.find(x => x.funcionId == id);
+    if(!f) return;
+
+    document.getElementById('f_id').value = f.funcionId;
+    document.getElementById('f_peli').value = f.pelicula?.movieId || '';
+
+    // Preseleccionar la sucursal de la sala de esta función y filtrar antes de setear sala
+    const sucId = f.sala?.sucursal?.branId || '';
+    document.getElementById('f_sucursal').value = sucId;
+    filtrarSalasPorSucursal();
+    document.getElementById('f_sala').value = f.sala?.salaId || '';
+
+    const isoString = `${f.fecha||'2025-01-01'}T${f.horaInicio||'00:00'}`;
+    document.getElementById('f_fecha').value = isoString;
+    document.getElementById('f_precio').value = f.precioBoleto || 18000;
+
+    document.getElementById('lbl-form-funcion').innerText = 'Editar Función #' + f.funcionId;
+    document.getElementById('btn-save-f').innerText = 'Actualizar Función';
+    document.getElementById('btn-cancel-f').style.display = 'inline-flex';
+    document.getElementById('f_peli').focus();
+  }
+
+  function cancelarEdicionFuncion() {
+    document.getElementById('f_id').value = "";
+    document.getElementById('formFuncion').reset();
+    document.getElementById('f_precio').value = "18000"; // Reset a valor por defecto
+    document.getElementById('f_sucursal').value = "";
+    filtrarSalasPorSucursal();
+    document.getElementById('lbl-form-funcion').innerText = "Programar Nueva Función";
+    document.getElementById('btn-save-f').innerText = "Publicar Función";
+    document.getElementById('btn-cancel-f').style.display = "none";
+  }
+
+  async function saveFuncion(e) {
+    e.preventDefault();
+    const id = document.getElementById('f_id').value;
+    const payload = {
+      pelicula: { movieId: parseInt(document.getElementById('f_peli').value) },
+      sala:     { salaId: parseInt(document.getElementById('f_sala').value) },
+      fecha:      document.getElementById('f_fecha').value.split('T')[0],
+      horaInicio: document.getElementById('f_fecha').value.split('T')[1] || '00:00',
+      precioBoleto: parseInt(document.getElementById('f_precio').value)
+    };
+
+    try {
+      if (id) {
+        await api(`/funciones/${id}`, 'PUT', payload);
+        showAlert('Función actualizada.');
+      } else {
+        await api('/funciones', 'POST', payload);
+        showAlert('Función programada exitosamente.');
+      }
+      cancelarEdicionFuncion();
+      cargarFunciones();
+    } catch(e) {
+      showAlert('Error al guardar función: ' + e.message, 'error');
+    }
+  }
+
+  /* ══════════════════════════════════════════════
+     ELIMINACIONES / CANCELACIONES (DELETE / PATCH)
+  ══════════════════════════════════════════════ */
+  async function eliminarEntidad(path, callback) {
+    if(!confirm('¿Seguro que deseas eliminar este registro permanentemente?')) return;
+    try {
+      await api(path, 'DELETE');
+      showAlert('Registro eliminado correctamente.');
+      callback();
+    } catch(e) {
+      showAlert('Fallo al eliminar (Posibles referencias foráneas activas).', 'error');
+    }
+  }
+
+  async function cancelarReserva(id) {
+    if(!confirm(`¿Cancelar el tiquete #${id}? Se liberarán los asientos y no se puede deshacer.`)) return;
+    try {
+      // Si el backend usa PATCH o DELETE, ajustar aquí. Asumiendo PATCH /cancelar según tus capturas:
+      await api(`/reservas/${id}/cancelar`, 'PATCH');
+      showAlert('Tiquete cancelado y sillas liberadas.');
+      cargarReservas();
+      cargarCartelera();
+    } catch(e) {
+      // Fallback a DELETE por si acaso tu API lo exige en DELETE normal
+      try {
+        await api(`/reservas/${id}`, 'DELETE');
+        showAlert('Tiquete cancelado y sillas liberadas.');
+        cargarReservas();
+        cargarCartelera();
+      } catch(err) {
+        showAlert('Error al cancelar: ' + err.message, 'error');
+      }
+    }
+  }
+
+  function guardarConfig() {
+    API_BASE = document.getElementById('apiBaseInput').value.trim();
+    localStorage.setItem('monarca_api_base', API_BASE);
+    showAlert('Configuración de URL guardada.');
+    testConexion();
+  }
+
+  async function testConexion() {
+    try {
+      const res = await fetch(API_BASE + '/peliculas', {
+        headers: JWT_TOKEN ? { 'Authorization': 'Bearer ' + JWT_TOKEN } : {}
+      });
+      setStatus(res.ok || res.status === 401);
+    } catch(e) {
+      setStatus(false);
+    }
+  }
+
+  function showAlert(msg, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = msg;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(100%)';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+  /* ══════════════════════════════════════════════
+     CINES
+  ══════════════════════════════════════════════ */
+  async function cargarCines() {
+    const tbody = document.getElementById('tbl-cines');
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--c-muted)"><span>Cargando…</span></td></tr>';
+    try {
+      const data = await api('/cines');
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--c-muted)">No hay cines registrados.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(c => `
+        <tr>
+          <td class="mono">#${c.cineId}</td>
+          <td><strong>${c.nombreDelCine}</strong></td>
+          <td>${c.cineCont || '—'}</td>
+          <td>
+            <button class="btn" style="padding:4px 10px;font-size:12px" onclick="verSucursalesDeCine(${c.cineId}, '${esc(c.nombreDelCine)}')">🏢 Ver sucursales</button>
+            <button class="btn" style="padding:4px 10px;font-size:12px;background:rgba(229,57,53,.1);color:#ff6b6b" onclick="eliminarEntidad('/cines/${c.cineId}', cargarSucursales)">Eliminar</button>
+          </td>
+        </tr>`).join('');
+      // Llenar select de sucursal con los cines
+      const sel = document.getElementById('sucCineId');
+      sel.innerHTML = '<option value="">— Seleccionar cine —</option>' +
+              data.map(c => `<option value="${c.cineId}">${c.nombreDelCine}</option>`).join('');
+    } catch(e) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#ff6b6b">Error: ${e.message}</td></tr>`;
+    }
+  }
+
+  async function crearCine() {
+    const nombre = document.getElementById('cineNombre').value.trim();
+    if (!nombre) { showAlert('El nombre del cine es obligatorio.', 'error'); return; }
+    try {
+      await api('/cines', 'POST', {
+        nombreDelCine: nombre,
+        cineCont: document.getElementById('cineCont').value.trim() || null
+      });
+      showAlert('Cine creado correctamente.');
+      document.getElementById('cineNombre').value = '';
+      document.getElementById('cineCont').value = '';
+      cargarSucursales();
+    } catch(e) { showAlert('Error: ' + e.message, 'error'); }
+  }
+
+  /* ══════════════════════════════════════════════
+     SUCURSALES
+  ══════════════════════════════════════════════ */
+  let _filtroSucCineId = null;
+
+  async function cargarSucursales() {
+    await cargarCines();
+    const tbody = document.getElementById('tbl-sucursales');
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--c-muted)">Cargando…</td></tr>';
+    try {
+      // Si hay filtro de cine activo usamos /sucursales/cine/{id}, sino todas
+      const path = _filtroSucCineId ? `/sucursales/cine/${_filtroSucCineId}` : '/sucursales';
+      const data = await api(path);
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--c-muted)">No hay sucursales.</td></tr>';
+        return;
+      }
+      // Para cada sucursal, cargar sus salas
+      const salasAll = await api('/salas').catch(() => []);
+      tbody.innerHTML = data.map(s => {
+        const salas = salasAll.filter(sala => sala.sucursal?.branId === s.branId || sala.sucursal?.bran_id === s.branId);
+        const salasTxt = salas.length
+                ? salas.map(sala => `${sala.nombre} (${sala.tipo})`).join(', ')
+                : '<span style="color:var(--c-muted)">Sin salas</span>';
+        return `
+        <tr>
+          <td class="mono">#${s.branId}</td>
+          <td>${s.branLocation || '—'}</td>
+          <td>${s.cine?.nombreDelCine || '—'}</td>
+          <td style="font-size:12px">${salasTxt}</td>
+          <td>
+            <button class="btn" style="padding:4px 10px;font-size:12px;background:rgba(229,57,53,.1);color:#ff6b6b"
+              onclick="eliminarEntidad('/sucursales/${s.branId}', cargarSucursales)">Eliminar</button>
+          </td>
+        </tr>`;
+      }).join('');
+    } catch(e) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#ff6b6b">Error: ${e.message}</td></tr>`;
+    }
+  }
+
+  function verSucursalesDeCine(cineId, nombre) {
+    _filtroSucCineId = cineId;
+    showAlert(`Mostrando sucursales de: ${nombre}`);
+    cargarSucursales();
+  }
+
+  async function crearSucursal() {
+    const cineId    = document.getElementById('sucCineId').value;
+    const ubicacion = document.getElementById('sucUbicacion').value.trim();
+    if (!cineId)    { showAlert('Selecciona un cine.', 'error'); return; }
+    if (!ubicacion) { showAlert('Ingresa la ubicación.', 'error'); return; }
+    try {
+      // POST /api/sucursales?cineId={id}  con body {branLocation}
+      await api(`/sucursales?cineId=${cineId}`, 'POST', { branLocation: ubicacion });
+      showAlert('Sucursal creada correctamente.');
+      document.getElementById('sucUbicacion').value = '';
+      document.getElementById('sucCineId').selectedIndex = 0;
+      _filtroSucCineId = null;
+      cargarSucursales();
+    } catch(e) { showAlert('Error: ' + e.message, 'error'); }
+  }
+
+  /* ══════════════════════════════════════════════
+     GESTIÓN DE USUARIOS
+  ══════════════════════════════════════════════ */
+  function calcularEdad(fechaNac) {
+    if (!fechaNac) return '—';
+    const hoy = new Date();
+    const nac = new Date(fechaNac);
+    let edad = hoy.getFullYear() - nac.getFullYear();
+    const m = hoy.getMonth() - nac.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edad--;
+    return edad;
+  }
+
+  async function cargarUsuarios() {
+    const tbody = document.getElementById('tbl-usuarios');
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--c-muted)">Cargando…</td></tr>';
+    try {
+      const data = await api('/usuarios');
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--c-muted)">No hay usuarios.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(u => `
+        <tr>
+          <td class="mono" style="color:var(--c-gold)">#${u.usuarioId}</td>
+          <td><strong>${u.username}</strong></td>
+          <td>${u.email}</td>
+          <td>${u.cedula||'—'}</td>
+          <td>${u.telefono||'—'}</td>
+          <td>
+            <span class="badge ${u.rol==='ADMIN'?'badge-red':'badge-blue'}">${u.rol}</span>
+            <button class="btn btn-sm" style="margin-left:6px;padding:2px 8px;font-size:11px"
+              onclick="cambiarRolUsuario(${u.usuarioId},'${u.rol}')">⇄</button>
+          </td>
+          <td><span class="badge ${u.activo?'badge-green':'badge-red'}">${u.activo?'Activo':'Inactivo'}</span></td>
+          <td style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-sm" onclick="verDetalleUsuario(${u.usuarioId})" title="Ver detalle">👁</button>
+            <button class="btn btn-sm" onclick="abrirEditarUsuario(${u.usuarioId})" title="Editar">✏️</button>
+            <button class="btn btn-sm btn-danger" onclick="eliminarUsuario(${u.usuarioId})" title="Eliminar">🗑</button>
+          </td>
+        </tr>`).join('');
+    } catch(e) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#ff6b6b">Error: ${e.message}</td></tr>`;
+    }
+  }
+
+  let usuariosCache = [];
+  async function getUsuariosCached() {
+    if (!usuariosCache.length) usuariosCache = await api('/usuarios');
+    return usuariosCache;
+  }
+
+  async function verDetalleUsuario(id) {
+    try {
+      usuariosCache = await api('/usuarios');
+      const u = usuariosCache.find(x=>x.usuarioId===id);
+      if (!u) return;
+      const edad = calcularEdad(u.fechaNacimiento);
+      document.getElementById('mu_titulo').textContent = 'DETALLE — ' + u.username.toUpperCase();
+      document.getElementById('mu_contenido').innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px">
+          <div><span style="color:var(--c-muted);font-size:11px">NOMBRE COMPLETO</span><br><strong>${u.nombreCompleto||'—'}</strong></div>
+          <div><span style="color:var(--c-muted);font-size:11px">EMAIL</span><br><strong>${u.email}</strong></div>
+          <div><span style="color:var(--c-muted);font-size:11px">CÉDULA</span><br><strong>${u.cedula||'—'}</strong></div>
+          <div><span style="color:var(--c-muted);font-size:11px">TELÉFONO</span><br><strong>${u.telefono||'—'}</strong></div>
+          <div><span style="color:var(--c-muted);font-size:11px">DIRECCIÓN</span><br><strong>${u.direccion||'—'}</strong></div>
+          <div><span style="color:var(--c-muted);font-size:11px">FECHA NAC.</span><br><strong>${u.fechaNacimiento||'—'}</strong></div>
+          <div><span style="color:var(--c-muted);font-size:11px">EDAD</span><br><strong>${edad}</strong></div>
+          <div><span style="color:var(--c-muted);font-size:11px">ROL</span><br><span class="badge ${u.rol==='ADMIN'?'badge-red':'badge-blue'}">${u.rol}</span></div>
+        </div>`;
+      document.getElementById('mu_acciones').innerHTML = `
+        <button class="btn btn-primary" onclick="abrirEditarUsuario(${id});cerrarModalUsuario()">✏️ Editar</button>
+        <button class="btn btn-danger" onclick="eliminarUsuario(${id});cerrarModalUsuario()">🗑 Eliminar</button>`;
+      const m = document.getElementById('modalUsuario');
+      m.style.display = 'flex';
+    } catch(e) { showAlert('Error: ' + e.message, 'error'); }
+  }
+
+  function cerrarModalUsuario() {
+    document.getElementById('modalUsuario').style.display = 'none';
+  }
+
+  function abrirModalNuevoUsuario() {
+    document.getElementById('mnu_titulo').textContent = 'REGISTRAR USUARIO';
+    document.getElementById('nu_id').value = '';
+    document.getElementById('nu_btn').textContent = 'Registrar Usuario';
+    ['nu_username','nu_nombre','nu_email','nu_cedula','nu_tel','nu_dir','nu_fnac','nu_pass'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = '';
+    });
+    document.getElementById('nu_username').disabled = false;
+    document.getElementById('nu_pass').required = true;
+    document.getElementById('nu_error').style.display = 'none';
+    document.getElementById('modalNuevoUsuario').style.display = 'flex';
+  }
+
+  function cerrarModalNuevoUsuario() {
+    document.getElementById('modalNuevoUsuario').style.display = 'none';
+  }
+
+  function abrirEditarUsuario(id) {
+    usuariosCache = usuariosCache.length ? usuariosCache : [];
+    api('/usuarios').then(data => {
+      usuariosCache = data;
+      const u = data.find(x=>x.usuarioId===id);
+      if (!u) return;
+      document.getElementById('mnu_titulo').textContent = 'EDITAR USUARIO — ' + u.username.toUpperCase();
+      document.getElementById('nu_id').value = u.usuarioId;
+      document.getElementById('nu_username').value = u.username;
+      document.getElementById('nu_username').disabled = true;
+      document.getElementById('nu_nombre').value = u.nombreCompleto||'';
+      document.getElementById('nu_email').value = u.email||'';
+      document.getElementById('nu_cedula').value = u.cedula||'';
+      document.getElementById('nu_tel').value = u.telefono||'';
+      document.getElementById('nu_dir').value = u.direccion||'';
+      document.getElementById('nu_fnac').value = u.fechaNacimiento||'';
+      document.getElementById('nu_pass').value = '';
+      document.getElementById('nu_pass').required = false;
+      document.getElementById('nu_btn').textContent = 'Guardar Cambios';
+      document.getElementById('nu_error').style.display = 'none';
+      document.getElementById('modalNuevoUsuario').style.display = 'flex';
+    });
+  }
+
+  async function guardarNuevoUsuario() {
+    const id       = document.getElementById('nu_id').value;
+    const username = document.getElementById('nu_username').value.trim();
+    const email    = document.getElementById('nu_email').value.trim();
+    const pass     = document.getElementById('nu_pass').value;
+    const errEl    = document.getElementById('nu_error');
+    errEl.style.display = 'none';
+
+    if (!id) {
+      // Crear nuevo via /auth/register
+      if (!username || !email || !pass) {
+        errEl.textContent = 'Username, email y contraseña son obligatorios.';
+        errEl.style.display = 'block'; return;
+      }
+      try {
+        await fetch(`${API_BASE}/auth/register`, {
+          method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${JWT_TOKEN}`},
+          body: JSON.stringify({
+            username, email, password: pass,
+            nombreCompleto: document.getElementById('nu_nombre').value.trim()||null,
+            cedula: document.getElementById('nu_cedula').value.trim()||null,
+            telefono: document.getElementById('nu_tel').value.trim()||null,
+            direccion: document.getElementById('nu_dir').value.trim()||null,
+            fechaNacimiento: document.getElementById('nu_fnac').value||null
+          })
+        }).then(r=>{ if(!r.ok) return r.json().then(d=>{throw new Error(d.error||'Error');}); });
+        showAlert('Usuario registrado correctamente.');
+        cerrarModalNuevoUsuario();
+        usuariosCache = [];
+        cargarUsuarios();
+      } catch(e) { errEl.textContent = e.message; errEl.style.display='block'; }
+    } else {
+      // Editar perfil existente
+      try {
+        const perfil = {};
+        const campos = {
+          nombreCompleto: document.getElementById('nu_nombre').value.trim(),
+          email:          document.getElementById('nu_email').value.trim(),
+          cedula:         document.getElementById('nu_cedula').value.trim(),
+          telefono:       document.getElementById('nu_tel').value.trim(),
+          direccion:      document.getElementById('nu_dir').value.trim(),
+          fechaNacimiento:document.getElementById('nu_fnac').value
+        };
+        Object.entries(campos).forEach(([k,v])=>{ if(v) perfil[k]=v; });
+        await api(`/usuarios/${id}/perfil`, 'PATCH', perfil);
+        showAlert('Perfil actualizado.');
+        cerrarModalNuevoUsuario();
+        usuariosCache = [];
+        cargarUsuarios();
+      } catch(e) { errEl.textContent = e.message; errEl.style.display='block'; }
+    }
+  }
+
+  async function cambiarRolUsuario(id, rolActual) {
+    const nuevoRol = rolActual === 'ADMIN' ? 'USER' : 'ADMIN';
+    if (!confirm(`¿Cambiar rol a ${nuevoRol}?`)) return;
+    try {
+      await api(`/usuarios/${id}/rol`, 'PATCH', { rol: nuevoRol });
+      showAlert(`Rol cambiado a ${nuevoRol}.`);
+      usuariosCache = [];
+      cargarUsuarios();
+    } catch(e) { showAlert('Error: ' + e.message, 'error'); }
+  }
+
+  async function eliminarUsuario(id) {
+    if (!confirm('¿Desactivar este usuario?')) return;
+    try {
+      await api(`/usuarios/${id}`, 'DELETE');
+      showAlert('Usuario desactivado.');
+      usuariosCache = [];
+      cargarUsuarios();
+    } catch(e) { showAlert('Error: ' + e.message, 'error'); }
+  }
+
+  // Backward compat por si algo llama cargarClientes
+  function cargarClientes() { cargarUsuarios(); }
+
+  function esc(s) { return (s || '').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+
+  let salasCache = [];
+
+  function tipoLabel(t) {
+    if (!t) return '—';
+    return t === 'PRO' ? 'PRO' : t === 'TRES_D' ? '3D' : t === 'DOS_D' ? '2D' : t;
+  }
+
+  function calcularCapacidad() {
+    const filas = parseInt(document.getElementById('s_filas').value) || 0;
+    const cols  = parseInt(document.getElementById('s_columnas').value) || 0;
+    document.getElementById('s_capacidad').value = filas * cols;
+    renderSalaPreview();
+  }
+
+  function renderSalaPreview() {
+    const nombre  = document.getElementById('s_nombre').value || 'Sala';
+    const filas   = parseInt(document.getElementById('s_filas').value) || 0;
+    const cols    = parseInt(document.getElementById('s_columnas').value) || 0;
+    const tipo    = document.getElementById('s_tipo').value;
+    const wrap    = document.getElementById('sala-preview-wrap');
+    const grid    = document.getElementById('sala-preview-grid');
+    const lbl     = document.getElementById('sala-preview-label');
+
+    if (!filas || !cols || !tipo) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    lbl.textContent = `${nombre} — ${tipoLabel(tipo)} · ${filas * cols} asientos`;
+
+    const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    grid.innerHTML = '';
+
+    for (let r = 0; r < Math.min(filas, 26); r++) {
+      const rowDiv = document.createElement('div');
+      rowDiv.style.cssText = 'display:flex;align-items:center;gap:4px;margin-bottom:3px';
+
+      const lbl2 = document.createElement('span');
+      lbl2.style.cssText = 'font-family:var(--f-mono);font-size:10px;color:var(--c-muted);width:14px;text-align:center';
+      lbl2.textContent = letras[r];
+      rowDiv.appendChild(lbl2);
+
+      const mitad = Math.floor(cols / 2);
+      const bloques = cols <= 6 ? [cols] : [mitad, cols - mitad];
+      let num = 1;
+      bloques.forEach((cnt, idx) => {
+        if (idx > 0) {
+          const sp = document.createElement('div');
+          sp.style.cssText = 'width:10px';
+          rowDiv.appendChild(sp);
+        }
+        for (let c = 0; c < cnt; c++) {
+          const s = document.createElement('div');
+          s.style.cssText = 'width:20px;height:18px;border-radius:3px 3px 2px 2px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);font-family:var(--f-mono);font-size:8px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3)';
+          s.textContent = num++;
+          rowDiv.appendChild(s);
+        }
+      });
+
+      const lbl3 = document.createElement('span');
+      lbl3.style.cssText = 'font-family:var(--f-mono);font-size:10px;color:var(--c-muted);width:14px;text-align:center';
+      lbl3.textContent = letras[r];
+      rowDiv.appendChild(lbl3);
+      grid.appendChild(rowDiv);
+    }
+  }
+
+  async function cargarSalasAdmin() {
+    document.getElementById('salasTable').innerHTML = '<tr><td colspan="8" class="empty-state">Cargando…</td></tr>';
+    try {
+      const [salas, sucursales] = await Promise.all([api('/salas'), api('/sucursales').catch(()=>[])]);
+      salasCache = salas;
+
+      // Poblar select de sucursal del formulario
+      const selForm = document.getElementById('s_sucursal');
+      selForm.innerHTML = '<option value="">-- Seleccionar sucursal --</option>' +
+              sucursales.map(s => `<option value="${s.branId}">${s.branLocation || 'Sucursal #'+s.branId}</option>`).join('');
+
+      // Poblar filtro de tabla y conservar selección previa
+      const filtroSel = document.getElementById('filtro-suc-salas');
+      const filtroActual = filtroSel.value;
+      filtroSel.innerHTML = '<option value="">— Todas las sucursales —</option>' +
+              sucursales.map(s => `<option value="${s.branId}">${s.branLocation || 'Sucursal #'+s.branId}</option>`).join('');
+      if (filtroActual) filtroSel.value = filtroActual;
+
+      renderTablaSalas();
+    } catch(e) {
+      document.getElementById('salasTable').innerHTML = `<tr><td colspan="8" class="empty-state">Error: ${e.message}</td></tr>`;
+    }
+  }
+
+  function filtrarTablaSalas() { renderTablaSalas(); }
+
+  function renderTablaSalas() {
+    const filtroId = document.getElementById('filtro-suc-salas').value;
+    const tbody = document.getElementById('salasTable');
+    const lista = filtroId
+            ? salasCache.filter(s => String(s.sucursal?.branId) === String(filtroId))
+            : salasCache;
+
+    if (!lista.length) {
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No hay salas para esta sucursal.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = lista.map(s => {
+      const filas    = s.filas    || (s.capacidad && s.columnas ? Math.ceil(s.capacidad / s.columnas) : '—');
+      const columnas = s.columnas || '—';
+      return `<tr>
+        <td class="mono text-muted">#${s.salaId}</td>
+        <td style="font-weight:600">${s.nombre}</td>
+        <td><span class="badge badge-blue">${tipoLabel(s.tipo)}</span></td>
+        <td class="mono">${filas}</td>
+        <td class="mono">${columnas}</td>
+        <td class="mono text-gold">${s.capacidad}</td>
+        <td style="font-size:12px;color:var(--c-muted)">${s.sucursal?.branLocation || '—'}</td>
+        <td>
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-sm" onclick="cargarEdicionSala(${s.salaId})">Editar</button>
+            <button class="btn btn-sm btn-danger" onclick="eliminarEntidad('/salas/${s.salaId}', cargarSalasAdmin)">Eliminar</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function cargarEdicionSala(id) {
+    const s = salasCache.find(x => x.salaId == id);
+    if (!s) return;
+    document.getElementById('s_id').value = s.salaId;
+    document.getElementById('s_nombre').value = s.nombre;
+    document.getElementById('s_tipo').value = s.tipo;
+    const filas = s.filas || (s.capacidad && s.columnas ? Math.ceil(s.capacidad / s.columnas) : 5);
+    const cols  = s.columnas || (s.tipo === 'PRO' ? 5 : s.tipo === 'TRES_D' ? 6 : 10);
+    document.getElementById('s_filas').value = filas;
+    document.getElementById('s_columnas').value = cols;
+    document.getElementById('s_capacidad').value = s.capacidad;
+    document.getElementById('s_sucursal').value = s.sucursal?.branId || '';
+    document.getElementById('lbl-form-sala').innerText = 'Editar Sala #' + s.salaId;
+    document.getElementById('btn-cancel-s').style.display = 'inline-flex';
+    renderSalaPreview();
+    document.getElementById('s_nombre').focus();
+  }
+
+  function cancelarEdicionSala() {
+    document.getElementById('s_id').value = '';
+    ['s_nombre','s_filas','s_columnas','s_capacidad'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('s_tipo').selectedIndex = 0;
+    document.getElementById('s_sucursal').selectedIndex = 0;
+    document.getElementById('lbl-form-sala').innerText = 'Nueva Sala';
+    document.getElementById('btn-cancel-s').style.display = 'none';
+    document.getElementById('sala-preview-wrap').style.display = 'none';
+  }
+
+  async function saveSala() {
+    const nombre  = document.getElementById('s_nombre').value.trim();
+    const tipo    = document.getElementById('s_tipo').value;
+    const filas   = parseInt(document.getElementById('s_filas').value);
+    const cols    = parseInt(document.getElementById('s_columnas').value);
+    const sucId   = document.getElementById('s_sucursal').value;
+    const id      = document.getElementById('s_id').value;
+
+    if (!nombre) { showAlert('El nombre de la sala es obligatorio.', 'error'); return; }
+    if (!tipo)   { showAlert('Selecciona el tipo de sala.', 'error'); return; }
+    if (!filas || !cols) { showAlert('Ingresa filas y columnas.', 'error'); return; }
+    if (!sucId)  { showAlert('La sucursal es obligatoria.', 'error'); return; }
+
+    const payload = {
+      nombre,
+      tipo,
+      filas,
+      columnas: cols,
+      capacidad: filas * cols,
+      sucursal: sucId ? { branId: parseInt(sucId) } : null
+    };
+
+    try {
+      if (id) {
+        await api(`/salas/${id}`, 'PUT', payload);
+        showAlert('Sala actualizada correctamente.');
+      } else {
+        await api('/salas', 'POST', payload);
+        showAlert('Sala creada. Las sillas se generan al programar una función.');
+      }
+      cancelarEdicionSala();
+      cargarSalasAdmin();
+    } catch(e) {
+      showAlert('Error al guardar sala: ' + e.message, 'error');
+    }
+  }
+
+  function verSillasReserva(resCode, sillas) {
+    const sillasArr = Array.isArray(sillas) ? sillas : [];
+    document.getElementById('ms_titulo').textContent  = 'TICKET TK-' + resCode;
+    document.getElementById('ms_sub').textContent     = sillasArr.length + ' asiento(s) seleccionado(s)';
+    const mapa = document.getElementById('ms_mapa');
+    mapa.innerHTML = sillasArr.length
+            ? sillasArr.map(s => `
+          <div style="width:52px;height:52px;border-radius:8px 8px 6px 6px;
+            background:rgba(245,197,24,0.15);border:2px solid var(--c-gold);
+            display:flex;flex-direction:column;align-items:center;justify-content:center;
+            font-family:var(--f-mono);color:var(--c-gold);position:relative">
+            <div style="position:absolute;bottom:4px;left:6px;right:6px;height:3px;
+              background:var(--c-gold);border-radius:2px"></div>
+            <span style="font-size:9px;opacity:0.7">${s.charAt(0)}</span>
+            <span style="font-size:16px;font-weight:bold;line-height:1">${s.slice(1)}</span>
+          </div>`).join('')
+            : '<span style="color:var(--c-muted);font-size:13px">Sin sillas registradas</span>';
+    document.getElementById('modalSillas').style.display = 'flex';
+  }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "spring-boot.ls.problem.application-properties.SPRING_BOOT_VERSION_VALIDATION": "IGNORE",
+  "editor.formatOnSave": true,
+  "java.jdt.ls.java.home": "",
+  "maven.executable.preferMavenWrapper": true,
+  "java.project.encoding": "UTF-8"
+}
