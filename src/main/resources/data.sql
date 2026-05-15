@@ -1,10 +1,9 @@
 -- =============================================
 -- Cinema Monarca — Datos semilla v3
--- Ejecutar DESPUÉS de 01_schema.sql
 -- =============================================
-USE cinema_monarca;
+USE railway;
 
--- ── Usuarios (contraseña: monarca123) ────────
+-- ── Usuarios (admin → monarca123 | usuario → monarca123) ────────
 INSERT IGNORE INTO usuario (username, email, password_hash, rol) VALUES
 ('admin',   'admin@monarca.co',   '$2a$12$XRAVvAi4ckSjhajv3QXgMeHiN5o0Z4/TK2h/3XDxD5MtWknl3VE/6', 'ADMIN'),
 ('usuario', 'usuario@monarca.co', '$2a$12$XRAVvAi4ckSjhajv3QXgMeHiN5o0Z4/TK2h/3XDxD5MtWknl3VE/6', 'USER');
@@ -28,7 +27,6 @@ INSERT IGNORE INTO cliente (cust_id, nombre_cliente, cust_age, direccion_cliente
 (2, 'Ana García', 25, 'Cll 15 # 8-40, Cali',  '3109876543');
 
 -- ── Salas ─────────────────────────────────────
--- ENUM usa PRO / TRES_D / DOS_D (coincide con EnumType.STRING de Hibernate)
 INSERT IGNORE INTO sala (sala_id, nombre, tipo, capacidad, sucursal_id) VALUES
 -- Sucursal Centro (1)
 ( 1,'Sala PRO 1','PRO',   20,1),( 2,'Sala PRO 2','PRO',   20,1),
@@ -43,7 +41,7 @@ INSERT IGNORE INTO sala (sala_id, nombre, tipo, capacidad, sucursal_id) VALUES
 (17,'Sala 3D 1', 'TRES_D',30,2),(18,'Sala 3D 2', 'TRES_D',30,2),
 (19,'Sala 2D 1', 'DOS_D', 50,2),(20,'Sala 2D 2', 'DOS_D', 50,2);
 
--- ── Películas (catálogo puro, sin fecha/hora/sala) ─────────────────────
+-- ── Películas ─────────────────────────────────
 INSERT IGNORE INTO pelicula (movie_id, nombre, descripcion, duracion_min, genero) VALUES
 (1,'Oppenheimer',
    'La historia del padre de la bomba atómica contada por Christopher Nolan.',
@@ -64,24 +62,17 @@ INSERT IGNORE INTO pelicula (movie_id, nombre, descripcion, duracion_min, genero
    'Un ladrón especializado en el robo de secretos dentro del subconsciente.',
    148,'THRILLER');
 
--- ── Funciones (proyecciones) ──────────────────
--- Cada película puede tener varias funciones en distintas salas y horarios
+-- ── Funciones ─────────────────────────────────
 INSERT IGNORE INTO funcion
     (funcion_id, movie_id, sala_id, fecha, hora_inicio, precio_boleto, capacidad_total, asientos_disponibles)
 VALUES
--- Oppenheimer — Sala PRO 1 y PRO 2
-(1, 1, 1, '2025-06-15', '15:00', 28000, 20, 20),
-(2, 1, 2, '2025-06-15', '19:00', 28000, 20, 20),
--- Dune 2 — Sala PRO 3 y PRO 4
-(3, 2, 3, '2025-06-16', '18:00', 28000, 20, 20),
-(4, 2, 4, '2025-06-16', '21:00', 28000, 20, 20),
--- Avatar — Sala 3D 1 y 3D 2
-(5, 3, 7, '2025-06-20', '18:30', 22000, 30, 30),
-(6, 3, 8, '2025-06-20', '21:30', 22000, 30, 30),
--- Spider-Man — Sala 3D 1
-(7, 4, 7, '2025-06-21', '16:00', 22000, 30, 30),
--- El Rey León — Sala 2D 1
-(8, 5, 9, '2025-06-25', '14:00', 16000, 50, 50),
--- Inception — Sala 2D 2 (dos horarios)
-(9,  6,10, '2025-06-26', '16:00', 16000, 50, 50),
-(10, 6,10, '2025-06-26', '20:00', 16000, 50, 50);
+(1, 1, 1, '2026-06-15', '15:00', 28000, 20, 20),
+(2, 1, 2, '2026-06-15', '19:00', 28000, 20, 20),
+(3, 2, 3, '2026-06-16', '18:00', 28000, 20, 20),
+(4, 2, 4, '2026-06-16', '21:00', 28000, 20, 20),
+(5, 3, 7, '2026-06-20', '18:30', 22000, 30, 30),
+(6, 3, 8, '2026-06-20', '21:30', 22000, 30, 30),
+(7, 4, 7, '2026-06-21', '16:00', 22000, 30, 30),
+(8, 5, 9, '2026-06-25', '14:00', 16000, 50, 50),
+(9,  6,10, '2026-06-26', '16:00', 16000, 50, 50),
+(10, 6,10, '2026-06-26', '20:00', 16000, 50, 50);
