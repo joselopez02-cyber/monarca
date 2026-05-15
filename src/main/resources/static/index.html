@@ -1168,13 +1168,13 @@
         <div class="section-title"><h2>Historial de Ventas</h2><p>Registro de todas las transacciones y emisiones de tiquetes.</p></div>
         <button class="btn" onclick="cargarReservas()">↻ Actualizar</button>
       </div>
-      <div class="card mb-3" style="padding:14px 16px; overflow: visible;">
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;align-items:end">
-          <div class="input-group" style="margin:0"><label>🏢 Sucursal</label><select id="filtro-res-suc" onchange="filtrarReservas()"><option value="">— Todas —</option></select></div>
-          <div class="input-group" style="margin:0;min-width:140px;grid-column:span 2"><label>🔍 Película</label><input type="text" id="filtro-res-nombre" placeholder="Buscar por película..." oninput="filtrarReservas()"></div>
-          <div class="input-group" style="margin:0"><label>🎭 Género</label><select id="filtro-res-genero" onchange="filtrarReservas()"><option value="">— Todos —</option></select></div>
-          <div class="input-group" style="margin:0"><label>🔞 Clasificación</label><select id="filtro-res-clasif" onchange="filtrarReservas()"><option value="">— Todas —</option></select></div>
-          <div class="input-group" style="margin:0">
+      <div class="card mb-3" style="padding:14px 16px;">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
+          <div class="input-group" style="margin:0;min-width:140px;flex:1"><label>🏢 Sucursal</label><select id="filtro-res-suc" onchange="filtrarReservas()"><option value="">— Todas —</option></select></div>
+          <div class="input-group" style="margin:0;min-width:180px;flex:2"><label>🔍 Película</label><input type="text" id="filtro-res-nombre" placeholder="Buscar por película..." oninput="filtrarReservas()"></div>
+          <div class="input-group" style="margin:0;min-width:130px;flex:1"><label>🎭 Género</label><select id="filtro-res-genero" onchange="filtrarReservas()"><option value="">— Todos —</option></select></div>
+          <div class="input-group" style="margin:0;min-width:130px;flex:1"><label>🔞 Clasificación</label><select id="filtro-res-clasif" onchange="filtrarReservas()"><option value="">— Todas —</option></select></div>
+          <div class="input-group" style="margin:0;min-width:130px;flex:1">
             <label>📋 Estado</label>
             <select id="filtro-res-estado" onchange="filtrarReservas()">
               <option value="">— Todos —</option>
@@ -1183,7 +1183,7 @@
               <option value="PENDIENTE">Pendiente</option>
             </select>
           </div>
-          <div class="input-group" style="margin:0">
+          <div class="input-group" style="margin:0;min-width:130px;flex:1">
             <label>💳 Método Pago</label>
             <select id="filtro-res-metodo" onchange="filtrarReservas()">
               <option value="">— Todos —</option>
@@ -1193,16 +1193,17 @@
               <option value="EFECTIVO">Efectivo</option>
             </select>
           </div>
-          <div style="display:flex;align-items:flex-end">
-            <button class="btn" style="width:100%;font-size:12px" onclick="limpiarFiltrosReservas()">✕ Limpiar</button>
+          <div style="display:flex;align-items:flex-end;flex-shrink:0;">
+            <button class="btn" style="font-size:12px;white-space:nowrap" onclick="limpiarFiltrosReservas()">✕ Limpiar</button>
           </div>
         </div>
       </div>
       <div id="res-contador" style="font-size:12px;color:var(--c-muted);margin-bottom:8px;font-family:var(--f-body)"></div>
       <div class="table-container">
-        <table style="min-width:900px">
+        <table style="min-width:860px">
           <thead><tr>
             <th style="white-space:nowrap">Ticket #</th>
+            <th style="white-space:nowrap">Acción</th>
             <th style="white-space:nowrap">Fecha Op.</th>
             <th>Cliente</th>
             <th>Película</th>
@@ -1211,7 +1212,6 @@
             <th style="white-space:nowrap">Total (COP)</th>
             <th>Método</th>
             <th>Estado</th>
-            <th class="col-accion-th">Acción</th>
           </tr></thead>
           <tbody id="reservasTable"></tbody>
         </table>
@@ -1350,9 +1350,10 @@
         <div style="font-size:10px;color:var(--c-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">👤 Cliente</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;">
           <div><div style="font-size:10px;color:var(--c-muted);margin-bottom:2px;">Nombre</div><div style="font-weight:600;" id="ms_cli_nombre">—</div></div>
+          <div><div style="font-size:10px;color:var(--c-muted);margin-bottom:2px;">Nombre Completo</div><div style="font-weight:600;color:var(--c-gold);" id="ms_cli_nombreCompleto">—</div></div>
           <div><div style="font-size:10px;color:var(--c-muted);margin-bottom:2px;">Cédula</div><div class="mono" id="ms_cli_cedula">—</div></div>
           <div><div style="font-size:10px;color:var(--c-muted);margin-bottom:2px;">Teléfono</div><div id="ms_cli_tel">—</div></div>
-          <div><div style="font-size:10px;color:var(--c-muted);margin-bottom:2px;">Dirección</div><div id="ms_cli_dir">—</div></div>
+          <div style="grid-column:1/-1"><div style="font-size:10px;color:var(--c-muted);margin-bottom:2px;">Dirección</div><div id="ms_cli_dir">—</div></div>
         </div>
       </div>
       <div style="background:var(--c-card);border:1px solid var(--c-border);border-radius:8px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
@@ -1367,7 +1368,8 @@
         </div>
       </div>
     </div>
-    <div style="padding:12px 22px;border-top:1px solid var(--c-border);text-align:right;flex-shrink:0;">
+    <div style="padding:12px 22px;border-top:1px solid var(--c-border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:10px;">
+      <div id="ms_btn_anular_wrap"></div>
       <button class="btn btn-primary" onclick="document.getElementById('modalSillas').style.display='none'">Cerrar</button>
     </div>
   </div>
@@ -2416,6 +2418,12 @@
       return `
         <tr>
           <td class="mono" style="font-weight:bold;font-size:15px;white-space:nowrap">TK-${r.resCode}</td>
+          <td>
+            <div style="display:flex;gap:4px;align-items:center;white-space:nowrap">
+              <button class="btn btn-sm" title="Ver detalle" onclick="verDetalleReserva(${r.resCode})" style="font-size:15px;padding:5px 10px">👁</button>
+              ${r.estado==='CONFIRMADA' ? `<button class="btn btn-sm btn-danger" onclick="cancelarReserva(${r.resCode})" style="white-space:nowrap">✕ Anular</button>` : ''}
+            </div>
+          </td>
           <td class="mono text-muted" style="font-size:12px;white-space:nowrap">${fecha}</td>
           <td>${cliNombre}<br><span class="mono text-muted" style="font-size:10px">CC: ${cliDoc}</span></td>
           <td>
@@ -2437,12 +2445,6 @@
           <td class="mono" style="font-weight:600">$${(r.total||0).toLocaleString()}</td>
           <td>${metodoHtml}</td>
           <td><span class="badge ${badgeCls}">${r.estado}</span></td>
-          <td class="col-accion-td">
-            <div style="display:flex;gap:4px;align-items:center;white-space:nowrap">
-              <button class="btn btn-sm" title="Ver detalle" onclick="verDetalleReserva(${r.resCode})" style="font-size:15px;padding:5px 10px">👁</button>
-              ${r.estado==='CONFIRMADA' ? `<button class="btn btn-sm btn-danger" onclick="cancelarReserva(${r.resCode})" style="white-space:nowrap">✕ Anular</button>` : ''}
-            </div>
-          </td>
         </tr>`;
     }).join('');
   }
@@ -3614,6 +3616,21 @@
     const r = reservasBaseCache?.find(x => x.resCode == resCode);
     if (!r) { showAlert('Reserva no encontrada.','error'); return; }
 
+    // Cargar usuarios en background para obtener nombre completo
+    if (!usuariosCache || !usuariosCache.length) {
+      api('/usuarios').then(data => {
+        usuariosCache = data;
+        // Re-poblar nombre completo si ya está abierto el modal
+        const cliDoc = r.cliente?.numeroCliente || r.contNum || '';
+        const cliUsername = r.nombre || r.cliente?.nombreCliente || '';
+        const uMatch = data.find(u => u.username === cliUsername || u.cedula === cliDoc);
+        if (uMatch?.nombreCompleto) {
+          const ncEl = document.getElementById('ms_cli_nombreCompleto');
+          if (ncEl) ncEl.textContent = uMatch.nombreCompleto;
+        }
+      }).catch(() => {});
+    }
+
     // Header
     document.getElementById('ms_titulo').textContent = 'TK-' + r.resCode;
     document.getElementById('ms_sub').textContent    = ((r.fecha||'')+' '+(r.tiempo||'')).trim() || '—';
@@ -3639,10 +3656,30 @@
             : '<span style="color:var(--c-muted);font-size:13px">Sin sillas registradas</span>';
 
     // Cliente
-    document.getElementById('ms_cli_nombre').textContent = r.nombre || r.cliente?.nombreCliente || '—';
-    const hdr = document.getElementById('ms_cli_header'); if(hdr) hdr.textContent = r.nombre || r.cliente?.nombreCliente || '';
-    document.getElementById('ms_cli_cedula').textContent  = r.cliente?.numeroCliente || r.contNum || '—';
-    document.getElementById('ms_cli_tel').textContent     = r.cliente?.telefonoCliente || '—';
+    const cliUsername = r.nombre || r.cliente?.nombreCliente || '—';
+    document.getElementById('ms_cli_nombre').textContent = cliUsername;
+    const hdr = document.getElementById('ms_cli_header'); if(hdr) hdr.textContent = cliUsername;
+
+    // Nombre completo — buscar en usuariosCache por username o cédula
+    const cliDoc = r.cliente?.numeroCliente || r.contNum || '';
+    let nombreCompleto = '—';
+    if (usuariosCache && usuariosCache.length) {
+      const uMatch = usuariosCache.find(u =>
+        u.username === cliUsername ||
+        u.cedula === cliDoc ||
+        u.nombreCompleto?.toLowerCase() === cliUsername.toLowerCase()
+      );
+      if (uMatch?.nombreCompleto) nombreCompleto = uMatch.nombreCompleto;
+    }
+    // Si no encontró en cache, intentar con el campo del cliente directamente
+    if (nombreCompleto === '—' && r.cliente?.nombreCliente && r.cliente.nombreCliente !== cliUsername) {
+      nombreCompleto = r.cliente.nombreCliente;
+    }
+    const ncEl = document.getElementById('ms_cli_nombreCompleto');
+    if (ncEl) ncEl.textContent = nombreCompleto;
+
+    document.getElementById('ms_cli_cedula').textContent  = cliDoc || '—';
+    document.getElementById('ms_cli_tel').textContent     = r.cliente?.telefonoCliente || r.cliente?.numeroCliente && '' || '—';
     document.getElementById('ms_cli_dir').textContent     = r.cliente?.direccionCliente || '—';
 
     // Total & estado
@@ -3672,6 +3709,23 @@
     }
 
     document.getElementById('modalSillas').style.display = 'flex';
+
+    // Botón Anular — solo si está CONFIRMADA
+    const btnWrap = document.getElementById('ms_btn_anular_wrap');
+    if (r.estado === 'CONFIRMADA') {
+      btnWrap.innerHTML = `
+        <button class="btn btn-danger" onclick="anularDesdeModal(${r.resCode})" style="gap:6px;">
+          🚫 Anular Tiquete
+        </button>`;
+    } else {
+      btnWrap.innerHTML = '';
+    }
+  }
+
+  async function anularDesdeModal(resCode) {
+    if (!confirm(`¿Anular el tiquete TK-${resCode}? Se liberarán los asientos y no se puede deshacer.`)) return;
+    document.getElementById('modalSillas').style.display = 'none';
+    await cancelarReserva(resCode);
   }
 
   /* ══ TOAST ══ */
