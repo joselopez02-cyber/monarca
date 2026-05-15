@@ -252,8 +252,10 @@
       background: var(--c-surface);
       border: 1px solid var(--c-border);
       border-radius: var(--radius);
-      overflow: hidden;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
+    .table-container table { min-width: 600px; }
     table { width: 100%; border-collapse: collapse; text-align: left; }
     th {
       padding: 11px 16px;
@@ -553,6 +555,239 @@
     @media (max-width: 480px) {
       .screen-curve { width: 85% !important; }
       .grid-4 { grid-template-columns: 1fr 1fr !important; }
+    }
+
+    /* ══ MOBILE FIXES COMPLETOS ══ */
+
+    /* ── Login box ── */
+    @media (max-width: 480px) {
+      .login-box {
+        padding: 28px 20px !important;
+        margin: 12px !important;
+        border-radius: 14px !important;
+      }
+      .login-box h2 { font-size: 24px !important; }
+      #registerForm { max-height: 70vh !important; }
+    }
+
+    /* ── Topbar ── */
+    @media (max-width: 768px) {
+      .topbar {
+        padding: 0 12px !important;
+        height: 48px !important;
+        gap: 8px;
+      }
+      #userDisplay {
+        font-size: 11px !important;
+        max-width: 130px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      #apiStatusText { display: none !important; }
+    }
+
+    /* ── Content area ── */
+    @media (max-width: 768px) {
+      .content-area { padding: 12px !important; }
+      .section-header { margin-bottom: 16px !important; }
+      .section-title h2 { font-size: 24px !important; }
+    }
+
+    /* ── Cards & stat cards ── */
+    @media (max-width: 768px) {
+      .stat-card { padding: 14px 16px !important; }
+      .stat-value { font-size: 28px !important; }
+      .card { padding: 14px !important; }
+    }
+
+    /* ── Formularios: forzar 1 columna en móvil ── */
+    @media (max-width: 600px) {
+      .grid-2 { grid-template-columns: 1fr !important; }
+      .grid-4 { grid-template-columns: 1fr !important; }
+      /* Formularios con grid inline */
+      form.grid-4,
+      #formPelicula,
+      #formFuncion {
+        grid-template-columns: 1fr !important;
+      }
+      /* Modales con grid 2 columnas inline */
+      #modalNuevoUsuario [style*="grid-template-columns:1fr 1fr"],
+      #modalNuevoUsuario [style*="grid-template-columns: 1fr 1fr"],
+      .card [style*="grid-template-columns:1fr 1fr"],
+      .card [style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    /* ── Tablas: scroll horizontal con indicador visual ── */
+    @media (max-width: 768px) {
+      .table-container {
+        border-radius: var(--radius) !important;
+        position: relative;
+      }
+      .table-container::after {
+        content: '← desliza →';
+        display: block;
+        text-align: center;
+        font-size: 10px;
+        color: rgba(245,197,24,0.4);
+        padding: 4px;
+        font-family: var(--f-mono);
+        letter-spacing: 1px;
+      }
+      th { font-size: 9px !important; padding: 8px 10px !important; }
+      td { font-size: 12px !important; padding: 10px 10px !important; }
+    }
+
+    /* ── Filtros / barras de filtro ── */
+    @media (max-width: 768px) {
+      /* Filtros de cartelera */
+      #view-cartelera .card,
+      #view-cartelera [style*="display:flex"] {
+        flex-direction: column !important;
+      }
+      /* Filtros de funciones */
+      #view-funciones [style*="display:flex"][style*="flex-wrap:wrap"] {
+        gap: 8px !important;
+      }
+      /* Filtros de reservas */
+      #view-reservas .card [style*="display:grid"] {
+        grid-template-columns: 1fr !important;
+      }
+      /* Barra de filtros de funciones */
+      #view-funciones > div[style*="background:var(--c-card)"] {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+      }
+    }
+
+    /* ── Modal de reserva (mapa de sillas) ── */
+    @media (max-width: 768px) {
+      #modalReserva .modal {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+      }
+      #modalReserva .modal-header {
+        padding: 12px 16px !important;
+      }
+      #modalReserva .modal-header h3 { font-size: 20px !important; }
+      /* Paso 2: datos de cliente en 1 columna */
+      #paso2Modal [style*="grid-template-columns:1fr 1fr"],
+      #paso2Modal [style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+      #paso2Modal [style*="padding:24px"] {
+        padding: 14px !important;
+        max-height: calc(100vh - 120px) !important;
+      }
+      /* Métodos de pago: 2 columnas en móvil */
+      .pay-methods { grid-template-columns: repeat(2,1fr) !important; }
+      .pay-method-btn { padding: 10px 6px !important; font-size: 12px !important; }
+      .pay-method-btn .pay-icon { font-size: 20px !important; }
+    }
+
+    /* ── Modales genéricos fullscreen en móvil ── */
+    @media (max-width: 768px) {
+      #modalUsuario > div,
+      #modalNuevoUsuario > div,
+      #modalSillas > div,
+      #modalDetallesGrupo .modal,
+      #modalEditFuncionInd > div,
+      #modalSelFuncion .modal {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+      }
+      #modalSelFuncion .modal {
+        height: 100% !important;
+      }
+      #modalSillas > div {
+        height: 100% !important;
+        overflow-y: auto !important;
+      }
+    }
+
+    /* ── Modal detalle reserva (sillas) ── */
+    @media (max-width: 480px) {
+      #ms_mapa { gap: 6px !important; }
+      #ms_mapa > div { width: 42px !important; height: 42px !important; }
+    }
+
+    /* ── Sección Cines & Sucursales: grids inline → 1 col ── */
+    @media (max-width: 600px) {
+      #view-sucursales .card [style*="grid-template-columns:1fr 1fr"],
+      #view-sucursales .card [style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    /* ── Historial: botones de acción apilados ── */
+    @media (max-width: 768px) {
+      #reservasTable td:last-child > div {
+        flex-direction: column !important;
+        gap: 3px !important;
+      }
+    }
+
+    /* ── Grupo de funciones programadas ── */
+    @media (max-width: 768px) {
+      #funcionesAgrupadas .card > div:first-child {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+      }
+    }
+
+    /* ── Vista previa de sala ── */
+    @media (max-width: 600px) {
+      #sala-preview-grid { font-size: 9px !important; }
+    }
+
+    /* ── Taquilla: filtros en columna ── */
+    @media (max-width: 600px) {
+      #view-cartelera > div:nth-child(2) {
+        flex-direction: column !important;
+      }
+      #view-cartelera > div:nth-child(2) .input-group {
+        min-width: 100% !important;
+      }
+    }
+
+    /* ── Chips de fecha/hora (modal selección función) ── */
+    @media (max-width: 480px) {
+      .sf-chip { font-size: 11px !important; padding: 4px 10px !important; }
+      .sf-time-chip { font-size: 12px !important; padding: 5px 10px !important; }
+      .hora-chip { font-size: 11px !important; padding: 5px 10px !important; }
+    }
+
+    /* ── Progreso de publicación en rango ── */
+    @media (max-width: 480px) {
+      #rango-progress-wrap .card { padding: 12px !important; }
+    }
+
+    /* ── Botones de acción en tablas ── */
+    @media (max-width: 768px) {
+      .btn-sm { font-size: 11px !important; padding: 4px 8px !important; }
+    }
+
+    /* ── Evitar que elementos con position:sticky rompan el layout ── */
+    @media (max-width: 768px) {
+      th[style*="position:sticky"],
+      td[style*="position:sticky"] {
+        position: static !important;
+      }
+    }
+
+    /* ── Topbar usuario más compacto ── */
+    @media (max-width: 360px) {
+      #userDisplay { display: none !important; }
+      .topbar { justify-content: flex-start !important; }
     }
   </style>
 </head>
@@ -1388,6 +1623,13 @@
   document.addEventListener('DOMContentLoaded', () => {
     const toggle = document.getElementById('mobile-nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
+
+    // Limpiar API_BASE de localhost si viene de otro dispositivo
+    (function() {
+      const saved = localStorage.getItem('monarca_api_base');
+      if (saved && saved.includes('localhost')) localStorage.removeItem('monarca_api_base');
+    })();
+
     function checkMobile() {
       if (!toggle) return;
       const isMob = window.innerWidth <= 768;
@@ -1396,6 +1638,17 @@
     }
     checkMobile();
     window.addEventListener('resize', checkMobile);
+
+    // Cerrar menú al tocar fuera (móvil)
+    document.addEventListener('click', (e) => {
+      if (navMenu && navMenu.classList.contains('open')) {
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar && !sidebar.contains(e.target)) {
+          navMenu.classList.remove('open');
+        }
+      }
+    });
+
     document.querySelectorAll('.nav-item').forEach(el => {
       el.addEventListener('click', () => navMenu && navMenu.classList.remove('open'));
     });
