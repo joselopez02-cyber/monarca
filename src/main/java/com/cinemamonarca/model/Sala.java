@@ -37,7 +37,8 @@ public class Sala {
     @Column(nullable = true)
     private Integer columnas;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    // EAGER para que sucursal se incluya en la serialización sin JOIN FETCH explícito
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sucursal_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler","salas","cine"})
     private Sucursal sucursal;
