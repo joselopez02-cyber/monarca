@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -23,21 +24,51 @@ public class ReservaService {
     private final FuncionRepository  funcionRepository;
     private final SillaService       sillaService;
 
-    public List<Reserva> obtenerTodas()           { return reservaRepository.findAllWithDetails(); }
-    public List<Reserva> obtenerPorCliente(Long c){ return reservaRepository.findByCliente_CustId(c); }
-    public List<Reserva> obtenerPorFuncion(Long f){ return reservaRepository.findByFuncion_FuncionId(f); }
+    // ── Consultas ──────────────────────────────────────────────────────────
+
+    public List<Reserva> obtenerTodas() {
+        return reservaRepository.findAllWithDetails();
+    }
+
+    public List<Reserva> obtenerPorCliente(Long custId) {
+        return reservaRepository.findByCliente_CustId(custId);
+    }
+
+    public List<Reserva> obtenerPorFuncion(Long funcionId) {
+        return reservaRepository.findByFuncion_FuncionId(funcionId);
+    }
+
+    public List<Reserva> obtenerPorUsername(String username) {
+        return reservaRepository.findByUsername(username);
+    }
 
     public Reserva obtenerPorId(Long id) {
         return reservaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada: " + id));
     }
 
+    // ── Crear reserva ──────────────────────────────────────────────────────
+
     @Transactional
     public Reserva guardar(ReservaRequest req) {
         Cliente cliente = clienteRepository.findById(req.getCustId())
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
         Funcion funcion = funcionRepository.findByIdWithDetails(req.getFuncionId())
                 .orElseThrow(() -> new RuntimeException("Función no encontrada"));
+
+        // ── Validar que la fecha de reserva esté dentro del rango de la función ──
+        String fechaReserva = req.getFecha();
+        if (fechaReserva == null) {
+            fechaReserva = LocalDate.now().toString();
+        }
+        if (!funcion.estaEnRango(fechaReserva)) {
+            throw new RuntimeException(
+                    "No se puede reservar: la fecha " + fechaReserva +
+                            " está fuera del rango de esta función (" +
+                            funcion.getFechaInicio() + " → " + funcion.getFechaFin() + ")."
+            );
+        }
 
         if (req.getSillas() == null || req.getSillas().isEmpty())
             throw new RuntimeException("Debes seleccionar al menos una silla.");
@@ -45,7 +76,7 @@ public class ReservaService {
         Reserva reserva = Reserva.builder()
                 .nombre(req.getNombre())
                 .contNum(req.getContNum())
-                .fecha(req.getFecha())
+                .fecha(fechaReserva)
                 .tiempo(req.getTiempo())
                 .estado(Reserva.Estado.CONFIRMADA)
                 .cliente(cliente)
@@ -57,6 +88,8 @@ public class ReservaService {
         return saved;
     }
 
+    // ── Cancelar ───────────────────────────────────────────────────────────
+
     @Transactional
     public Reserva cancelar(Long id) {
         Reserva r = obtenerPorId(id);
@@ -65,6 +98,10 @@ public class ReservaService {
         return reservaRepository.save(r);
     }
 
+    // ── Eliminar ───────────────────────────────────────────────────────────
+
     @Transactional
-    public void eliminar(Long id) { reservaRepository.deleteById(id); }
+    public void eliminar(Long id) {
+        reservaRepository.deleteById(id);
+    }
 }
