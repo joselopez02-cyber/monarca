@@ -20,7 +20,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     List<Reserva> findByCliente_CustId(Long custId);
     List<Reserva> findByFuncion_FuncionId(Long funcionId);
 
-    // ── Para USER: filtra reservas cuyo cliente.nombreCliente coincide con el username ──
+    // ── Para USER: filtra por nombreCliente o numeroCliente ──
     @Query("SELECT r FROM Reserva r " +
             "LEFT JOIN FETCH r.cliente c " +
             "LEFT JOIN FETCH r.funcion f " +
@@ -29,4 +29,13 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
             "WHERE LOWER(c.nombreCliente) = LOWER(:username) " +
             "OR LOWER(c.numeroCliente) = LOWER(:username)")
     List<Reserva> findByUsername(@Param("username") String username);
+
+    // ── NUEVO: búsqueda por email del cliente (direccionCliente) ──
+    @Query("SELECT r FROM Reserva r " +
+            "LEFT JOIN FETCH r.cliente c " +
+            "LEFT JOIN FETCH r.funcion f " +
+            "LEFT JOIN FETCH f.pelicula " +
+            "LEFT JOIN FETCH f.sala " +
+            "WHERE LOWER(c.direccionCliente) = LOWER(:email)")
+    List<Reserva> findByClienteEmail(@Param("email") String email);
 }

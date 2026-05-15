@@ -2,6 +2,8 @@ package com.cinemamonarca.controller;
 
 import com.cinemamonarca.dto.ReservaRequest;
 import com.cinemamonarca.model.Reserva;
+import com.cinemamonarca.model.Usuario;
+import com.cinemamonarca.repository.UsuarioRepository;
 import com.cinemamonarca.service.ReservaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,19 +22,36 @@ import java.util.Map;
 public class ReservaController {
 
     private final ReservaService reservaService;
+    private final UsuarioRepository usuarioRepository;
 
     /**
      * GET /api/reservas
-     * ADMIN  → devuelve TODAS las reservas
-     * USER   → devuelve solo las reservas cuyo cliente.nombreCliente = username del JWT
+     * ADMIN → devuelve TODAS las reservas
+     * USER  → busca por email real del usuario (campo direccionCliente en Cliente),
+     *         con fallback a username si no hay resultados.
      */
     @GetMapping
     public ResponseEntity<List<Reserva>> obtenerTodas(Authentication auth) {
         boolean isAdmin = auth.getAuthorities()
                 .contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        List<Reserva> lista = isAdmin
-                ? reservaService.obtenerTodas()
-                : reservaService.obtenerPorUsername(auth.getName());
+
+        if (isAdmin) {
+            return ResponseEntity.ok(reservaService.obtenerTodas());
+        }
+
+        String username = auth.getName();
+        Usuario usuario = usuarioRepository.findByUsername(username).orElse(null);
+
+        List<Reserva> lista;
+        if (usuario != null && usuario.getEmail() != null) {
+            lista = reservaService.obtenerPorEmail(usuario.getEmail());
+            if (lista.isEmpty()) {
+                lista = reservaService.obtenerPorUsername(username);
+            }
+        } else {
+            lista = reservaService.obtenerPorUsername(username);
+        }
+
         return ResponseEntity.ok(lista);
     }
 

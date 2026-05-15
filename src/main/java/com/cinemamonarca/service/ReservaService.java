@@ -24,8 +24,6 @@ public class ReservaService {
     private final FuncionRepository  funcionRepository;
     private final SillaService       sillaService;
 
-    // ── Consultas ──────────────────────────────────────────────────────────
-
     public List<Reserva> obtenerTodas() {
         return reservaRepository.findAllWithDetails();
     }
@@ -42,12 +40,15 @@ public class ReservaService {
         return reservaRepository.findByUsername(username);
     }
 
+    // ── NUEVO: buscar por email del cliente ────────────────────────────────
+    public List<Reserva> obtenerPorEmail(String email) {
+        return reservaRepository.findByClienteEmail(email);
+    }
+
     public Reserva obtenerPorId(Long id) {
         return reservaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada: " + id));
     }
-
-    // ── Crear reserva ──────────────────────────────────────────────────────
 
     @Transactional
     public Reserva guardar(ReservaRequest req) {
@@ -57,7 +58,6 @@ public class ReservaService {
         Funcion funcion = funcionRepository.findByIdWithDetails(req.getFuncionId())
                 .orElseThrow(() -> new RuntimeException("Función no encontrada"));
 
-        // ── Validar que la fecha de reserva esté dentro del rango de la función ──
         String fechaReserva = req.getFecha();
         if (fechaReserva == null) {
             fechaReserva = LocalDate.now().toString();
@@ -88,8 +88,6 @@ public class ReservaService {
         return saved;
     }
 
-    // ── Cancelar ───────────────────────────────────────────────────────────
-
     @Transactional
     public Reserva cancelar(Long id) {
         Reserva r = obtenerPorId(id);
@@ -97,8 +95,6 @@ public class ReservaService {
         sillaService.liberarSillas(r);
         return reservaRepository.save(r);
     }
-
-    // ── Eliminar ───────────────────────────────────────────────────────────
 
     @Transactional
     public void eliminar(Long id) {

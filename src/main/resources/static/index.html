@@ -1724,7 +1724,14 @@
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: document.getElementById('l_user').value, password: document.getElementById('l_pass').value })
       });
-      if (!res.ok) throw new Error("Credenciales inválidas");
+      if (res.status === 429) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d.error || 'Demasiados intentos. Espera unos minutos.');
+      }
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d.error || 'Credenciales inválidas');
+      }
       const data = await res.json();
       JWT_TOKEN = data.token;
       sessionStorage.setItem('monarca_token', JWT_TOKEN);
@@ -1748,7 +1755,7 @@
       setTimeout(() => document.getElementById('loginScreen').style.visibility = 'hidden', 500);
       iniciarApp();
       showAlert('Autenticación exitosa.');
-    } catch (e) { showAlert('Fallo de inicio de sesión. Verifica el backend y CORS.', 'error'); }
+    } catch (e) { showAlert(e.message || 'Fallo de inicio de sesión. Verifica el backend y CORS.', 'error'); }
   }
 
   function logout() { sessionStorage.removeItem('monarca_token'); location.reload(); }
@@ -2318,12 +2325,9 @@
       (transacciones || []).forEach(t => {
         if (t.reserva?.resCode) transMap[t.reserva.resCode] = t;
       });
-      const reservasFiltradas = isAdmin
-        ? reservas
-        : reservas.filter(r => {
-            const doc = r.cliente?.cliDoc || r.cliDoc || '';
-            return doc === miDoc;
-          });
+      // El backend ya filtra por username (JWT) para usuarios no-admin,
+      // así que usamos la lista tal cual sin filtro adicional en el cliente.
+      const reservasFiltradas = reservas;
       reservasBaseCache = reservasFiltradas.map(r => {
         const t = transMap[r.resCode];
         if (t) {
