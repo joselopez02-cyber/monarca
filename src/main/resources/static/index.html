@@ -850,7 +850,7 @@
       <div class="card" style="max-width: 500px;">
         <div class="input-group">
           <label>URL Base del API REST (Spring Boot)</label>
-          <input type="text" id="apiBaseInput" class="mono" value="http://localhost:8080/api">
+          <input type="text" id="apiBaseInput" class="mono" value="">
         </div>
         <p style="color:var(--c-muted); font-size:12px; margin-bottom: 24px;">Asegúrate de que no termine con '/' y que CORS esté configurado en tu servidor.</p>
         <div style="display:flex; gap:12px;">
@@ -1157,7 +1157,16 @@
 
 <script>
   /* ══ CONFIG & ESTADO ══ */
-  let API_BASE   = localStorage.getItem('monarca_api_base') || 'http://localhost:8080/api';
+  // Auto-detectar URL del servidor: si el localStorage tiene 'localhost' guardado
+  // de una sesión local anterior, lo ignoramos y usamos el host actual.
+  (function() {
+    const saved = localStorage.getItem('monarca_api_base');
+    if (saved && saved.includes('localhost')) {
+      localStorage.removeItem('monarca_api_base');
+    }
+  })();
+  const _defaultBase = window.location.origin + '/api';
+  let API_BASE   = localStorage.getItem('monarca_api_base') || _defaultBase;
   let JWT_TOKEN  = sessionStorage.getItem('monarca_token') || null;
 
   let peliculasCache  = [];
