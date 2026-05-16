@@ -1514,20 +1514,8 @@
     document.getElementById('apiBaseInput').value = API_BASE;
     // Populate cfg_url_activa
     const cfgUrlA = document.getElementById('cfg_url_activa');
-    if (cfgUrlA && API_BASE) cfgUrlA.textContent = API_BASE + '/api';
-    // Show token card if already logged in
-    if (JWT_TOKEN) {
-      const tokCard = document.getElementById('cfg_token_card');
-      if (tokCard) tokCard.style.display = 'block';
-      const infoUser = document.getElementById('cfg_info_user');
-      const infoRol  = document.getElementById('cfg_info_rol');
-      const tokBox   = document.getElementById('cfg_token_preview_box');
-      const uname = sessionStorage.getItem('monarca_username') || '?';
-      const rol   = sessionStorage.getItem('monarca_rol') || 'USER';
-      if (infoUser) infoUser.textContent = uname;
-      if (infoRol)  infoRol.textContent  = rol;
-      if (tokBox)   tokBox.textContent   = JWT_TOKEN;
-    }
+    if (cfgUrlA && API_BASE) cfgUrlA.textContent = API_BASE;
+    // Token card only shown after explicit login in config section
     // Auto-run diagnostico
     if (API_BASE) runDiagnostico();
     if (!JWT_TOKEN) {
@@ -3451,7 +3439,7 @@
     localStorage.setItem('monarca_api_base', API_BASE);
     showAlert('URL guardada: ' + API_BASE);
     const urlEl = document.getElementById('cfg_url_activa');
-    if (urlEl) urlEl.textContent = API_BASE + '/api';
+    if (urlEl) urlEl.textContent = API_BASE;
     runDiagnostico();
     testConexion();
   }
