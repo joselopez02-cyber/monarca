@@ -1538,7 +1538,7 @@
     const headers = { 'Content-Type': 'application/json' };
     if (JWT_TOKEN) headers['Authorization'] = `Bearer ${JWT_TOKEN}`;
     try {
-      const res = await fetch(`${API_BASE}${path}`, {
+      const res = await fetch(`${API_BASE}/api${path}`, {
         method, headers,
         body: body ? JSON.stringify(body) : null
       });
