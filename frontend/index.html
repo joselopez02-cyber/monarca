@@ -962,7 +962,7 @@
     <div class="nav-item" data-view="sucursales" data-rol="ADMIN" onclick="switchView('sucursales', this)">🏢 Cines & Sucursales</div>
     <div class="nav-item" data-view="usuarios" data-rol="ADMIN" onclick="switchView('usuarios', this)">👥 Gestión de Usuarios</div>
     <div style="height: 24px;"></div>
-    <div class="nav-item" data-view="config" onclick="switchView('config', this)">⚙️ Configuración API</div>
+    <div class="nav-item" data-view="config" onclick="switchView('config', this)">⚙ Configuración API</div>
     <div class="nav-item" style="color: var(--c-red);" onclick="logout()">🚪 Cerrar Sesión</div>
   </nav>
 </aside>
@@ -1411,17 +1411,74 @@
     <!-- CONFIGURACIÓN API -->
     <section id="view-config" class="view-section">
       <div class="section-header">
-        <div class="section-title"><h2>Configuración de Conexión</h2></div>
+        <div class="section-title">
+          <h2>Configuración</h2>
+          <p>Conexión al servidor y herramientas de desarrollo</p>
+        </div>
       </div>
-      <div class="card" style="max-width: 500px;">
-        <div class="input-group">
-          <label>URL Base del API REST (Spring Boot)</label>
-          <input type="text" id="apiBaseInput" class="mono" value="">
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px;max-width:900px;">
+
+        <!-- Tarjeta: URL del servidor -->
+        <div class="card" style="border-color:rgba(245,197,24,0.12);background:linear-gradient(135deg,rgba(245,197,24,0.03) 0%,transparent 60%);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+            <div style="width:32px;height:32px;background:var(--c-gold-dim);border:1px solid rgba(245,197,24,0.25);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🌐</div>
+            <div>
+              <div style="font-family:var(--f-head);font-size:18px;letter-spacing:1px;">Servidor API</div>
+              <div style="font-size:11px;color:var(--c-muted);">Spring Boot · Railway</div>
+            </div>
+          </div>
+          <div class="input-group">
+            <label>URL Base</label>
+            <input type="text" id="apiBaseInput" class="mono" placeholder="https://tu-app.up.railway.app">
+          </div>
+          <p style="color:var(--c-muted);font-size:11px;margin-bottom:18px;line-height:1.6;">
+            Sin <code style="background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px;">/api</code> ni <code style="background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px;">/</code> al final.<br>
+            Se detecta automáticamente al abrir la app en cualquier dispositivo.
+          </p>
+          <button class="btn btn-primary w-full" onclick="guardarConfig()" style="letter-spacing:0.5px;">
+            Guardar y Probar Conexión
+          </button>
         </div>
-        <p style="color:var(--c-muted); font-size:12px; margin-bottom: 24px;">Asegúrate de que no termine con '/' y que CORS esté configurado en tu servidor.</p>
-        <div style="display:flex; gap:12px;">
-          <button class="btn btn-primary" onclick="guardarConfig()">Guardar y Probar Conexión</button>
+
+        <!-- Tarjeta: Estado y Swagger -->
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+            <div style="width:32px;height:32px;background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">📡</div>
+            <div>
+              <div style="font-family:var(--f-head);font-size:18px;letter-spacing:1px;">Estado & Herramientas</div>
+              <div style="font-size:11px;color:var(--c-muted);">Monitoreo y documentación</div>
+            </div>
+          </div>
+
+          <!-- Estado conexión -->
+          <div style="background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
+              <span id="apiStatusDot" class="status-dot offline"></span>
+              <span id="apiStatusText" style="color:var(--c-red);font-weight:500;">API Desconectada</span>
+            </div>
+            <button class="btn btn-sm" onclick="testConexion()" style="font-size:11px;">↻ Verificar</button>
+          </div>
+
+          <!-- URL activa -->
+          <div style="background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;">
+            <div style="font-size:10px;color:var(--c-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">URL activa</div>
+            <div id="cfg_url_display" class="mono" style="font-size:12px;color:var(--c-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</div>
+          </div>
+
+          <!-- Acceso Swagger -->
+          <a id="cfg_swagger_link" href="#" target="_blank" style="display:none;text-decoration:none;">
+            <button class="btn w-full" type="button" style="justify-content:center;gap:8px;border-color:rgba(41,121,255,0.3);color:#7bb3ff;background:rgba(41,121,255,0.06);">
+              📖 Abrir Swagger UI
+            </button>
+          </a>
+
+          <!-- Nota HTTPS -->
+          <div style="margin-top:12px;padding:8px 12px;border-radius:var(--radius-sm);background:rgba(229,57,53,0.06);border:1px solid rgba(229,57,53,0.15);font-size:11px;color:rgba(255,107,107,0.85);line-height:1.5;">
+            ⚠️ Usa siempre <strong>https://</strong> · Ruta Swagger: <code style="font-size:10px;">/swagger-ui/index.html</code>
+          </div>
         </div>
+
       </div>
     </section>
 
@@ -1727,18 +1784,36 @@
   /* ══ CONFIG & ESTADO ══ */
   // Auto-detectar URL del servidor: si el localStorage tiene 'localhost' guardado
   // de una sesión local anterior, lo ignoramos y usamos el host actual.
+  // API_BASE: siempre usa la URL actual del navegador (funciona en cualquier dispositivo)
+  // El localStorage solo se usa si el usuario configuró manualmente una URL diferente
+  const _autoBase = window.location.origin;
   (function() {
     const saved = localStorage.getItem('monarca_api_base');
-    if (saved && saved.includes('localhost')) {
+    // Limpiar valores inválidos o locales
+    if (!saved || saved.includes('localhost') || saved.includes('127.0.0.1')) {
       localStorage.removeItem('monarca_api_base');
     }
-    if (saved && saved.endsWith('/api')) {
-      localStorage.setItem('monarca_api_base', saved.replace(/\/api$/, ''));
-    }
   })();
-  const _defaultBase = window.location.origin;
-  let API_BASE   = (localStorage.getItem('monarca_api_base') || _defaultBase).replace(/\/api$/, '');
-  let JWT_TOKEN  = sessionStorage.getItem('monarca_token') || null;
+  const _savedBase = localStorage.getItem('monarca_api_base');
+  let API_BASE = (_savedBase && _savedBase !== _autoBase ? _savedBase : _autoBase).replace(/\/api$/, '').replace(/\/$/, '');
+  // FIX: leer token de sessionStorage o localStorage (con verificación de expiración)
+  let JWT_TOKEN = (function() {
+    const ss = sessionStorage.getItem('monarca_token');
+    if (ss) return ss;
+    const ls = localStorage.getItem('monarca_token');
+    const exp = parseInt(localStorage.getItem('monarca_token_exp') || '0');
+    if (ls && Date.now() < exp) {
+      // Restaurar sesión desde localStorage
+      sessionStorage.setItem('monarca_token', ls);
+      sessionStorage.setItem('monarca_email', localStorage.getItem('monarca_email') || '');
+      sessionStorage.setItem('monarca_rol',   localStorage.getItem('monarca_rol')   || '');
+      sessionStorage.setItem('monarca_username', localStorage.getItem('monarca_username') || '');
+      return ls;
+    }
+    // Token expirado — limpiar
+    ['monarca_token','monarca_token_exp','monarca_email','monarca_rol','monarca_username'].forEach(k => localStorage.removeItem(k));
+    return null;
+  })();
 
   let peliculasCache  = [];
   let funcionesCache  = [];
@@ -1787,6 +1862,10 @@
       el.addEventListener('click', () => navMenu && navMenu.classList.remove('open'));
     });
     document.getElementById('apiBaseInput').value = API_BASE;
+    const swLinkInit = document.getElementById('cfg_swagger_link');
+    if (swLinkInit && API_BASE) { swLinkInit.href = API_BASE + '/swagger-ui/index.html'; swLinkInit.style.display = 'flex'; }
+    const urlDispInit = document.getElementById('cfg_url_display');
+    if (urlDispInit) urlDispInit.textContent = API_BASE || window.location.origin;
     if (!JWT_TOKEN) {
       document.getElementById('loginScreen').style.opacity = '1';
       document.getElementById('loginScreen').style.visibility = 'visible';
@@ -1803,35 +1882,58 @@
   async function api(path, method = 'GET', body = null) {
     const headers = { 'Content-Type': 'application/json' };
     if (JWT_TOKEN) headers['Authorization'] = `Bearer ${JWT_TOKEN}`;
+    // FIX: timeout de 12s — evita colgarse en redes lentas o móviles
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12000);
     try {
       const res = await fetch(`${API_BASE}/api${path}`, {
-        method, headers,
+        method, headers, signal: controller.signal,
         body: body ? JSON.stringify(body) : null
       });
+      clearTimeout(timer);
       if (res.status === 401 || res.status === 403) { logout(); throw new Error("Sesión expirada o sin permisos."); }
       if (!res.ok) { const t = await res.text(); throw new Error(t || `Error HTTP: ${res.status}`); }
       setStatus(true);
       const ct = res.headers.get("content-type");
       return ct && ct.includes("application/json") ? await res.json() : await res.text();
-    } catch (e) { setStatus(false); throw e; }
+    } catch (e) {
+      clearTimeout(timer);
+      setStatus(false);
+      // FIX: mensaje claro si es timeout o sin red
+      if (e.name === 'AbortError') throw new Error('Tiempo de espera agotado. Verifica tu conexión.');
+      if (!navigator.onLine) throw new Error('Sin conexión a internet.');
+      throw e;
+    }
   }
 
   function setStatus(ok) {
     const dot = document.getElementById('apiStatusDot');
     const txt = document.getElementById('apiStatusText');
     dot.className = 'status-dot ' + (ok ? 'online' : 'offline');
-    txt.textContent = ok ? 'API Conectada' : 'API Desconectada';
-    txt.style.color = ok ? 'var(--c-green)' : 'var(--c-red)';
+    if (ok) {
+      txt.textContent = 'API Conectada';
+      txt.style.color = 'var(--c-green)';
+    } else {
+      txt.textContent = navigator.onLine ? 'API Desconectada' : 'Sin internet';
+      txt.style.color = 'var(--c-red)';
+    }
   }
+  // FIX: detectar cambios de red en tiempo real
+  window.addEventListener('online',  () => setStatus(false) || testConexion());
+  window.addEventListener('offline', () => setStatus(false));
 
   /* ══ AUTH ══ */
   async function handleLogin(e) {
     e.preventDefault();
     try {
+      const loginCtrl = new AbortController();
+      const loginTimer = setTimeout(() => loginCtrl.abort(), 12000);
       const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: document.getElementById('l_user').value, password: document.getElementById('l_pass').value })
+        body: JSON.stringify({ username: document.getElementById('l_user').value, password: document.getElementById('l_pass').value }),
+        signal: loginCtrl.signal
       });
+      clearTimeout(loginTimer);
       if (res.status === 429) {
         const d = await res.json().catch(() => ({}));
         throw new Error(d.error || 'Demasiados intentos. Espera unos minutos.');
@@ -1842,6 +1944,12 @@
       }
       const data = await res.json();
       JWT_TOKEN = data.token;
+      // FIX: usar localStorage con expiración — sessionStorage se pierde en Safari móvil
+      const exp = Date.now() + 8 * 60 * 60 * 1000; // 8 horas
+      localStorage.setItem('monarca_token', JWT_TOKEN);
+      localStorage.setItem('monarca_token_exp', exp);
+      localStorage.setItem('monarca_email', data.email || '');
+      localStorage.setItem('monarca_rol', data.rol || 'USER');
       sessionStorage.setItem('monarca_token', JWT_TOKEN);
       sessionStorage.setItem('monarca_email', data.email || '');
       sessionStorage.setItem('monarca_rol', data.rol || 'USER');
@@ -1863,10 +1971,18 @@
       setTimeout(() => document.getElementById('loginScreen').style.visibility = 'hidden', 500);
       iniciarApp();
       showAlert('Autenticación exitosa.');
-    } catch (e) { showAlert(e.message || 'Fallo de inicio de sesión. Verifica el backend y CORS.', 'error'); }
+    } catch (e) {
+      if (e.name === 'AbortError') showAlert('Tiempo de espera agotado. Intenta de nuevo.', 'error');
+      else if (!navigator.onLine) showAlert('Sin conexión a internet.', 'error');
+      else showAlert(e.message || 'Fallo de inicio de sesión. Verifica el servidor.', 'error');
+    }
   }
 
-  function logout() { sessionStorage.removeItem('monarca_token'); location.reload(); }
+  function logout() {
+    sessionStorage.clear();
+    ['monarca_token','monarca_token_exp','monarca_email','monarca_rol','monarca_username','monarca_doc'].forEach(k => localStorage.removeItem(k));
+    location.reload();
+  }
 
   function iniciarApp() { testConexion(); aplicarNavPorRol(); cargarDashboard(); }
 
@@ -3814,17 +3930,33 @@
 
   /* ══ CONFIG ══ */
   function guardarConfig() {
-    API_BASE = document.getElementById('apiBaseInput').value.trim();
-    localStorage.setItem('monarca_api_base', API_BASE);
+    const inputVal = document.getElementById('apiBaseInput').value.trim().replace(/\/api$/, '').replace(/\/$/, '');
+    API_BASE = inputVal || window.location.origin;
+    // Solo guardar en localStorage si es diferente al origen actual
+    if (API_BASE !== window.location.origin) {
+      localStorage.setItem('monarca_api_base', API_BASE);
+    } else {
+      localStorage.removeItem('monarca_api_base');
+    }
     showAlert('Configuración de URL guardada.');
+    const swLink = document.getElementById('cfg_swagger_link');
+    if (swLink && API_BASE) { swLink.href = API_BASE + '/swagger-ui/index.html'; swLink.style.display = 'flex'; }
+    const urlDisp = document.getElementById('cfg_url_display');
+    if (urlDisp) urlDisp.textContent = API_BASE || window.location.origin;
     testConexion();
   }
 
   async function testConexion() {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 8000);
     try {
-      const res = await fetch(API_BASE + '/api/peliculas', { headers: JWT_TOKEN ? { 'Authorization': 'Bearer ' + JWT_TOKEN } : {} });
+      const res = await fetch(API_BASE + '/api/peliculas', {
+        headers: JWT_TOKEN ? { 'Authorization': 'Bearer ' + JWT_TOKEN } : {},
+        signal: ctrl.signal
+      });
+      clearTimeout(t);
       setStatus(res.ok || res.status === 401);
-    } catch(e) { setStatus(false); }
+    } catch(e) { clearTimeout(t); setStatus(false); }
   }
 
   /* ══ VER SILLAS RESERVA ══ */
