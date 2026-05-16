@@ -1466,9 +1466,12 @@
     if (saved && saved.includes('localhost')) {
       localStorage.removeItem('monarca_api_base');
     }
+    if (saved && saved.endsWith('/api')) {
+      localStorage.setItem('monarca_api_base', saved.replace(/\/api$/, ''));
+    }
   })();
-  const _defaultBase = window.location.origin + '/api';
-  let API_BASE   = localStorage.getItem('monarca_api_base') || _defaultBase;
+  const _defaultBase = window.location.origin;
+  let API_BASE   = (localStorage.getItem('monarca_api_base') || _defaultBase).replace(/\/api$/, '');
   let JWT_TOKEN  = sessionStorage.getItem('monarca_token') || null;
 
   let peliculasCache  = [];
@@ -1559,7 +1562,7 @@
   async function handleLogin(e) {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_BASE}/auth/login`, {
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: document.getElementById('l_user').value, password: document.getElementById('l_pass').value })
       });
@@ -1625,7 +1628,7 @@
     errEl.style.display = 'none';
     if (pass !== pass2) { errEl.textContent = 'Las contraseñas no coinciden.'; errEl.style.display = 'block'; return; }
     try {
-      const res = await fetch(`${API_BASE}/auth/register`, {
+      const res = await fetch(`${API_BASE}/api/auth/register`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username, email: document.getElementById('r_email').value.trim(), password: pass,
@@ -3173,7 +3176,7 @@
       if (!username || !email || !pass) { errEl.textContent = 'Username, email y contraseña son obligatorios.'; errEl.style.display='block'; return; }
       try {
         const rolDeseado = document.getElementById('nu_rol').value;
-        const res = await fetch(`${API_BASE}/auth/register`, {
+        const res = await fetch(`${API_BASE}/api/auth/register`, {
           method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${JWT_TOKEN}`},
           body: JSON.stringify({ username, email, password: pass,
             nombreCompleto: document.getElementById('nu_nombre').value.trim()||null,
@@ -3515,7 +3518,7 @@
     if (swaggerWrap) swaggerWrap.style.display = 'none';
 
     try {
-      const res = await fetch(API_BASE + '/auth/login', {
+      const res = await fetch(API_BASE + '/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -3602,7 +3605,7 @@
 
   async function testConexion() {
     try {
-      const res = await fetch(API_BASE + '/peliculas', { headers: JWT_TOKEN ? { 'Authorization': 'Bearer ' + JWT_TOKEN } : {} });
+      const res = await fetch(API_BASE + '/api/peliculas', { headers: JWT_TOKEN ? { 'Authorization': 'Bearer ' + JWT_TOKEN } : {} });
       setStatus(res.ok || res.status === 401);
     } catch(e) { setStatus(false); }
   }
