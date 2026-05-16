@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/peliculas")
@@ -47,5 +49,30 @@ public class PeliculaController {
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         peliculaService.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * POST /api/peliculas/{id}/poster
+     * Solo ADMIN (ver SecurityConfig).
+     * Body: { "posterUrl": "data:image/jpeg;base64,..." }
+     */
+    @PostMapping("/{id}/poster")
+    public ResponseEntity<Pelicula> subirPoster(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+        String dataUrl = body.get("posterUrl");
+        if (dataUrl == null || dataUrl.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(peliculaService.actualizarPoster(id, dataUrl));
+    }
+
+    /**
+     * DELETE /api/peliculas/{id}/poster
+     * Solo ADMIN — elimina el poster de la película.
+     */
+    @DeleteMapping("/{id}/poster")
+    public ResponseEntity<Pelicula> eliminarPoster(@PathVariable Long id) {
+        return ResponseEntity.ok(peliculaService.actualizarPoster(id, null));
     }
 }

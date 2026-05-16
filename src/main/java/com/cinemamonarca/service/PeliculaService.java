@@ -15,8 +15,8 @@ public class PeliculaService {
 
     private final PeliculaRepository peliculaRepository;
 
-    public List<Pelicula> obtenerTodas()           { return peliculaRepository.findAll(); }
-    public List<Pelicula> buscarPorNombre(String n) { return peliculaRepository.findByNombreContainingIgnoreCase(n); }
+    public List<Pelicula> obtenerTodas()            { return peliculaRepository.findAll(); }
+    public List<Pelicula> buscarPorNombre(String n)  { return peliculaRepository.findByNombreContainingIgnoreCase(n); }
 
     public Pelicula obtenerPorId(Long id) {
         return peliculaRepository.findById(id)
@@ -34,6 +34,14 @@ public class PeliculaService {
         p.setDuracionMin(datos.getDuracionMin());
         p.setGenero(datos.getGenero());
         p.setClasificacion(datos.getClasificacion());
+        // posterUrl NO se toca aquí — se gestiona via /poster endpoint
+        return peliculaRepository.save(p);
+    }
+
+    @Transactional
+    public Pelicula actualizarPoster(Long id, String posterUrl) {
+        Pelicula p = obtenerPorId(id);
+        p.setPosterUrl(posterUrl);
         return peliculaRepository.save(p);
     }
 

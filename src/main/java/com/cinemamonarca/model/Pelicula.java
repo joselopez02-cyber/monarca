@@ -32,22 +32,28 @@ public class Pelicula {
     @Column(length = 1000)
     private String descripcion;
 
-    /** Duración en minutos — también accesible como duracionMinutos para compatibilidad frontend */
+    /** Duración en minutos */
     @Column(name = "duracion_min")
     private Integer duracionMin;
 
-    /** Alias para compatibilidad con el frontend (mapea al mismo campo) */
     @Transient
     public Integer getDuracionMinutos() { return duracionMin; }
     public void setDuracionMinutos(Integer v) { this.duracionMin = v; }
 
-    /** Clasificación: G, PG, PG-13, R */
+    /** Clasificación: A, B, B15, C */
     @Column(length = 10)
     private String clasificacion;
 
     /** Género: ACCION, DRAMA, COMEDIA, TERROR, ANIMACION, etc. */
     @Column(length = 50)
     private String genero;
+
+    /**
+     * Poster en Base64 (data:image/...;base64,...).
+     * Guardado como MEDIUMTEXT en MySQL (~16 MB máx).
+     */
+    @Column(name = "poster_url", columnDefinition = "MEDIUMTEXT")
+    private String posterUrl;
 
     @OneToMany(mappedBy = "pelicula", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
