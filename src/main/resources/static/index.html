@@ -277,20 +277,28 @@
     /* ── FUNCION CARDS ── */
     .funcion-card { display: flex; flex-direction: column; height: 100%; padding: 0; overflow: hidden; }
     .funcion-header {
-      height: 130px; background: var(--c-card); border-bottom: 1px solid var(--c-border);
-      display: flex; align-items: center; justify-content: center; position: relative;
+      height: 260px; background: var(--c-card); border-bottom: 1px solid var(--c-border);
+      display: flex; align-items: flex-end; justify-content: flex-start; position: relative;
       overflow: hidden;
     }
-    .funcion-header::before {
+    /* Gradiente sutil solo cuando NO hay poster */
+    .funcion-header:not(:has(img))::before {
       content: ''; position: absolute; inset: 0;
       background: radial-gradient(ellipse at center, rgba(245,197,24,0.06) 0%, transparent 70%);
     }
+    /* Gradiente inferior para legibilidad del título sobre el poster */
     .funcion-header::after {
       content: ''; position: absolute; inset: 0;
-      background: linear-gradient(0deg, var(--c-surface) 0%, transparent 100%); opacity: 0.9;
+      background: linear-gradient(to top, rgba(10,10,15,0.92) 0%, rgba(10,10,15,0.3) 45%, transparent 100%);
+      z-index: 2;
     }
-    .funcion-header h3 { font-size: 28px; color: var(--c-text); z-index: 2; text-align: center; padding: 0 16px; line-height: 1.1; }
-    .funcion-body { padding: 18px 20px; flex: 1; display: flex; flex-direction: column; }
+    .funcion-header h3 {
+      font-size: 20px; color: #fff; z-index: 3;
+      text-align: left; padding: 0 16px 14px; line-height: 1.2;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+      width: 100%;
+    }
+    .funcion-body { padding: 14px 18px; flex: 1; display: flex; flex-direction: column; }
     .funcion-meta { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
     .funcion-details { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
     .detail-item { font-size: 12px; }
@@ -806,8 +814,11 @@
     /* ── Poster en cartelera ── */
     .funcion-header img.poster-img {
       position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; opacity: 0.55; z-index: 1;
+      object-fit: cover; object-position: center top;
+      opacity: 1; z-index: 1;
+      transition: transform 0.35s ease;
     }
+    .funcion-card:hover .poster-img { transform: scale(1.04); }
     /* ── Poster en catálogo admin ── */
     .poster-thumb { width: 52px; height: 72px; object-fit: cover; border-radius: 4px; border: 1px solid var(--c-border); }
     .poster-placeholder { width: 52px; height: 72px; background: var(--c-surface); border: 1px dashed var(--c-border);
@@ -1922,7 +1933,9 @@
         card.className = 'card funcion-card';
         card.innerHTML = `
           <div class="funcion-header">
-            ${peli.posterUrl ? `<img src="${peli.posterUrl}" class="poster-img" alt="${peli.nombre}">` : ''}
+            ${peli.posterUrl
+              ? `<img src="${peli.posterUrl}" class="poster-img" alt="${peli.nombre}">`
+              : `<div style="position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(245,197,24,0.08) 0%,transparent 70%);z-index:1;"></div>`}
             <h3>${peli.nombre.toUpperCase()}</h3>
           </div>
           <div class="funcion-body">
@@ -1931,7 +1944,7 @@
               <span class="badge" style="background:var(--c-surface);border:1px solid var(--c-border);">${peli.duracionMin||'?'}M</span>
               <span class="badge" style="background:var(--c-surface);border:1px solid var(--c-border);">${(peli.genero||'').toUpperCase()}</span>
             </div>
-            ${peli.descripcion ? `<p style="font-size:12px;color:var(--c-text-muted);margin-bottom:10px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${peli.descripcion}</p>` : ''}
+            ${peli.descripcion ? `<p style="font-size:12px;color:var(--c-text-muted);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${peli.descripcion}</p>` : ''}
             <button class="btn btn-primary w-full" style="padding:12px;font-size:14px;margin-top:auto;" onclick="abrirSeleccionFuncion(${peli.movieId})">
               Reservar Entrada
             </button>
