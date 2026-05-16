@@ -48,6 +48,7 @@
       display: flex;
       font-size: 14px;
       overflow-x: hidden;
+      max-width: 100vw;
     }
     h1,h2,h3,h4,.brand-text { font-family: var(--f-head); letter-spacing: 1px; font-weight: normal; }
     .mono { font-family: var(--f-mono); font-size: 0.85em; }
@@ -102,6 +103,7 @@
       font-size: 14px;
       transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
       outline: none;
+      max-width: 100%;
     }
     input:focus, select:focus, textarea:focus {
       border-color: var(--c-gold);
@@ -182,7 +184,7 @@
 
     /* ── LAYOUT ── */
     .app-layout { display: flex; min-height: 100vh; }
-    .main-content { flex: 1; margin-left: 256px; display: flex; flex-direction: column; min-height: 100vh; }
+    .main-content { flex: 1; margin-left: 256px; display: flex; flex-direction: column; min-height: 100vh; min-width: 0; overflow-x: hidden; }
 
     /* ── TOPBAR ── */
     .topbar {
@@ -203,7 +205,7 @@
     .status-dot.online  { background: var(--c-green); box-shadow: 0 0 8px var(--c-green); }
     .status-dot.offline { background: var(--c-red); box-shadow: 0 0 8px var(--c-red); }
 
-    .content-area { padding: 32px; max-width: 1280px; width: 100%; margin: 0 auto; }
+    .content-area { padding: 32px; max-width: 1280px; width: 100%; margin: 0 auto; overflow-x: hidden; }
     .view-section { display: none; animation: fadeIn 0.25s ease; }
     .view-section.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
@@ -252,10 +254,9 @@
       background: var(--c-surface);
       border: 1px solid var(--c-border);
       border-radius: var(--radius);
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
     }
-    .table-container table { min-width: 600px; }
+    .table-container.scrollable { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; text-align: left; }
     th {
       padding: 11px 16px;
@@ -397,7 +398,6 @@
     .login-screen::before {
       content: ''; position: absolute; inset: 0;
       background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f5c518' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-      pointer-events: none;
     }
     .login-box {
       background: rgba(15,15,26,0.95);
@@ -557,270 +557,6 @@
       .screen-curve { width: 85% !important; }
       .grid-4 { grid-template-columns: 1fr 1fr !important; }
     }
-
-    /* ══ MOBILE FIXES COMPLETOS ══ */
-
-    /* ── Login box ── */
-    @media (max-width: 480px) {
-      .login-box {
-        padding: 28px 20px !important;
-        margin: 12px !important;
-        border-radius: 14px !important;
-      }
-      .login-box h2 { font-size: 24px !important; }
-      #registerForm { max-height: 70vh !important; }
-    }
-
-    /* ── Topbar ── */
-    @media (max-width: 768px) {
-      .topbar {
-        padding: 0 12px !important;
-        height: 48px !important;
-        gap: 8px;
-      }
-      #userDisplay {
-        font-size: 11px !important;
-        max-width: 130px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      #apiStatusText { display: none !important; }
-    }
-
-    /* ── Content area ── */
-    @media (max-width: 768px) {
-      .content-area { padding: 12px !important; }
-      .section-header { margin-bottom: 16px !important; }
-      .section-title h2 { font-size: 24px !important; }
-    }
-
-    /* ── Cards & stat cards ── */
-    @media (max-width: 768px) {
-      .stat-card { padding: 14px 16px !important; }
-      .stat-value { font-size: 28px !important; }
-      .card { padding: 14px !important; }
-    }
-
-    /* ── Formularios: forzar 1 columna en móvil ── */
-    @media (max-width: 600px) {
-      .grid-2 { grid-template-columns: 1fr !important; }
-      .grid-4 { grid-template-columns: 1fr !important; }
-      /* Formularios con grid inline */
-      form.grid-4,
-      #formPelicula,
-      #formFuncion {
-        grid-template-columns: 1fr !important;
-      }
-      /* Modales con grid 2 columnas inline */
-      #modalNuevoUsuario [style*="grid-template-columns:1fr 1fr"],
-      #modalNuevoUsuario [style*="grid-template-columns: 1fr 1fr"],
-      .card [style*="grid-template-columns:1fr 1fr"],
-      .card [style*="grid-template-columns: 1fr 1fr"] {
-        grid-template-columns: 1fr !important;
-      }
-    }
-
-    /* ── Tablas: scroll horizontal con indicador visual ── */
-    @media (max-width: 768px) {
-      .table-container {
-        border-radius: var(--radius) !important;
-        position: relative;
-      }
-      .table-container::after {
-        content: '← desliza →';
-        display: block;
-        text-align: center;
-        font-size: 10px;
-        color: rgba(245,197,24,0.4);
-        padding: 4px;
-        font-family: var(--f-mono);
-        letter-spacing: 1px;
-      }
-      th { font-size: 9px !important; padding: 8px 10px !important; }
-      td { font-size: 12px !important; padding: 10px 10px !important; }
-    }
-
-    /* ── Filtros / barras de filtro ── */
-    @media (max-width: 768px) {
-      /* Filtros de cartelera */
-      #view-cartelera .card,
-      #view-cartelera [style*="display:flex"] {
-        flex-direction: column !important;
-      }
-      /* Filtros de funciones */
-      #view-funciones [style*="display:flex"][style*="flex-wrap:wrap"] {
-        gap: 8px !important;
-      }
-      /* Filtros de reservas */
-      #view-reservas .card [style*="display:grid"] {
-        grid-template-columns: 1fr !important;
-      }
-      /* Barra de filtros de funciones */
-      #view-funciones > div[style*="background:var(--c-card)"] {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-      }
-    }
-
-    /* ── Modal de reserva (mapa de sillas) ── */
-    @media (max-width: 768px) {
-      #modalReserva .modal {
-        width: 100% !important;
-        max-width: 100% !important;
-        height: 100% !important;
-        max-height: 100% !important;
-        border-radius: 0 !important;
-        margin: 0 !important;
-      }
-      #modalReserva .modal-header {
-        padding: 12px 16px !important;
-      }
-      #modalReserva .modal-header h3 { font-size: 20px !important; }
-      /* Paso 2: datos de cliente en 1 columna */
-      #paso2Modal [style*="grid-template-columns:1fr 1fr"],
-      #paso2Modal [style*="grid-template-columns: 1fr 1fr"] {
-        grid-template-columns: 1fr !important;
-      }
-      #paso2Modal [style*="padding:24px"] {
-        padding: 14px !important;
-        max-height: calc(100vh - 120px) !important;
-      }
-      /* Métodos de pago: 2 columnas en móvil */
-      .pay-methods { grid-template-columns: repeat(2,1fr) !important; }
-      .pay-method-btn { padding: 10px 6px !important; font-size: 12px !important; }
-      .pay-method-btn .pay-icon { font-size: 20px !important; }
-    }
-
-    /* ── Modales genéricos fullscreen en móvil ── */
-    @media (max-width: 768px) {
-      #modalUsuario > div,
-      #modalNuevoUsuario > div,
-      #modalSillas > div,
-      #modalDetallesGrupo .modal,
-      #modalEditFuncionInd > div,
-      #modalSelFuncion .modal {
-        width: 100% !important;
-        max-width: 100% !important;
-        max-height: 100vh !important;
-        border-radius: 0 !important;
-        margin: 0 !important;
-      }
-      #modalSelFuncion .modal {
-        height: 100% !important;
-      }
-      #modalSillas > div {
-        height: 100% !important;
-        overflow-y: auto !important;
-      }
-    }
-
-    /* ── Modal detalle reserva (sillas) ── */
-    @media (max-width: 480px) {
-      #ms_mapa { gap: 6px !important; }
-      #ms_mapa > div { width: 42px !important; height: 42px !important; }
-    }
-
-    /* ── Sección Cines & Sucursales: grids inline → 1 col ── */
-    @media (max-width: 600px) {
-      #view-sucursales .card [style*="grid-template-columns:1fr 1fr"],
-      #view-sucursales .card [style*="grid-template-columns: 1fr 1fr"] {
-        grid-template-columns: 1fr !important;
-      }
-    }
-
-    /* ── Historial: botones de acción apilados ── */
-    @media (max-width: 768px) {
-      #reservasTable td:last-child > div {
-        flex-direction: column !important;
-        gap: 3px !important;
-      }
-    }
-
-    /* ── Grupo de funciones programadas ── */
-    @media (max-width: 768px) {
-      #funcionesAgrupadas .card > div:first-child {
-        flex-wrap: wrap !important;
-        gap: 8px !important;
-      }
-    }
-
-    /* ── Vista previa de sala ── */
-    @media (max-width: 600px) {
-      #sala-preview-grid { font-size: 9px !important; }
-    }
-
-    /* ── Taquilla: filtros en columna ── */
-    @media (max-width: 600px) {
-      #view-cartelera > div:nth-child(2) {
-        flex-direction: column !important;
-      }
-      #view-cartelera > div:nth-child(2) .input-group {
-        min-width: 100% !important;
-      }
-    }
-
-    /* ── Chips de fecha/hora (modal selección función) ── */
-    @media (max-width: 480px) {
-      .sf-chip { font-size: 11px !important; padding: 4px 10px !important; }
-      .sf-time-chip { font-size: 12px !important; padding: 5px 10px !important; }
-      .hora-chip { font-size: 11px !important; padding: 5px 10px !important; }
-    }
-
-    /* ── Progreso de publicación en rango ── */
-    @media (max-width: 480px) {
-      #rango-progress-wrap .card { padding: 12px !important; }
-    }
-
-    /* ── Botones de acción en tablas ── */
-    @media (max-width: 768px) {
-      .btn-sm { font-size: 11px !important; padding: 4px 8px !important; }
-    }
-
-    /* ── Columna Acción sticky (siempre visible) ── */
-    .col-accion-th {
-      position: sticky !important;
-      right: 0 !important;
-      background: var(--c-card) !important;
-      z-index: 3 !important;
-      box-shadow: -3px 0 8px rgba(0,0,0,0.4) !important;
-      white-space: nowrap !important;
-    }
-    .col-accion-td {
-      position: sticky !important;
-      right: 0 !important;
-      background: var(--c-surface) !important;
-      z-index: 2 !important;
-      box-shadow: -3px 0 8px rgba(0,0,0,0.3) !important;
-    }
-    tr:hover .col-accion-td {
-      background: var(--c-card) !important;
-    }
-
-    /* ── Topbar usuario más compacto ── */
-    @media (max-width: 360px) {
-      #userDisplay { display: none !important; }
-      .topbar { justify-content: flex-start !important; }
-    }
-
-    /* ── Poster en cartelera ── */
-    .funcion-header img.poster-img {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; opacity: 0.55; z-index: 1;
-    }
-    /* ── Poster en catálogo admin ── */
-    .poster-thumb { width: 52px; height: 72px; object-fit: cover; border-radius: 4px; border: 1px solid var(--c-border); }
-    .poster-placeholder { width: 52px; height: 72px; background: var(--c-surface); border: 1px dashed var(--c-border);
-      border-radius: 4px; display: flex; align-items: center; justify-content: center; color: var(--c-text-muted); font-size: 20px; cursor: pointer; }
-    .poster-upload-btn { background: none; border: 1px solid var(--c-border); border-radius: 6px; padding: 4px 10px;
-      color: var(--c-text-muted); cursor: pointer; font-size: 12px; transition: all .2s; }
-    .poster-upload-btn:hover { border-color: var(--c-primary); color: var(--c-primary); }
-    .poster-del-btn { background: none; border: 1px solid #ef4444; border-radius: 6px; padding: 4px 8px;
-      color: #ef4444; cursor: pointer; font-size: 12px; }
-    #posterDropzone { border: 2px dashed var(--c-border); border-radius: 10px; padding: 24px; text-align: center;
-      cursor: pointer; transition: border-color .2s; color: var(--c-text-muted); margin-top: 8px; }
-    #posterDropzone.drag-over { border-color: var(--c-primary); color: var(--c-primary); }
-    #posterDropzone img { max-height: 160px; border-radius: 6px; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -978,9 +714,8 @@
         <div class="flex-between mb-2">
           <h4 style="font-family: var(--f-body); font-weight: 600; font-size: 14px;" id="lbl-form-pelicula">Registrar Nuevo Título</h4>
         </div>
-        <form id="formPelicula" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; align-items:start;">
+        <form id="formPelicula" class="grid-4" style="align-items: end;">
           <input type="hidden" id="p_id">
-          <!-- Fila 1 -->
           <div class="input-group" style="margin:0"><label>Título</label><input type="text" id="p_titulo" required></div>
           <div class="input-group" style="margin:0"><label>Género principal</label><input type="text" id="p_genero" placeholder="Ej: Ciencia Ficción" required></div>
           <div class="input-group" style="margin:0"><label>Duración (min)</label><input type="number" id="p_duracion" required min="1"></div>
@@ -993,26 +728,7 @@
               <option value="C">C - Adultos</option>
             </select>
           </div>
-          <!-- Fila 2: descripción + poster -->
-          <div class="input-group" style="margin:0; grid-column: span 3;">
-            <label>Descripción</label>
-            <textarea id="p_desc" rows="3" style="resize:vertical;font-family:var(--f-body);font-size:13px;" placeholder="Sinopsis de la película..."></textarea>
-          </div>
-          <div style="margin:0; display:flex; flex-direction:column; gap:6px;">
-            <label style="font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--c-text-muted);">POSTER</label>
-            <div id="posterDropzone" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handlePosterDrop(event)">
-              <div id="posterPreview">
-                <div style="font-size:28px;margin-bottom:4px;">🖼️</div>
-                <div style="font-size:12px;margin-bottom:10px;color:var(--c-text-muted);">JPG · PNG · WEBP · GIF</div>
-                <button type="button" onclick="document.getElementById('posterFileInput').click()" style="background:var(--c-primary);color:#000;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">📁 Elegir archivo</button>
-                <div style="font-size:10px;margin-top:6px;color:var(--c-text-muted);">o arrastra la imagen aquí</div>
-              </div>
-            </div>
-            <input type="file" id="posterFileInput" accept=".jpg,.jpeg,.png,.webp,.gif,.bmp,.tiff,.avif,image/*" style="display:none" onchange="handlePosterFile(this)">
-            <button type="button" id="btn-clear-poster" class="poster-del-btn" style="display:none" onclick="limpiarPosterForm()">🗑 Quitar poster</button>
-          </div>
-          <!-- Fila 3: botones -->
-          <div style="grid-column: 1 / -1; display:flex; justify-content: flex-end; margin-top: 4px; gap: 8px;">
+          <div style="grid-column: 1 / -1; display:flex; justify-content: flex-end; margin-top: 8px; gap: 8px;">
             <button type="button" class="btn" id="btn-cancel-p" style="display:none;" onclick="cancelarEdicionPelicula()">Cancelar</button>
             <button type="submit" class="btn btn-primary" id="btn-save-p">Guardar Película</button>
           </div>
@@ -1020,7 +736,7 @@
       </div>
       <div class="table-container">
         <table>
-          <thead><tr><th>ID</th><th>Poster</th><th>Título</th><th>Género</th><th>Duración</th><th>Clasificación</th><th>Acciones</th></tr></thead>
+          <thead><tr><th>ID</th><th>Título</th><th>Género</th><th>Duración</th><th>Clasificación</th><th>Acciones</th></tr></thead>
           <tbody id="peliculasTable"></tbody>
         </table>
       </div>
@@ -1048,14 +764,14 @@
           </div>
         </div>
       </div>
-      <div id="sala-preview-wrap" style="display:none;margin-bottom:24px">
+      <div id="sala-preview-wrap" style="display:none;margin-bottom:24px;overflow:hidden">
         <div class="card">
           <h4 style="font-family:var(--f-body);font-weight:600;font-size:13px;margin-bottom:12px;color:var(--c-gold)">Vista previa — <span id="sala-preview-label">Sala</span></h4>
           <div style="text-align:center;margin-bottom:10px">
             <div style="height:4px;background:linear-gradient(90deg,transparent,rgba(245,197,24,0.5),transparent);border-radius:50%;width:60%;margin:0 auto 6px"></div>
             <span style="font-family:var(--f-mono);font-size:10px;color:rgba(245,197,24,0.5);letter-spacing:3px">PANTALLA</span>
           </div>
-          <div id="sala-preview-grid"></div>
+          <div id="sala-preview-grid" style="overflow-x:auto;max-width:100%;padding-bottom:4px"></div>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
@@ -1207,13 +923,13 @@
         <div class="section-title"><h2>Historial de Ventas</h2><p>Registro de todas las transacciones y emisiones de tiquetes.</p></div>
         <button class="btn" onclick="cargarReservas()">↻ Actualizar</button>
       </div>
-      <div class="card mb-3" style="padding:14px 16px;">
-        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
-          <div class="input-group" style="margin:0;min-width:140px;flex:1"><label>🏢 Sucursal</label><select id="filtro-res-suc" onchange="filtrarReservas()"><option value="">— Todas —</option></select></div>
-          <div class="input-group" style="margin:0;min-width:180px;flex:2"><label>🔍 Película</label><input type="text" id="filtro-res-nombre" placeholder="Buscar por película..." oninput="filtrarReservas()"></div>
-          <div class="input-group" style="margin:0;min-width:130px;flex:1"><label>🎭 Género</label><select id="filtro-res-genero" onchange="filtrarReservas()"><option value="">— Todos —</option></select></div>
-          <div class="input-group" style="margin:0;min-width:130px;flex:1"><label>🔞 Clasificación</label><select id="filtro-res-clasif" onchange="filtrarReservas()"><option value="">— Todas —</option></select></div>
-          <div class="input-group" style="margin:0;min-width:130px;flex:1">
+      <div class="card mb-3" style="padding:14px 16px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;align-items:end">
+          <div class="input-group" style="margin:0"><label>🏢 Sucursal</label><select id="filtro-res-suc" onchange="filtrarReservas()"><option value="">— Todas —</option></select></div>
+          <div class="input-group" style="margin:0"><label>🔍 Película</label><input type="text" id="filtro-res-nombre" placeholder="Buscar por película..." oninput="filtrarReservas()"></div>
+          <div class="input-group" style="margin:0"><label>🎭 Género</label><select id="filtro-res-genero" onchange="filtrarReservas()"><option value="">— Todos —</option></select></div>
+          <div class="input-group" style="margin:0"><label>🔞 Clasificación</label><select id="filtro-res-clasif" onchange="filtrarReservas()"><option value="">— Todas —</option></select></div>
+          <div class="input-group" style="margin:0">
             <label>📋 Estado</label>
             <select id="filtro-res-estado" onchange="filtrarReservas()">
               <option value="">— Todos —</option>
@@ -1222,7 +938,7 @@
               <option value="PENDIENTE">Pendiente</option>
             </select>
           </div>
-          <div class="input-group" style="margin:0;min-width:130px;flex:1">
+          <div class="input-group" style="margin:0">
             <label>💳 Método Pago</label>
             <select id="filtro-res-metodo" onchange="filtrarReservas()">
               <option value="">— Todos —</option>
@@ -1232,26 +948,15 @@
               <option value="EFECTIVO">Efectivo</option>
             </select>
           </div>
-          <div style="display:flex;align-items:flex-end;flex-shrink:0;">
-            <button class="btn" style="font-size:12px;white-space:nowrap" onclick="limpiarFiltrosReservas()">✕ Limpiar</button>
+          <div style="display:flex;align-items:flex-end">
+            <button class="btn" style="width:100%;font-size:12px" onclick="limpiarFiltrosReservas()">✕ Limpiar</button>
           </div>
         </div>
       </div>
       <div id="res-contador" style="font-size:12px;color:var(--c-muted);margin-bottom:8px;font-family:var(--f-body)"></div>
       <div class="table-container">
-        <table style="min-width:860px">
-          <thead><tr>
-            <th style="white-space:nowrap">Ticket #</th>
-            <th style="white-space:nowrap">Acción</th>
-            <th style="white-space:nowrap">Fecha Op.</th>
-            <th>Cliente</th>
-            <th>Película</th>
-            <th style="white-space:nowrap">Sala / Sucursal</th>
-            <th>Sillas</th>
-            <th style="white-space:nowrap">Total (COP)</th>
-            <th>Método</th>
-            <th>Estado</th>
-          </tr></thead>
+        <table>
+          <thead><tr><th style="white-space:nowrap">Ticket #</th><th style="white-space:nowrap">Fecha Op.</th><th>Cliente</th><th>Película</th><th>Sala / Sucursal</th><th>Sillas</th><th style="white-space:nowrap">Total (COP)</th><th>Método</th><th>Estado</th><th style="position:sticky;right:0;background:var(--c-card);z-index:2;white-space:nowrap">Acción</th></tr></thead>
           <tbody id="reservasTable"></tbody>
         </table>
       </div>
@@ -1345,16 +1050,113 @@
     <!-- CONFIGURACIÓN API -->
     <section id="view-config" class="view-section">
       <div class="section-header">
-        <div class="section-title"><h2>Configuración de Conexión</h2></div>
+        <div class="section-title"><h2>Configuración de Conexión</h2><p>Conecta la app con tu servidor Spring Boot y obtén tu token JWT</p></div>
       </div>
-      <div class="card" style="max-width: 500px;">
-        <div class="input-group">
-          <label>URL Base del API REST (Spring Boot)</label>
-          <input type="text" id="apiBaseInput" class="mono" value="">
+
+      <!-- Fila 1: URL + Diagnóstico en tiempo real -->
+      <div class="grid-2" style="max-width:1100px;margin-bottom:20px">
+
+        <!-- URL del API -->
+        <div class="card">
+          <h4 style="font-family:var(--f-head);font-size:18px;margin-bottom:16px;color:var(--c-gold)">🌐 URL del Servidor</h4>
+          <div class="input-group">
+            <label>URL Base del API REST</label>
+            <input type="text" id="apiBaseInput" class="mono" placeholder="https://tu-app.railway.app">
+          </div>
+          <p style="color:var(--c-muted);font-size:11px;margin-bottom:16px">Sin <code>/api</code> ni <code>/</code> al final. Ej: <code>https://monarca-production-3763.up.railway.app</code></p>
+          <button class="btn btn-primary w-full" onclick="guardarConfig()">Guardar URL</button>
         </div>
-        <p style="color:var(--c-muted); font-size:12px; margin-bottom: 24px;">Asegúrate de que no termine con '/' y que CORS esté configurado en tu servidor.</p>
-        <div style="display:flex; gap:12px;">
-          <button class="btn btn-primary" onclick="guardarConfig()">Guardar y Probar Conexión</button>
+
+        <!-- Estado en tiempo real -->
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <h4 style="font-family:var(--f-head);font-size:18px;color:var(--c-gold);margin:0">📡 Diagnóstico</h4>
+            <button class="btn btn-sm" onclick="runDiagnostico()">↻ Verificar</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--c-card);border-radius:var(--radius-sm)">
+              <span id="dot-srv" style="width:9px;height:9px;border-radius:50%;background:#888;flex-shrink:0;transition:background 0.3s"></span>
+              <span id="lbl-srv" style="font-size:13px;color:var(--c-muted)">Verificando servidor...</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--c-card);border-radius:var(--radius-sm)">
+              <span id="dot-swg" style="width:9px;height:9px;border-radius:50%;background:#888;flex-shrink:0;transition:background 0.3s"></span>
+              <span id="lbl-swg" style="font-size:13px;color:var(--c-muted)">Verificando Swagger UI...</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--c-card);border-radius:var(--radius-sm)">
+              <span id="dot-jwt" style="width:9px;height:9px;border-radius:50%;background:#888;flex-shrink:0;transition:background 0.3s"></span>
+              <span id="lbl-jwt" style="font-size:13px;color:var(--c-muted)">Token JWT pendiente</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fila 2: Login + Token obtenido -->
+      <div class="grid-2" style="max-width:1100px;margin-bottom:20px">
+
+        <!-- Login -->
+        <div class="card">
+          <h4 style="font-family:var(--f-head);font-size:18px;margin-bottom:16px;color:var(--c-gold)">🔑 Autenticación</h4>
+          <div class="input-group">
+            <label>Usuario</label>
+            <input type="text" id="cfg_username" placeholder="Ingresa tu usuario" autocomplete="off">
+          </div>
+          <div class="input-group">
+            <label>Contraseña</label>
+            <div style="position:relative">
+              <input type="password" id="cfg_password" placeholder="Ingresa tu contraseña" autocomplete="new-password" style="padding-right:42px;width:100%">
+              <button type="button" id="cfg_pass_eye" onclick="toggleCfgPass()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--c-muted);cursor:pointer;font-size:16px;padding:0;line-height:1">👁</button>
+            </div>
+          </div>
+          <button class="btn btn-primary w-full" id="cfg_login_btn" onclick="loginDesdeConfig()">Conectar y Obtener Token</button>
+          <div id="cfg_status" style="margin-top:12px;font-size:12px;font-family:var(--f-mono);display:none;padding:8px 12px;border-radius:var(--radius-sm);background:var(--c-card)"></div>
+        </div>
+
+        <!-- Token obtenido -->
+        <div class="card" id="cfg_token_card" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <h4 style="font-family:var(--f-head);font-size:18px;color:var(--c-green);margin:0">✅ Token JWT</h4>
+            <button class="btn btn-sm" onclick="copiarTokenCfg()" id="cfg_copy_btn">📋 Copiar</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;font-size:12px">
+            <div style="background:var(--c-card);padding:8px 10px;border-radius:var(--radius-sm)">
+              <div style="color:var(--c-muted);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px">Usuario</div>
+              <div class="mono" id="cfg_info_user" style="color:var(--c-gold);font-weight:600">—</div>
+            </div>
+            <div style="background:var(--c-card);padding:8px 10px;border-radius:var(--radius-sm)">
+              <div style="color:var(--c-muted);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px">Rol</div>
+              <div class="mono" id="cfg_info_rol" style="color:var(--c-text);font-weight:600">—</div>
+            </div>
+          </div>
+          <div style="background:var(--c-bg);border:1px solid var(--c-border);border-radius:var(--radius-sm);padding:10px 12px;font-family:var(--f-mono);font-size:10px;word-break:break-all;color:var(--c-muted);max-height:72px;overflow:hidden;line-height:1.4" id="cfg_token_preview_box">—</div>
+          <p style="font-size:11px;color:var(--c-muted);margin-top:8px">Pega este token en el botón <strong style="color:var(--c-gold)">Authorize 🔓</strong> de Swagger UI</p>
+        </div>
+      </div>
+
+      <!-- Fila 3: Info conexión activa + acceso Swagger -->
+      <div class="card" style="max-width:1100px">
+        <h4 style="font-family:var(--f-head);font-size:18px;margin-bottom:14px;color:var(--c-gold)">📋 Conexión Activa</h4>
+        <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center">
+          <div>
+            <div style="font-size:10px;color:var(--c-muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px">URL activa</div>
+            <div class="mono" style="font-size:12px;color:var(--c-text)" id="cfg_url_activa">—</div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--c-muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px">Usuario conectado</div>
+            <div class="mono" style="font-size:12px;color:var(--c-gold)" id="cfg_user_activo">—</div>
+          </div>
+          <div style="flex:1;min-width:200px">
+            <div style="font-size:10px;color:var(--c-muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px">Token (preview)</div>
+            <div class="mono" style="font-size:10px;color:var(--c-green);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:320px" id="cfg_token_preview">—</div>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+            <a id="cfg_swagger_link" href="#" target="_blank" style="display:none;text-decoration:none">
+              <button class="btn" style="white-space:nowrap">📖 Swagger UI (HTTPS)</button>
+            </a>
+          </div>
+        </div>
+        <!-- Alerta HTTPS -->
+        <div style="margin-top:12px;padding:8px 12px;border-radius:var(--radius-sm);background:rgba(229,57,53,0.08);border:1px solid rgba(229,57,53,0.2);font-size:12px;color:#ff6b6b;display:flex;align-items:center;gap:8px">
+          ⚠️ <span>Usa siempre <strong>https://</strong> en la URL — <code>http://</code> causa errores CORS en Swagger. La ruta correcta del Swagger es <code>/swagger-ui/index.html</code> (no <code>/swagger-ui.html</code>)</span>
         </div>
       </div>
     </section>
@@ -1389,10 +1191,9 @@
         <div style="font-size:10px;color:var(--c-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">👤 Cliente</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;">
           <div><div style="font-size:10px;color:var(--c-muted);margin-bottom:2px;">Nombre</div><div style="font-weight:600;" id="ms_cli_nombre">—</div></div>
-          <div><div style="font-size:10px;color:var(--c-muted);margin-bottom:2px;">Nombre Completo</div><div style="font-weight:600;color:var(--c-gold);" id="ms_cli_nombreCompleto">—</div></div>
           <div><div style="font-size:10px;color:var(--c-muted);margin-bottom:2px;">Cédula</div><div class="mono" id="ms_cli_cedula">—</div></div>
           <div><div style="font-size:10px;color:var(--c-muted);margin-bottom:2px;">Teléfono</div><div id="ms_cli_tel">—</div></div>
-          <div style="grid-column:1/-1"><div style="font-size:10px;color:var(--c-muted);margin-bottom:2px;">Dirección</div><div id="ms_cli_dir">—</div></div>
+          <div><div style="font-size:10px;color:var(--c-muted);margin-bottom:2px;">Dirección</div><div id="ms_cli_dir">—</div></div>
         </div>
       </div>
       <div style="background:var(--c-card);border:1px solid var(--c-border);border-radius:8px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
@@ -1407,8 +1208,7 @@
         </div>
       </div>
     </div>
-    <div style="padding:12px 22px;border-top:1px solid var(--c-border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:10px;">
-      <div id="ms_btn_anular_wrap"></div>
+    <div style="padding:12px 22px;border-top:1px solid var(--c-border);text-align:right;flex-shrink:0;">
       <button class="btn btn-primary" onclick="document.getElementById('modalSillas').style.display='none'">Cerrar</button>
     </div>
   </div>
@@ -1686,15 +1486,20 @@
   let _sfHorasActivas = new Set(); // horas seleccionadas por chips
 
   document.addEventListener('DOMContentLoaded', () => {
+    // Populate config section on load
+    const cfgUrl = document.getElementById('cfg_url_activa');
+    const cfgUser = document.getElementById('cfg_user_activo');
+    const cfgToken = document.getElementById('cfg_token_preview');
+    const cfgSwagger = document.getElementById('cfg_swagger_link');
+    const cfgInput = document.getElementById('apiBaseInput');
+    if (cfgUrl && API_BASE) cfgUrl.textContent = API_BASE;
+    if (cfgInput && API_BASE) cfgInput.value = API_BASE;
+    if (cfgUser && sessionStorage.getItem('monarca_email')) cfgUser.textContent = sessionStorage.getItem('monarca_email') + ' (' + (sessionStorage.getItem('monarca_rol')||'USER') + ')';
+    if (cfgToken && JWT_TOKEN) cfgToken.textContent = JWT_TOKEN.substring(0,40) + '...';
+    if (cfgSwagger && API_BASE) { cfgSwagger.href = API_BASE + '/swagger-ui/index.html'; cfgSwagger.style.display = 'inline'; }
+
     const toggle = document.getElementById('mobile-nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
-
-    // Limpiar API_BASE de localhost si viene de otro dispositivo
-    (function() {
-      const saved = localStorage.getItem('monarca_api_base');
-      if (saved && saved.includes('localhost')) localStorage.removeItem('monarca_api_base');
-    })();
-
     function checkMobile() {
       if (!toggle) return;
       const isMob = window.innerWidth <= 768;
@@ -1703,21 +1508,28 @@
     }
     checkMobile();
     window.addEventListener('resize', checkMobile);
-
-    // Cerrar menú al tocar fuera (móvil)
-    document.addEventListener('click', (e) => {
-      if (navMenu && navMenu.classList.contains('open')) {
-        const sidebar = document.querySelector('.sidebar');
-        if (sidebar && !sidebar.contains(e.target)) {
-          navMenu.classList.remove('open');
-        }
-      }
-    });
-
     document.querySelectorAll('.nav-item').forEach(el => {
       el.addEventListener('click', () => navMenu && navMenu.classList.remove('open'));
     });
     document.getElementById('apiBaseInput').value = API_BASE;
+    // Populate cfg_url_activa
+    const cfgUrlA = document.getElementById('cfg_url_activa');
+    if (cfgUrlA && API_BASE) cfgUrlA.textContent = API_BASE + '/api';
+    // Show token card if already logged in
+    if (JWT_TOKEN) {
+      const tokCard = document.getElementById('cfg_token_card');
+      if (tokCard) tokCard.style.display = 'block';
+      const infoUser = document.getElementById('cfg_info_user');
+      const infoRol  = document.getElementById('cfg_info_rol');
+      const tokBox   = document.getElementById('cfg_token_preview_box');
+      const uname = sessionStorage.getItem('monarca_username') || '?';
+      const rol   = sessionStorage.getItem('monarca_rol') || 'USER';
+      if (infoUser) infoUser.textContent = uname;
+      if (infoRol)  infoRol.textContent  = rol;
+      if (tokBox)   tokBox.textContent   = JWT_TOKEN;
+    }
+    // Auto-run diagnostico
+    if (API_BASE) runDiagnostico();
     if (!JWT_TOKEN) {
       document.getElementById('loginScreen').style.opacity = '1';
       document.getElementById('loginScreen').style.visibility = 'visible';
@@ -1763,14 +1575,7 @@
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: document.getElementById('l_user').value, password: document.getElementById('l_pass').value })
       });
-      if (res.status === 429) {
-        const d = await res.json().catch(() => ({}));
-        throw new Error(d.error || 'Demasiados intentos. Espera unos minutos.');
-      }
-      if (!res.ok) {
-        const d = await res.json().catch(() => ({}));
-        throw new Error(d.error || 'Credenciales inválidas');
-      }
+      if (!res.ok) throw new Error("Credenciales inválidas");
       const data = await res.json();
       JWT_TOKEN = data.token;
       sessionStorage.setItem('monarca_token', JWT_TOKEN);
@@ -1794,7 +1599,7 @@
       setTimeout(() => document.getElementById('loginScreen').style.visibility = 'hidden', 500);
       iniciarApp();
       showAlert('Autenticación exitosa.');
-    } catch (e) { showAlert(e.message || 'Fallo de inicio de sesión. Verifica el backend y CORS.', 'error'); }
+    } catch (e) { showAlert('Fallo de inicio de sesión. Verifica el backend y CORS.', 'error'); }
   }
 
   function logout() { sessionStorage.removeItem('monarca_token'); location.reload(); }
@@ -1879,7 +1684,7 @@
     if (viewId === 'reservas')   cargarReservas();
     if (viewId === 'sucursales') { _filtroSucCineId = null; cargarSucursales(); }
     if (viewId === 'usuarios')   cargarUsuarios();
-    if (viewId === 'config')     testConexion();
+    if (viewId === 'config')     { testConexion(); runDiagnostico(); }
   }
 
   /* ══ DASHBOARD ══ */
@@ -1921,17 +1726,13 @@
         const card = document.createElement('div');
         card.className = 'card funcion-card';
         card.innerHTML = `
-          <div class="funcion-header">
-            ${peli.posterUrl ? `<img src="${peli.posterUrl}" class="poster-img" alt="${peli.nombre}">` : ''}
-            <h3>${peli.nombre.toUpperCase()}</h3>
-          </div>
+          <div class="funcion-header"><h3>${peli.nombre.toUpperCase()}</h3></div>
           <div class="funcion-body">
             <div class="funcion-meta">
-              <span class="badge badge-blue">${peli.clasificacion || '—'}</span>
+              <span class="badge badge-blue">${peli.clasificacion}</span>
               <span class="badge" style="background:var(--c-surface);border:1px solid var(--c-border);">${peli.duracionMin||'?'}M</span>
               <span class="badge" style="background:var(--c-surface);border:1px solid var(--c-border);">${(peli.genero||'').toUpperCase()}</span>
             </div>
-            ${peli.descripcion ? `<p style="font-size:12px;color:var(--c-text-muted);margin-bottom:10px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${peli.descripcion}</p>` : ''}
             <button class="btn btn-primary w-full" style="padding:12px;font-size:14px;margin-top:auto;" onclick="abrirSeleccionFuncion(${peli.movieId})">
               Reservar Entrada
             </button>
@@ -1975,21 +1776,13 @@
       tbody.innerHTML = peliculasCache.map(p => `
         <tr>
           <td class="mono text-muted">#${p.movieId}</td>
-          <td>
-            ${p.posterUrl
-              ? `<img src="${p.posterUrl}" class="poster-thumb" alt="poster">`
-              : `<div class="poster-placeholder" title="Sin poster" onclick="cargarEdicionPelicula(${p.movieId})">🎬</div>`}
-          </td>
           <td style="font-weight:600;">${p.nombre}</td>
           <td>${p.genero}</td>
           <td>${p.duracionMin} min</td>
           <td><span class="badge badge-blue">${p.clasificacion}</span></td>
           <td>
-            <div style="display:flex; gap: 4px; flex-wrap:wrap;">
+            <div style="display:flex; gap: 4px;">
               <button class="btn btn-sm" onclick="cargarEdicionPelicula(${p.movieId})">Editar</button>
-              ${p.posterUrl
-                ? `<button class="poster-del-btn" onclick="eliminarPosterPelicula(${p.movieId})">🗑 Poster</button>`
-                : ''}
               <button class="btn btn-sm btn-danger" onclick="eliminarEntidad('/peliculas/${p.movieId}', cargarPeliculas)">Eliminar</button>
             </div>
           </td>
@@ -1999,129 +1792,40 @@
     }
   }
 
-  let _posterBase64 = null; // poster seleccionado en el form pero aún no guardado
-
   function cargarEdicionPelicula(id) {
     const p = peliculasCache.find(x => x.movieId == id);
     if (!p) return;
     document.getElementById('p_id').value = p.movieId;
     document.getElementById('p_titulo').value = p.nombre;
-    document.getElementById('p_genero').value = p.genero || '';
+    document.getElementById('p_genero').value = p.genero;
     document.getElementById('p_duracion').value = p.duracionMin || '';
-    document.getElementById('p_clasif').value = p.clasificacion || 'A';
-    document.getElementById('p_desc').value = p.descripcion || '';
+    document.getElementById('p_clasif').value = p.clasificacion;
     document.getElementById('lbl-form-pelicula').innerText = "Editar Título #" + p.movieId;
     document.getElementById('btn-save-p').innerText = "Actualizar Película";
     document.getElementById('btn-cancel-p').style.display = "inline-flex";
-    // Mostrar poster actual si existe
-    _posterBase64 = null;
-    if (p.posterUrl) {
-      mostrarPosterPreview(p.posterUrl);
-    } else {
-      limpiarPosterForm();
-    }
     document.getElementById('p_titulo').focus();
-    document.getElementById('formPelicula').scrollIntoView({ behavior: 'smooth' });
-  }
-
-  function mostrarPosterPreview(dataUrl, filename) {
-    const prev = document.getElementById('posterPreview');
-    prev.innerHTML = `
-      <img src="${dataUrl}" style="max-height:150px;border-radius:6px;margin-top:4px;display:block;margin-left:auto;margin-right:auto;">
-      ${filename ? `<div style="font-size:10px;color:var(--c-text-muted);margin-top:4px;">${filename}</div>` : ''}
-      <button type="button" onclick="document.getElementById('posterFileInput').click()" style="margin-top:6px;background:none;border:1px solid var(--c-border);border-radius:6px;padding:3px 10px;font-size:11px;color:var(--c-text-muted);cursor:pointer;">🔄 Cambiar</button>`;
-    document.getElementById('btn-clear-poster').style.display = 'block';
-  }
-
-  function limpiarPosterForm() {
-    _posterBase64 = null;
-    document.getElementById('posterPreview').innerHTML = `
-      <div style="font-size:28px;margin-bottom:4px;">🖼️</div>
-      <div style="font-size:12px;margin-bottom:10px;color:var(--c-text-muted);">JPG · PNG · WEBP · GIF</div>
-      <button type="button" onclick="document.getElementById('posterFileInput').click()" style="background:var(--c-primary);color:#000;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">📁 Elegir archivo</button>
-      <div style="font-size:10px;margin-top:6px;color:var(--c-text-muted);">o arrastra la imagen aquí</div>`;
-    document.getElementById('btn-clear-poster').style.display = 'none';
-    document.getElementById('posterFileInput').value = '';
-  }
-
-  function handlePosterFile(input) {
-    const file = input.files ? input.files[0] : input;
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      showAlert('Solo se permiten imágenes (JPG, PNG, WEBP, GIF, etc.)', 'error');
-      return;
-    }
-    if (file.size > 2 * 1024 * 1024) {
-      showAlert('El archivo supera 2 MB. Elige una imagen más pequeña.', 'error');
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = ev => {
-      _posterBase64 = ev.target.result;
-      mostrarPosterPreview(_posterBase64, file.name);
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function handlePosterDrop(e) {
-    e.preventDefault();
-    document.getElementById('posterDropzone').classList.remove('drag-over');
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      showAlert('Solo se permiten imágenes (JPG, PNG, WEBP, GIF, etc.)', 'error');
-      return;
-    }
-    if (file.size > 2 * 1024 * 1024) {
-      showAlert('El archivo supera 2 MB. Elige una imagen más pequeña.', 'error');
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = ev => { _posterBase64 = ev.target.result; mostrarPosterPreview(_posterBase64); };
-    reader.readAsDataURL(file);
-  }
-
-  async function eliminarPosterPelicula(id) {
-    if (!confirm('¿Eliminar el poster de esta película?')) return;
-    try {
-      await api('/peliculas/' + id + '/poster', 'DELETE');
-      showAlert('Poster eliminado.');
-      cargarPeliculas();
-    } catch(e) { showAlert('Error al eliminar poster: ' + e.message, 'error'); }
   }
 
   function cancelarEdicionPelicula() {
     document.getElementById('p_id').value = "";
     document.getElementById('formPelicula').reset();
     document.getElementById('lbl-form-pelicula').innerText = "Registrar Nuevo Título";
-    document.getElementById('btn-save-p').innerText = "Guardar Película";
+    document.getElementById('btn-save-p').innerText = "Guardar Película en Catálogo";
     document.getElementById('btn-cancel-p').style.display = "none";
-    limpiarPosterForm();
   }
 
   async function savePelicula(e) {
     e.preventDefault();
     const id = document.getElementById('p_id').value;
     const p = {
-      nombre:       document.getElementById('p_titulo').value,
-      genero:       document.getElementById('p_genero').value,
-      duracionMin:  parseInt(document.getElementById('p_duracion').value),
-      clasificacion:document.getElementById('p_clasif').value,
-      descripcion:  document.getElementById('p_desc').value || null
+      nombre: document.getElementById('p_titulo').value,
+      genero: document.getElementById('p_genero').value,
+      duracionMin: parseInt(document.getElementById('p_duracion').value),
+      clasificacion: document.getElementById('p_clasif').value
     };
     try {
-      let savedId = id;
-      if (id) {
-        await api(`/peliculas/${id}`, 'PUT', p);
-      } else {
-        const created = await api('/peliculas', 'POST', p);
-        savedId = created.movieId;
-      }
-      // Si hay poster nuevo seleccionado, subirlo
-      if (_posterBase64 && savedId) {
-        await api(`/peliculas/${savedId}/poster`, 'POST', { posterUrl: _posterBase64 });
-      }
-      showAlert(id ? 'Película actualizada.' : 'Película guardada.');
+      if (id) { await api(`/peliculas/${id}`, 'PUT', p); showAlert('Película actualizada.'); }
+      else    { await api('/peliculas', 'POST', p);       showAlert('Película guardada.'); }
       cancelarEdicionPelicula();
       cargarPeliculas();
       cargarFunciones();
@@ -2465,9 +2169,12 @@
       (transacciones || []).forEach(t => {
         if (t.reserva?.resCode) transMap[t.reserva.resCode] = t;
       });
-      // El backend ya filtra por username (JWT) para usuarios no-admin,
-      // así que usamos la lista tal cual sin filtro adicional en el cliente.
-      const reservasFiltradas = reservas;
+      const reservasFiltradas = isAdmin
+        ? reservas
+        : reservas.filter(r => {
+            const doc = r.cliente?.cliDoc || r.cliDoc || '';
+            return doc === miDoc;
+          });
       reservasBaseCache = reservasFiltradas.map(r => {
         const t = transMap[r.resCode];
         if (t) {
@@ -2562,12 +2269,6 @@
       return `
         <tr>
           <td class="mono" style="font-weight:bold;font-size:15px;white-space:nowrap">TK-${r.resCode}</td>
-          <td>
-            <div style="display:flex;gap:4px;align-items:center;white-space:nowrap">
-              <button class="btn btn-sm" title="Ver detalle" onclick="verDetalleReserva(${r.resCode})" style="font-size:15px;padding:5px 10px">👁</button>
-              ${r.estado==='CONFIRMADA' ? `<button class="btn btn-sm btn-danger" onclick="cancelarReserva(${r.resCode})" style="white-space:nowrap">✕ Anular</button>` : ''}
-            </div>
-          </td>
           <td class="mono text-muted" style="font-size:12px;white-space:nowrap">${fecha}</td>
           <td>${cliNombre}<br><span class="mono text-muted" style="font-size:10px">CC: ${cliDoc}</span></td>
           <td>
@@ -2589,6 +2290,12 @@
           <td class="mono" style="font-weight:600">$${(r.total||0).toLocaleString()}</td>
           <td>${metodoHtml}</td>
           <td><span class="badge ${badgeCls}">${r.estado}</span></td>
+          <td style="position:sticky;right:0;background:var(--c-surface);z-index:1">
+            <div style="display:flex;gap:4px;align-items:center;white-space:nowrap">
+              <button class="btn btn-sm" title="Ver detalle" onclick="verDetalleReserva(${r.resCode})" style="font-size:15px;padding:4px 8px">👁</button>
+              ${r.estado==='CONFIRMADA' ? `<button class="btn btn-sm btn-danger" onclick="cancelarReserva(${r.resCode})">Anular</button>` : ''}
+            </div>
+          </td>
         </tr>`;
     }).join('');
   }
@@ -3627,7 +3334,7 @@
       h += '</div>';
     }
 
-    grid.innerHTML = h;
+    grid.innerHTML = '<div style="overflow-x:auto;max-width:100%;padding-bottom:4px">' + h + '</div>';
   }
 
   async function cargarSalasAdmin() {
@@ -3740,10 +3447,169 @@
 
   /* ══ CONFIG ══ */
   function guardarConfig() {
-    API_BASE = document.getElementById('apiBaseInput').value.trim();
+    API_BASE = document.getElementById('apiBaseInput').value.trim().replace(/\/api$/, '').replace(/\/$/, '');
     localStorage.setItem('monarca_api_base', API_BASE);
-    showAlert('Configuración de URL guardada.');
+    showAlert('URL guardada: ' + API_BASE);
+    const urlEl = document.getElementById('cfg_url_activa');
+    if (urlEl) urlEl.textContent = API_BASE + '/api';
+    runDiagnostico();
     testConexion();
+  }
+
+  /* ── Diagnóstico en tiempo real ── */
+  function _setDot(id, state) {
+    const el = document.getElementById(id); if (!el) return;
+    const colors = { ok:'var(--c-green)', err:'var(--c-red)', idle:'#888', loading:'var(--c-gold)' };
+    el.style.background = colors[state] || '#888';
+  }
+  function _setLbl(id, text, color) {
+    const el = document.getElementById(id); if (!el) return;
+    el.textContent = text; el.style.color = color || 'var(--c-text)';
+  }
+
+  async function runDiagnostico() {
+    const base = API_BASE || localStorage.getItem('monarca_api_base') || '';
+    if (!base) return;
+    // Server
+    _setDot('dot-srv','loading'); _setLbl('lbl-srv','Verificando servidor...','var(--c-muted)');
+    try {
+      const r = await fetch(base + '/api/peliculas', { signal: AbortSignal.timeout(7000) });
+      _setDot('dot-srv','ok'); _setLbl('lbl-srv','Servidor activo · HTTP ' + r.status,'var(--c-green)');
+    } catch(e) {
+      _setDot('dot-srv','err'); _setLbl('lbl-srv','Sin respuesta del servidor','var(--c-red)');
+    }
+    // Swagger
+    _setDot('dot-swg','loading'); _setLbl('lbl-swg','Verificando Swagger...','var(--c-muted)');
+    try {
+      await fetch(base + '/swagger-ui/index.html', { mode:'no-cors', signal:AbortSignal.timeout(6000) });
+      _setDot('dot-swg','ok'); _setLbl('lbl-swg','Swagger UI accesible · /swagger-ui/index.html','var(--c-green)');
+    } catch(e) {
+      _setDot('dot-swg','err'); _setLbl('lbl-swg','Error de red al verificar Swagger','var(--c-red)');
+    }
+    // JWT
+    if (JWT_TOKEN) {
+      _setDot('dot-jwt','ok');
+      _setLbl('lbl-jwt','Token activo · @' + (sessionStorage.getItem('monarca_username')||'?'),'var(--c-green)');
+    } else {
+      _setDot('dot-jwt','idle'); _setLbl('lbl-jwt','Sin token — inicia sesión abajo','var(--c-muted)');
+    }
+    // Swagger link
+    const swLink = document.getElementById('cfg_swagger_link');
+    if (swLink) { swLink.href = base + '/swagger-ui/index.html'; swLink.style.display = 'inline'; }
+  }
+
+  function toggleCfgPass() {
+    const input = document.getElementById('cfg_password');
+    const eye   = document.getElementById('cfg_pass_eye');
+    if (!input) return;
+    if (input.type === 'password') { input.type = 'text'; if(eye) eye.textContent = '🙈'; }
+    else { input.type = 'password'; if(eye) eye.textContent = '👁'; }
+  }
+
+  async function loginDesdeConfig() {
+    const username = document.getElementById('cfg_username').value.trim();
+    const password = document.getElementById('cfg_password').value.trim();
+    const statusEl = document.getElementById('cfg_status');
+
+    if (!username || !password) {
+      showAlert('Ingresa usuario y contraseña.', 'error'); return;
+    }
+    if (!API_BASE) {
+      showAlert('Primero guarda la URL del servidor.', 'error'); return;
+    }
+
+    statusEl.style.display = 'block';
+    statusEl.style.color = 'var(--c-muted)';
+    statusEl.textContent = '⏳ Conectando...';
+
+    // Ocultar Swagger mientras reconecta
+    const swaggerWrap = document.getElementById('cfg_swagger_link');
+    if (swaggerWrap) swaggerWrap.style.display = 'none';
+
+    try {
+      const res = await fetch(API_BASE + '/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      let data = {};
+      const ct = res.headers.get('content-type') || '';
+      if (ct.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const txt = await res.text();
+        throw new Error('Respuesta inesperada del servidor: ' + txt.slice(0, 80));
+      }
+
+      if (res.ok && data.token) {
+        JWT_TOKEN = data.token;
+        sessionStorage.setItem('monarca_token', JWT_TOKEN);
+        sessionStorage.setItem('monarca_rol', data.rol || 'USER');
+        sessionStorage.setItem('monarca_username', data.username || username);
+        sessionStorage.setItem('monarca_email', data.email || username);
+
+        statusEl.style.color = 'var(--c-green)';
+        statusEl.textContent = '✅ Conectado correctamente como ' + username;
+
+        // Poblar estado de la conexión
+        const urlEl   = document.getElementById('cfg_url_activa');
+        const userEl  = document.getElementById('cfg_user_activo');
+        const tokenEl = document.getElementById('cfg_token_preview');
+        if (urlEl)   urlEl.textContent   = API_BASE + '/api';
+        if (userEl)  userEl.textContent  = username + ' (' + (data.rol || 'USER') + ')';
+        if (tokenEl) tokenEl.textContent = JWT_TOKEN.substring(0, 40) + '...';
+        // Update new token card
+        const tokCard = document.getElementById('cfg_token_card');
+        if (tokCard) { tokCard.style.display = 'block'; }
+        const infoUser = document.getElementById('cfg_info_user');
+        const infoRol  = document.getElementById('cfg_info_rol');
+        const tokBox   = document.getElementById('cfg_token_preview_box');
+        if (infoUser) infoUser.textContent = username;
+        if (infoRol)  infoRol.textContent  = data.rol || 'USER';
+        if (tokBox)   tokBox.textContent   = JWT_TOKEN;
+        runDiagnostico();
+
+        // Mostrar botón Swagger SOLO tras conectar con éxito
+        if (swaggerWrap) {
+          swaggerWrap.href = API_BASE + '/swagger-ui/index.html';
+          swaggerWrap.style.display = 'inline';
+        }
+
+        // Limpiar campo de contraseña por seguridad
+        document.getElementById('cfg_password').value = '';
+        document.getElementById('cfg_password').type  = 'password';
+        const eye = document.getElementById('cfg_pass_eye');
+        if (eye) eye.textContent = '👁';
+
+        setStatus(true);
+        document.getElementById('userDisplay').innerText = '@' + username;
+        showAlert('✅ Token obtenido — API conectada como ' + username);
+        aplicarNavPorRol();
+        cargarDashboard();
+
+      } else {
+        statusEl.style.color = 'var(--c-red)';
+        statusEl.textContent = '❌ ' + (data.message || data.error || 'Credenciales incorrectas');
+        showAlert('Error al conectar: credenciales inválidas', 'error');
+      }
+    } catch(e) {
+      statusEl.style.color = 'var(--c-red)';
+      statusEl.textContent = '❌ No se pudo conectar al servidor';
+      showAlert('Error de conexión: ' + e.message, 'error');
+    }
+  }
+
+  function copiarTokenCfg() {
+    if (!JWT_TOKEN) return;
+    navigator.clipboard.writeText(JWT_TOKEN).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = JWT_TOKEN; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    });
+    const btn = document.getElementById('cfg_copy_btn');
+    if (btn) { btn.textContent = '✅ Copiado!'; setTimeout(() => { btn.textContent = '📋 Copiar'; }, 2000); }
+    showAlert('Token copiado al portapapeles.');
   }
 
   async function testConexion() {
@@ -3759,21 +3625,6 @@
   function verDetalleReserva(resCode) {
     const r = reservasBaseCache?.find(x => x.resCode == resCode);
     if (!r) { showAlert('Reserva no encontrada.','error'); return; }
-
-    // Cargar usuarios en background para obtener nombre completo
-    if (!usuariosCache || !usuariosCache.length) {
-      api('/usuarios').then(data => {
-        usuariosCache = data;
-        // Re-poblar nombre completo si ya está abierto el modal
-        const cliDoc = r.cliente?.numeroCliente || r.contNum || '';
-        const cliUsername = r.nombre || r.cliente?.nombreCliente || '';
-        const uMatch = data.find(u => u.username === cliUsername || u.cedula === cliDoc);
-        if (uMatch?.nombreCompleto) {
-          const ncEl = document.getElementById('ms_cli_nombreCompleto');
-          if (ncEl) ncEl.textContent = uMatch.nombreCompleto;
-        }
-      }).catch(() => {});
-    }
 
     // Header
     document.getElementById('ms_titulo').textContent = 'TK-' + r.resCode;
@@ -3800,30 +3651,10 @@
             : '<span style="color:var(--c-muted);font-size:13px">Sin sillas registradas</span>';
 
     // Cliente
-    const cliUsername = r.nombre || r.cliente?.nombreCliente || '—';
-    document.getElementById('ms_cli_nombre').textContent = cliUsername;
-    const hdr = document.getElementById('ms_cli_header'); if(hdr) hdr.textContent = cliUsername;
-
-    // Nombre completo — buscar en usuariosCache por username o cédula
-    const cliDoc = r.cliente?.numeroCliente || r.contNum || '';
-    let nombreCompleto = '—';
-    if (usuariosCache && usuariosCache.length) {
-      const uMatch = usuariosCache.find(u =>
-        u.username === cliUsername ||
-        u.cedula === cliDoc ||
-        u.nombreCompleto?.toLowerCase() === cliUsername.toLowerCase()
-      );
-      if (uMatch?.nombreCompleto) nombreCompleto = uMatch.nombreCompleto;
-    }
-    // Si no encontró en cache, intentar con el campo del cliente directamente
-    if (nombreCompleto === '—' && r.cliente?.nombreCliente && r.cliente.nombreCliente !== cliUsername) {
-      nombreCompleto = r.cliente.nombreCliente;
-    }
-    const ncEl = document.getElementById('ms_cli_nombreCompleto');
-    if (ncEl) ncEl.textContent = nombreCompleto;
-
-    document.getElementById('ms_cli_cedula').textContent  = cliDoc || '—';
-    document.getElementById('ms_cli_tel').textContent     = r.cliente?.telefonoCliente || r.cliente?.numeroCliente && '' || '—';
+    document.getElementById('ms_cli_nombre').textContent = r.nombre || r.cliente?.nombreCliente || '—';
+    const hdr = document.getElementById('ms_cli_header'); if(hdr) hdr.textContent = r.nombre || r.cliente?.nombreCliente || '';
+    document.getElementById('ms_cli_cedula').textContent  = r.cliente?.numeroCliente || r.contNum || '—';
+    document.getElementById('ms_cli_tel').textContent     = r.cliente?.telefonoCliente || '—';
     document.getElementById('ms_cli_dir').textContent     = r.cliente?.direccionCliente || '—';
 
     // Total & estado
@@ -3853,23 +3684,6 @@
     }
 
     document.getElementById('modalSillas').style.display = 'flex';
-
-    // Botón Anular — solo si está CONFIRMADA
-    const btnWrap = document.getElementById('ms_btn_anular_wrap');
-    if (r.estado === 'CONFIRMADA') {
-      btnWrap.innerHTML = `
-        <button class="btn btn-danger" onclick="anularDesdeModal(${r.resCode})" style="gap:6px;">
-          🚫 Anular Tiquete
-        </button>`;
-    } else {
-      btnWrap.innerHTML = '';
-    }
-  }
-
-  async function anularDesdeModal(resCode) {
-    if (!confirm(`¿Anular el tiquete TK-${resCode}? Se liberarán los asientos y no se puede deshacer.`)) return;
-    document.getElementById('modalSillas').style.display = 'none';
-    await cancelarReserva(resCode);
   }
 
   /* ══ TOAST ══ */

@@ -1050,9 +1050,12 @@
     <!-- CONFIGURACIÓN API -->
     <section id="view-config" class="view-section">
       <div class="section-header">
-        <div class="section-title"><h2>Configuración de Conexión</h2><p>Conecta la app con tu servidor Spring Boot</p></div>
+        <div class="section-title"><h2>Configuración de Conexión</h2><p>Conecta la app con tu servidor Spring Boot y obtén tu token JWT</p></div>
       </div>
-      <div class="grid-2" style="max-width:900px">
+
+      <!-- Fila 1: URL + Diagnóstico en tiempo real -->
+      <div class="grid-2" style="max-width:1100px;margin-bottom:20px">
+
         <!-- URL del API -->
         <div class="card">
           <h4 style="font-family:var(--f-head);font-size:18px;margin-bottom:16px;color:var(--c-gold)">🌐 URL del Servidor</h4>
@@ -1060,11 +1063,37 @@
             <label>URL Base del API REST</label>
             <input type="text" id="apiBaseInput" class="mono" placeholder="https://tu-app.railway.app">
           </div>
-          <p style="color:var(--c-muted);font-size:11px;margin-bottom:16px">Sin '/' al final. Ejemplo: https://monarca-production-3763.up.railway.app</p>
+          <p style="color:var(--c-muted);font-size:11px;margin-bottom:16px">Sin <code>/api</code> ni <code>/</code> al final. Ej: <code>https://monarca-production-3763.up.railway.app</code></p>
           <button class="btn btn-primary w-full" onclick="guardarConfig()">Guardar URL</button>
         </div>
 
-        <!-- Login automático -->
+        <!-- Estado en tiempo real -->
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <h4 style="font-family:var(--f-head);font-size:18px;color:var(--c-gold);margin:0">📡 Diagnóstico</h4>
+            <button class="btn btn-sm" onclick="runDiagnostico()">↻ Verificar</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--c-card);border-radius:var(--radius-sm)">
+              <span id="dot-srv" style="width:9px;height:9px;border-radius:50%;background:#888;flex-shrink:0;transition:background 0.3s"></span>
+              <span id="lbl-srv" style="font-size:13px;color:var(--c-muted)">Verificando servidor...</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--c-card);border-radius:var(--radius-sm)">
+              <span id="dot-swg" style="width:9px;height:9px;border-radius:50%;background:#888;flex-shrink:0;transition:background 0.3s"></span>
+              <span id="lbl-swg" style="font-size:13px;color:var(--c-muted)">Verificando Swagger UI...</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--c-card);border-radius:var(--radius-sm)">
+              <span id="dot-jwt" style="width:9px;height:9px;border-radius:50%;background:#888;flex-shrink:0;transition:background 0.3s"></span>
+              <span id="lbl-jwt" style="font-size:13px;color:var(--c-muted)">Token JWT pendiente</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fila 2: Login + Token obtenido -->
+      <div class="grid-2" style="max-width:1100px;margin-bottom:20px">
+
+        <!-- Login -->
         <div class="card">
           <h4 style="font-family:var(--f-head);font-size:18px;margin-bottom:16px;color:var(--c-gold)">🔑 Autenticación</h4>
           <div class="input-group">
@@ -1078,32 +1107,56 @@
               <button type="button" id="cfg_pass_eye" onclick="toggleCfgPass()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--c-muted);cursor:pointer;font-size:16px;padding:0;line-height:1">👁</button>
             </div>
           </div>
-          <button class="btn btn-primary w-full" onclick="loginDesdeConfig()">Conectar y Obtener Token</button>
-          <div id="cfg_status" style="margin-top:12px;font-size:12px;font-family:var(--f-mono);display:none"></div>
+          <button class="btn btn-primary w-full" id="cfg_login_btn" onclick="loginDesdeConfig()">Conectar y Obtener Token</button>
+          <div id="cfg_status" style="margin-top:12px;font-size:12px;font-family:var(--f-mono);display:none;padding:8px 12px;border-radius:var(--radius-sm);background:var(--c-card)"></div>
         </div>
 
-        <!-- Info token activo -->
-        <div class="card" style="grid-column:1/-1">
-          <h4 style="font-family:var(--f-head);font-size:18px;margin-bottom:12px;color:var(--c-gold)">📋 Estado de la Conexión</h4>
-          <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
-            <div>
-              <div style="font-size:11px;color:var(--c-muted);margin-bottom:4px">URL ACTIVA</div>
-              <div class="mono" style="font-size:12px;color:var(--c-text)" id="cfg_url_activa">—</div>
+        <!-- Token obtenido -->
+        <div class="card" id="cfg_token_card" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <h4 style="font-family:var(--f-head);font-size:18px;color:var(--c-green);margin:0">✅ Token JWT</h4>
+            <button class="btn btn-sm" onclick="copiarTokenCfg()" id="cfg_copy_btn">📋 Copiar</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;font-size:12px">
+            <div style="background:var(--c-card);padding:8px 10px;border-radius:var(--radius-sm)">
+              <div style="color:var(--c-muted);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px">Usuario</div>
+              <div class="mono" id="cfg_info_user" style="color:var(--c-gold);font-weight:600">—</div>
             </div>
-            <div>
-              <div style="font-size:11px;color:var(--c-muted);margin-bottom:4px">USUARIO CONECTADO</div>
-              <div class="mono" style="font-size:12px;color:var(--c-gold)" id="cfg_user_activo">—</div>
-            </div>
-            <div>
-              <div style="font-size:11px;color:var(--c-muted);margin-bottom:4px">TOKEN</div>
-              <div class="mono" style="font-size:11px;color:var(--c-green)" id="cfg_token_preview">—</div>
-            </div>
-            <div style="margin-left:auto">
-              <a id="cfg_swagger_link" href="#" target="_blank" style="display:none" id2="cfg_swagger_a">
-                <button class="btn">📖 Abrir Swagger UI</button>
-              </a>
+            <div style="background:var(--c-card);padding:8px 10px;border-radius:var(--radius-sm)">
+              <div style="color:var(--c-muted);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px">Rol</div>
+              <div class="mono" id="cfg_info_rol" style="color:var(--c-text);font-weight:600">—</div>
             </div>
           </div>
+          <div style="background:var(--c-bg);border:1px solid var(--c-border);border-radius:var(--radius-sm);padding:10px 12px;font-family:var(--f-mono);font-size:10px;word-break:break-all;color:var(--c-muted);max-height:72px;overflow:hidden;line-height:1.4" id="cfg_token_preview_box">—</div>
+          <p style="font-size:11px;color:var(--c-muted);margin-top:8px">Pega este token en el botón <strong style="color:var(--c-gold)">Authorize 🔓</strong> de Swagger UI</p>
+        </div>
+      </div>
+
+      <!-- Fila 3: Info conexión activa + acceso Swagger -->
+      <div class="card" style="max-width:1100px">
+        <h4 style="font-family:var(--f-head);font-size:18px;margin-bottom:14px;color:var(--c-gold)">📋 Conexión Activa</h4>
+        <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center">
+          <div>
+            <div style="font-size:10px;color:var(--c-muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px">URL activa</div>
+            <div class="mono" style="font-size:12px;color:var(--c-text)" id="cfg_url_activa">—</div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--c-muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px">Usuario conectado</div>
+            <div class="mono" style="font-size:12px;color:var(--c-gold)" id="cfg_user_activo">—</div>
+          </div>
+          <div style="flex:1;min-width:200px">
+            <div style="font-size:10px;color:var(--c-muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px">Token (preview)</div>
+            <div class="mono" style="font-size:10px;color:var(--c-green);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:320px" id="cfg_token_preview">—</div>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+            <a id="cfg_swagger_link" href="#" target="_blank" style="display:none;text-decoration:none">
+              <button class="btn" style="white-space:nowrap">📖 Swagger UI (HTTPS)</button>
+            </a>
+          </div>
+        </div>
+        <!-- Alerta HTTPS -->
+        <div style="margin-top:12px;padding:8px 12px;border-radius:var(--radius-sm);background:rgba(229,57,53,0.08);border:1px solid rgba(229,57,53,0.2);font-size:12px;color:#ff6b6b;display:flex;align-items:center;gap:8px">
+          ⚠️ <span>Usa siempre <strong>https://</strong> en la URL — <code>http://</code> causa errores CORS en Swagger. La ruta correcta del Swagger es <code>/swagger-ui/index.html</code> (no <code>/swagger-ui.html</code>)</span>
         </div>
       </div>
     </section>
@@ -1443,7 +1496,7 @@
     if (cfgInput && API_BASE) cfgInput.value = API_BASE;
     if (cfgUser && sessionStorage.getItem('monarca_email')) cfgUser.textContent = sessionStorage.getItem('monarca_email') + ' (' + (sessionStorage.getItem('monarca_rol')||'USER') + ')';
     if (cfgToken && JWT_TOKEN) cfgToken.textContent = JWT_TOKEN.substring(0,40) + '...';
-    if (cfgSwagger && API_BASE) { cfgSwagger.href = API_BASE + '/swagger-ui.html'; cfgSwagger.style.display = 'inline'; }
+    if (cfgSwagger && API_BASE) { cfgSwagger.href = API_BASE + '/swagger-ui/index.html'; cfgSwagger.style.display = 'inline'; }
 
     const toggle = document.getElementById('mobile-nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
@@ -1459,6 +1512,24 @@
       el.addEventListener('click', () => navMenu && navMenu.classList.remove('open'));
     });
     document.getElementById('apiBaseInput').value = API_BASE;
+    // Populate cfg_url_activa
+    const cfgUrlA = document.getElementById('cfg_url_activa');
+    if (cfgUrlA && API_BASE) cfgUrlA.textContent = API_BASE + '/api';
+    // Show token card if already logged in
+    if (JWT_TOKEN) {
+      const tokCard = document.getElementById('cfg_token_card');
+      if (tokCard) tokCard.style.display = 'block';
+      const infoUser = document.getElementById('cfg_info_user');
+      const infoRol  = document.getElementById('cfg_info_rol');
+      const tokBox   = document.getElementById('cfg_token_preview_box');
+      const uname = sessionStorage.getItem('monarca_username') || '?';
+      const rol   = sessionStorage.getItem('monarca_rol') || 'USER';
+      if (infoUser) infoUser.textContent = uname;
+      if (infoRol)  infoRol.textContent  = rol;
+      if (tokBox)   tokBox.textContent   = JWT_TOKEN;
+    }
+    // Auto-run diagnostico
+    if (API_BASE) runDiagnostico();
     if (!JWT_TOKEN) {
       document.getElementById('loginScreen').style.opacity = '1';
       document.getElementById('loginScreen').style.visibility = 'visible';
@@ -1613,7 +1684,7 @@
     if (viewId === 'reservas')   cargarReservas();
     if (viewId === 'sucursales') { _filtroSucCineId = null; cargarSucursales(); }
     if (viewId === 'usuarios')   cargarUsuarios();
-    if (viewId === 'config')     testConexion();
+    if (viewId === 'config')     { testConexion(); runDiagnostico(); }
   }
 
   /* ══ DASHBOARD ══ */
@@ -3376,14 +3447,55 @@
 
   /* ══ CONFIG ══ */
   function guardarConfig() {
-    API_BASE = document.getElementById('apiBaseInput').value.trim().replace(/\/$/, '');
+    API_BASE = document.getElementById('apiBaseInput').value.trim().replace(/\/api$/, '').replace(/\/$/, '');
     localStorage.setItem('monarca_api_base', API_BASE);
     showAlert('URL guardada: ' + API_BASE);
     const urlEl = document.getElementById('cfg_url_activa');
-    if (urlEl) urlEl.textContent = API_BASE;
-    const swLink = document.getElementById('cfg_swagger_link');
-    if (swLink) { swLink.href = API_BASE + '/swagger-ui.html'; swLink.style.display = 'inline'; }
+    if (urlEl) urlEl.textContent = API_BASE + '/api';
+    runDiagnostico();
     testConexion();
+  }
+
+  /* ── Diagnóstico en tiempo real ── */
+  function _setDot(id, state) {
+    const el = document.getElementById(id); if (!el) return;
+    const colors = { ok:'var(--c-green)', err:'var(--c-red)', idle:'#888', loading:'var(--c-gold)' };
+    el.style.background = colors[state] || '#888';
+  }
+  function _setLbl(id, text, color) {
+    const el = document.getElementById(id); if (!el) return;
+    el.textContent = text; el.style.color = color || 'var(--c-text)';
+  }
+
+  async function runDiagnostico() {
+    const base = API_BASE || localStorage.getItem('monarca_api_base') || '';
+    if (!base) return;
+    // Server
+    _setDot('dot-srv','loading'); _setLbl('lbl-srv','Verificando servidor...','var(--c-muted)');
+    try {
+      const r = await fetch(base + '/api/peliculas', { signal: AbortSignal.timeout(7000) });
+      _setDot('dot-srv','ok'); _setLbl('lbl-srv','Servidor activo · HTTP ' + r.status,'var(--c-green)');
+    } catch(e) {
+      _setDot('dot-srv','err'); _setLbl('lbl-srv','Sin respuesta del servidor','var(--c-red)');
+    }
+    // Swagger
+    _setDot('dot-swg','loading'); _setLbl('lbl-swg','Verificando Swagger...','var(--c-muted)');
+    try {
+      await fetch(base + '/swagger-ui/index.html', { mode:'no-cors', signal:AbortSignal.timeout(6000) });
+      _setDot('dot-swg','ok'); _setLbl('lbl-swg','Swagger UI accesible · /swagger-ui/index.html','var(--c-green)');
+    } catch(e) {
+      _setDot('dot-swg','err'); _setLbl('lbl-swg','Error de red al verificar Swagger','var(--c-red)');
+    }
+    // JWT
+    if (JWT_TOKEN) {
+      _setDot('dot-jwt','ok');
+      _setLbl('lbl-jwt','Token activo · @' + (sessionStorage.getItem('monarca_username')||'?'),'var(--c-green)');
+    } else {
+      _setDot('dot-jwt','idle'); _setLbl('lbl-jwt','Sin token — inicia sesión abajo','var(--c-muted)');
+    }
+    // Swagger link
+    const swLink = document.getElementById('cfg_swagger_link');
+    if (swLink) { swLink.href = base + '/swagger-ui/index.html'; swLink.style.display = 'inline'; }
   }
 
   function toggleCfgPass() {
@@ -3444,13 +3556,23 @@
         const urlEl   = document.getElementById('cfg_url_activa');
         const userEl  = document.getElementById('cfg_user_activo');
         const tokenEl = document.getElementById('cfg_token_preview');
-        if (urlEl)   urlEl.textContent   = API_BASE;
+        if (urlEl)   urlEl.textContent   = API_BASE + '/api';
         if (userEl)  userEl.textContent  = username + ' (' + (data.rol || 'USER') + ')';
         if (tokenEl) tokenEl.textContent = JWT_TOKEN.substring(0, 40) + '...';
+        // Update new token card
+        const tokCard = document.getElementById('cfg_token_card');
+        if (tokCard) { tokCard.style.display = 'block'; }
+        const infoUser = document.getElementById('cfg_info_user');
+        const infoRol  = document.getElementById('cfg_info_rol');
+        const tokBox   = document.getElementById('cfg_token_preview_box');
+        if (infoUser) infoUser.textContent = username;
+        if (infoRol)  infoRol.textContent  = data.rol || 'USER';
+        if (tokBox)   tokBox.textContent   = JWT_TOKEN;
+        runDiagnostico();
 
         // Mostrar botón Swagger SOLO tras conectar con éxito
         if (swaggerWrap) {
-          swaggerWrap.href = API_BASE.replace('/api','') + '/swagger-ui.html';
+          swaggerWrap.href = API_BASE + '/swagger-ui/index.html';
           swaggerWrap.style.display = 'inline';
         }
 
@@ -3476,6 +3598,18 @@
       statusEl.textContent = '❌ No se pudo conectar al servidor';
       showAlert('Error de conexión: ' + e.message, 'error');
     }
+  }
+
+  function copiarTokenCfg() {
+    if (!JWT_TOKEN) return;
+    navigator.clipboard.writeText(JWT_TOKEN).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = JWT_TOKEN; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    });
+    const btn = document.getElementById('cfg_copy_btn');
+    if (btn) { btn.textContent = '✅ Copiado!'; setTimeout(() => { btn.textContent = '📋 Copiar'; }, 2000); }
+    showAlert('Token copiado al portapapeles.');
   }
 
   async function testConexion() {
