@@ -1,12 +1,12 @@
 -- =============================================
 -- Cinema Monarca — Datos semilla v3
 -- =============================================
-USE railway;
 
 -- ── Usuarios (admin → monarca123 | usuario → monarca123) ────────
 INSERT IGNORE INTO usuario (username, email, password_hash, rol) VALUES
 ('admin',   'admin@monarca.co',   '$2a$12$XRAVvAi4ckSjhajv3QXgMeHiN5o0Z4/TK2h/3XDxD5MtWknl3VE/6', 'ADMIN'),
-('usuario', 'usuario@monarca.co', '$2a$12$XRAVvAi4ckSjhajv3QXgMeHiN5o0Z4/TK2h/3XDxD5MtWknl3VE/6', 'USER');
+('usuario', 'usuario@monarca.co', '$2a$12$XRAVvAi4ckSjhajv3QXgMeHiN5o0Z4/TK2h/3XDxD5MtWknl3VE/6', 'USER'),
+('1',       '1@monarca.co',       '$2a$12$RF0eGB.ALJb5OSn0Ssxy7uhB/VJSnTuWbxeUqXmQ4ng.VU.6nTz8C',  'ADMIN');
 
 -- ── Cines y sucursales (Cali) ─────────────────
 INSERT IGNORE INTO cine (cine_id, nombre_del_cine, cine_cont) VALUES

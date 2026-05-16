@@ -1479,6 +1479,88 @@
           </div>
         </div>
 
+
+        <!-- Tarjeta: Autorización JWT -->
+        <div class="card" style="grid-column:1/-1;border-color:rgba(245,197,24,0.2);background:linear-gradient(135deg,rgba(245,197,24,0.04) 0%,transparent 60%);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+            <div style="width:32px;height:32px;background:rgba(245,197,24,0.12);border:1px solid rgba(245,197,24,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🔐</div>
+            <div>
+              <div style="font-family:var(--f-head);font-size:18px;letter-spacing:1px;">Autorización</div>
+              <div style="font-size:11px;color:var(--c-muted);">Obtener token JWT para Swagger</div>
+            </div>
+          </div>
+
+          <!-- Tabs -->
+          <div style="display:flex;border-bottom:1px solid var(--c-border);margin-bottom:18px;gap:0;">
+            <button id="auth_tab_login" onclick="switchAuthConfigTab('login')"
+              style="padding:8px 20px;background:var(--c-gold);color:#07070f;border:none;font-family:var(--f-body);font-size:13px;font-weight:700;cursor:pointer;border-radius:6px 6px 0 0;transition:all 0.2s;">
+              🔑 Iniciar Sesión
+            </button>
+            <button id="auth_tab_token" onclick="switchAuthConfigTab('token')"
+              style="padding:8px 20px;background:transparent;color:var(--c-muted);border:none;font-family:var(--f-body);font-size:13px;font-weight:600;cursor:pointer;border-radius:6px 6px 0 0;transition:all 0.2s;">
+              🎫 Mi Token
+            </button>
+          </div>
+
+          <!-- Panel Login -->
+          <div id="auth_panel_login" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
+            <div class="input-group" style="margin:0;flex:1;min-width:160px;">
+              <label>Usuario</label>
+              <input type="text" id="cfg_auth_user" placeholder="admin" value="1">
+            </div>
+            <div class="input-group" style="margin:0;flex:1;min-width:160px;">
+              <label>Contraseña</label>
+              <input type="password" id="cfg_auth_pass" placeholder="••••••" value="111111"
+                onkeydown="if(event.key==='Enter') obtenerTokenConfig()">
+            </div>
+            <button class="btn btn-primary" onclick="obtenerTokenConfig()" style="padding:10px 24px;white-space:nowrap;align-self:flex-end;">
+              Obtener Token →
+            </button>
+            <p id="cfg_auth_error" style="width:100%;font-size:12px;color:var(--c-red);display:none;margin:0;"></p>
+          </div>
+
+          <!-- Panel Token -->
+          <div id="auth_panel_token" style="display:none;flex-direction:column;gap:12px;">
+            <!-- Token copiable -->
+            <div style="background:var(--c-card);border:1px solid rgba(245,197,24,0.25);border-radius:var(--radius-sm);padding:12px 14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-size:10px;color:var(--c-gold);text-transform:uppercase;letter-spacing:1px;font-weight:700;">🎫 JWT Token</span>
+                <button class="btn btn-sm" onclick="copiarToken()" style="font-size:11px;padding:3px 10px;">📋 Copiar</button>
+              </div>
+              <div id="cfg_token_display" class="mono"
+                style="font-size:11px;color:var(--c-gold);word-break:break-all;line-height:1.6;max-height:80px;overflow-y:auto;opacity:0.85;">
+                —
+              </div>
+            </div>
+            <!-- Info usuario -->
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <div style="background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius-sm);padding:10px 14px;flex:1;min-width:120px;">
+                <div style="font-size:10px;color:var(--c-muted);margin-bottom:4px;">USUARIO</div>
+                <div id="cfg_token_user" style="font-weight:700;font-size:14px;">—</div>
+              </div>
+              <div style="background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius-sm);padding:10px 14px;flex:1;min-width:100px;">
+                <div style="font-size:10px;color:var(--c-muted);margin-bottom:4px;">ROL</div>
+                <div id="cfg_token_rol" style="font-weight:700;font-size:14px;">—</div>
+              </div>
+              <div style="background:var(--c-card);border:1px solid rgba(0,230,118,0.2);border-radius:var(--radius-sm);padding:10px 14px;flex:1;min-width:100px;">
+                <div style="font-size:10px;color:var(--c-muted);margin-bottom:4px;">ESTADO</div>
+                <div style="font-weight:700;font-size:13px;color:var(--c-green);">✅ Autenticado</div>
+              </div>
+            </div>
+            <!-- Botón Swagger con token -->
+            <a id="cfg_swagger_token_link" href="#" target="_blank" style="text-decoration:none;">
+              <button class="btn w-full" type="button"
+                style="justify-content:center;gap:8px;border-color:rgba(41,121,255,0.4);color:#7bb3ff;background:rgba(41,121,255,0.08);padding:12px;">
+                📖 Abrir Swagger UI con este Token
+              </button>
+            </a>
+            <div style="padding:8px 12px;border-radius:var(--radius-sm);background:rgba(41,121,255,0.06);border:1px solid rgba(41,121,255,0.15);font-size:11px;color:rgba(150,190,255,0.8);line-height:1.6;">
+              💡 En Swagger haz clic en <strong>Authorize</strong> e ingresa: <code style="font-size:10px;background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px;">Bearer &lt;pega el token aquí&gt;</code>
+            </div>
+            <button class="btn btn-sm" onclick="switchAuthConfigTab('login')" style="align-self:flex-start;font-size:12px;">← Volver</button>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -4088,8 +4170,66 @@
     setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; setTimeout(() => toast.remove(), 300); }, 3000);
   }
 
+  /* ══ CONFIG AUTH ══ */
+  let _cfgToken = null;
+
+  function switchAuthConfigTab(tab) {
+    const isLogin = tab === 'login';
+    const btnL = document.getElementById('auth_tab_login');
+    const btnT = document.getElementById('auth_tab_token');
+    if (btnL) { btnL.style.background = isLogin ? 'var(--c-gold)' : 'transparent'; btnL.style.color = isLogin ? '#07070f' : 'var(--c-muted)'; }
+    if (btnT) { btnT.style.background = !isLogin ? 'var(--c-gold)' : 'transparent'; btnT.style.color = !isLogin ? '#07070f' : 'var(--c-muted)'; }
+    const pL = document.getElementById('auth_panel_login');
+    const pT = document.getElementById('auth_panel_token');
+    if (pL) pL.style.display = isLogin ? 'flex' : 'none';
+    if (pT) pT.style.display = !isLogin ? 'flex' : 'none';
+  }
+
+  async function obtenerTokenConfig() {
+    const user = document.getElementById('cfg_auth_user')?.value.trim();
+    const pass = document.getElementById('cfg_auth_pass')?.value;
+    const errEl = document.getElementById('cfg_auth_error');
+    if (!user || !pass) { errEl.textContent='Completa usuario y contraseña.'; errEl.style.display='block'; return; }
+    errEl.style.display = 'none';
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 10000);
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ username: user, password: pass }),
+        signal: ctrl.signal
+      });
+      clearTimeout(timer);
+      if (!res.ok) { const d = await res.json().catch(()=>({})); throw new Error(d.error || 'Credenciales inválidas'); }
+      const data = await res.json();
+      _cfgToken = data.token;
+      // Actualizar panel token
+      const td = document.getElementById('cfg_token_display');
+      if (td) td.textContent = data.token;
+      const tu = document.getElementById('cfg_token_user');
+      if (tu) tu.textContent = data.username || user;
+      const tr = document.getElementById('cfg_token_rol');
+      if (tr) { tr.textContent = data.rol || 'USER'; tr.style.color = data.rol==='ADMIN' ? 'var(--c-red)' : 'var(--c-blue)'; }
+      const swL = document.getElementById('cfg_swagger_token_link');
+      if (swL) swL.href = `${API_BASE}/swagger-ui/index.html`;
+      switchAuthConfigTab('token');
+      showAlert('Token obtenido para ' + (data.username||user));
+    } catch(e) {
+      errEl.textContent = e.name==='AbortError' ? 'Tiempo agotado.' : (e.message || 'Error de conexión');
+      errEl.style.display = 'block';
+    }
+  }
+
+  function copiarToken() {
+    if (!_cfgToken) return;
+    navigator.clipboard.writeText(_cfgToken).then(() => showAlert('Token copiado al portapapeles.')).catch(() => {
+      const el = document.getElementById('cfg_token_display');
+      if (el) { const r = document.createRange(); r.selectNode(el); window.getSelection().removeAllRanges(); window.getSelection().addRange(r); }
+    });
+  }
+
   /* ══ HELPERS ══ */
-  function esc(s) { return (s || '').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+  function esc(s) { return (s || '').replace(/'/g, "\'").replace(/"/g, '&quot;'); }
 
   // Clientes alias (por compatibilidad)
   function cargarClientes() { cargarUsuarios(); }
