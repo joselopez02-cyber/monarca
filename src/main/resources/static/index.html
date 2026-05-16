@@ -1069,11 +1069,14 @@
           <h4 style="font-family:var(--f-head);font-size:18px;margin-bottom:16px;color:var(--c-gold)">🔑 Autenticación</h4>
           <div class="input-group">
             <label>Usuario</label>
-            <input type="text" id="cfg_username" placeholder="admin" value="admin">
+            <input type="text" id="cfg_username" placeholder="Ingresa tu usuario" autocomplete="off">
           </div>
           <div class="input-group">
             <label>Contraseña</label>
-            <input type="password" id="cfg_password" placeholder="••••••••" value="monarca123">
+            <div style="position:relative">
+              <input type="password" id="cfg_password" placeholder="Ingresa tu contraseña" autocomplete="new-password" style="padding-right:42px;width:100%">
+              <button type="button" id="cfg_pass_eye" onclick="toggleCfgPass()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--c-muted);cursor:pointer;font-size:16px;padding:0;line-height:1">👁</button>
+            </div>
           </div>
           <button class="btn btn-primary w-full" onclick="loginDesdeConfig()">Conectar y Obtener Token</button>
           <div id="cfg_status" style="margin-top:12px;font-size:12px;font-family:var(--f-mono);display:none"></div>
@@ -1096,7 +1099,7 @@
               <div class="mono" style="font-size:11px;color:var(--c-green)" id="cfg_token_preview">—</div>
             </div>
             <div style="margin-left:auto">
-              <a id="cfg_swagger_link" href="#" target="_blank" style="display:none">
+              <a id="cfg_swagger_link" href="#" target="_blank" style="display:none" id2="cfg_swagger_a">
                 <button class="btn">📖 Abrir Swagger UI</button>
               </a>
             </div>
@@ -3383,40 +3386,90 @@
     testConexion();
   }
 
+  function toggleCfgPass() {
+    const input = document.getElementById('cfg_password');
+    const eye   = document.getElementById('cfg_pass_eye');
+    if (!input) return;
+    if (input.type === 'password') { input.type = 'text'; if(eye) eye.textContent = '🙈'; }
+    else { input.type = 'password'; if(eye) eye.textContent = '👁'; }
+  }
+
   async function loginDesdeConfig() {
     const username = document.getElementById('cfg_username').value.trim();
     const password = document.getElementById('cfg_password').value.trim();
     const statusEl = document.getElementById('cfg_status');
+
+    if (!username || !password) {
+      showAlert('Ingresa usuario y contraseña.', 'error'); return;
+    }
     if (!API_BASE) {
       showAlert('Primero guarda la URL del servidor.', 'error'); return;
     }
+
     statusEl.style.display = 'block';
     statusEl.style.color = 'var(--c-muted)';
     statusEl.textContent = '⏳ Conectando...';
+
+    // Ocultar Swagger mientras reconecta
+    const swaggerWrap = document.getElementById('cfg_swagger_link');
+    if (swaggerWrap) swaggerWrap.style.display = 'none';
+
     try {
-      const res = await fetch(API_BASE + '/api/auth/login', {
+      const res = await fetch(API_BASE + '/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
-      const data = await res.json();
+
+      let data = {};
+      const ct = res.headers.get('content-type') || '';
+      if (ct.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const txt = await res.text();
+        throw new Error('Respuesta inesperada del servidor: ' + txt.slice(0, 80));
+      }
+
       if (res.ok && data.token) {
         JWT_TOKEN = data.token;
         sessionStorage.setItem('monarca_token', JWT_TOKEN);
         sessionStorage.setItem('monarca_rol', data.rol || 'USER');
+        sessionStorage.setItem('monarca_username', data.username || username);
         sessionStorage.setItem('monarca_email', data.email || username);
+
         statusEl.style.color = 'var(--c-green)';
-        statusEl.textContent = '✅ Conectado correctamente';
-        const userEl = document.getElementById('cfg_user_activo');
+        statusEl.textContent = '✅ Conectado correctamente como ' + username;
+
+        // Poblar estado de la conexión
+        const urlEl   = document.getElementById('cfg_url_activa');
+        const userEl  = document.getElementById('cfg_user_activo');
         const tokenEl = document.getElementById('cfg_token_preview');
-        if (userEl) userEl.textContent = username + ' (' + (data.rol || 'USER') + ')';
+        if (urlEl)   urlEl.textContent   = API_BASE;
+        if (userEl)  userEl.textContent  = username + ' (' + (data.rol || 'USER') + ')';
         if (tokenEl) tokenEl.textContent = JWT_TOKEN.substring(0, 40) + '...';
+
+        // Mostrar botón Swagger SOLO tras conectar con éxito
+        if (swaggerWrap) {
+          swaggerWrap.href = API_BASE.replace('/api','') + '/swagger-ui.html';
+          swaggerWrap.style.display = 'inline';
+        }
+
+        // Limpiar campo de contraseña por seguridad
+        document.getElementById('cfg_password').value = '';
+        document.getElementById('cfg_password').type  = 'password';
+        const eye = document.getElementById('cfg_pass_eye');
+        if (eye) eye.textContent = '👁';
+
         setStatus(true);
+        document.getElementById('userDisplay').innerText = '@' + username;
         showAlert('✅ Token obtenido — API conectada como ' + username);
+        aplicarNavPorRol();
+        cargarDashboard();
+
       } else {
         statusEl.style.color = 'var(--c-red)';
-        statusEl.textContent = '❌ ' + (data.message || 'Credenciales incorrectas');
-        showAlert('Error al conectar: ' + (data.message || 'Credenciales incorrectas'), 'error');
+        statusEl.textContent = '❌ ' + (data.message || data.error || 'Credenciales incorrectas');
+        showAlert('Error al conectar: credenciales inválidas', 'error');
       }
     } catch(e) {
       statusEl.style.color = 'var(--c-red)';
