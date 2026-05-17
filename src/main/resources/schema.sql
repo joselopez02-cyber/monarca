@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS silla (
     FOREIGN KEY (reserva_id) REFERENCES reserva(res_code)   ON DELETE SET NULL
 );
 
--- Transacciones / Pagos
+-- Transaccones / Pagos
 CREATE TABLE IF NOT EXISTS transaccion (
     trans_no     BIGSERIAL PRIMARY KEY,
     tipo_pago    tipo_pago    NOT NULL,
