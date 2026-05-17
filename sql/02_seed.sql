@@ -9,7 +9,7 @@ INSERT IGNORE INTO usuario (username, email, password_hash, rol) VALUES
 ('admin',   'admin@monarca.co',   '$2a$12$XRAVvAi4ckSjhajv3QXgMeHiN5o0Z4/TK2h/3XDxD5MtWknl3VE/6', 'ADMIN'),
 ('usuario', 'usuario@monarca.co', '$2a$12$XRAVvAi4ckSjhajv3QXgMeHiN5o0Z4/TK2h/3XDxD5MtWknl3VE/6', 'USER');
 
--- ── Cines y sucursales (Cali) ─────────────────
+-- ── Cines y sucursales (Cal) ─────────────────
 INSERT IGNORE INTO cine (cine_id, nombre_del_cine, cine_cont) VALUES
 (1, 'Cinema Monarca Centro', '+57 2 8901234'),
 (2, 'Cinema Monarca Norte',  '+57 2 8905678');
