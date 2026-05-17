@@ -12,7 +12,7 @@ IF %ERRORLEVEL% EQU 0 (
     GOTO :EOF
 )
 
-REM ── Intentar con Maven de IntelliJ ──
+REM ── Intentar con Maven de IntelliJ ─
 SET IDEA_MVN="C:\Program Files\JetBrains\IntelliJ IDEA 2026.1.1\plugins\maven\lib\maven3\bin\mvn.cmd"
 IF EXIST %IDEA_MVN% (
     ECHO Usando Maven de IntelliJ...
