@@ -50,7 +50,12 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // ── Frontend estático ──────────────────────────────────────
-                        .requestMatchers("/", "/index.html", "/*.html").permitAll()
+                        .requestMatchers("/", "/index.html", "/*.html",
+                                         "/*.js", "/*.css", "/*.ico",
+                                         "/*.png", "/*.jpg", "/*.svg", "/*.webp",
+                                         "/assets/**", "/static/**", "/favicon.ico").permitAll()
+                        // ── Actuator health ────────────────────────────────────────
+                        .requestMatchers("/actuator/health").permitAll()
                         // ── Swagger UI ─────────────────────────────────────────────
                         .requestMatchers("/swagger-ui.html").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
