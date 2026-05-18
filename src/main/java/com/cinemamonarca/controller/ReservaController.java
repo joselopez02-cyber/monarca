@@ -3,6 +3,7 @@ package com.cinemamonarca.controller;
 import com.cinemamonarca.dto.ReservaRequest;
 import com.cinemamonarca.model.Reserva;
 import com.cinemamonarca.model.Usuario;
+import com.cinemamonarca.repository.ClienteRepository;
 import com.cinemamonarca.repository.UsuarioRepository;
 import com.cinemamonarca.service.ReservaService;
 import lombok.RequiredArgsConstructor;
@@ -21,21 +22,23 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class ReservaController {
 
-    private final ReservaService reservaService;
-    private final UsuarioRepository usuarioRepository;
+    private final ReservaService      reservaService;
+    private final UsuarioRepository   usuarioRepository;
+    private final ClienteRepository   clienteRepository;
 
     /**
-     * GET /api/reservas
-     * ADMIN → devuelve TODAS las reservas
-     * USER  → busca por email real del usuario (campo direccionCliente en Cliente),
-     *         con fallback a username si no hay resultados.
+     * Helper privado — reemplaza la expresion repetida
+     *   auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))
+     * No cambia ninguna logica, solo evita repeticion.
      */
+    private boolean esAdmin(Authentication auth) {
+        return auth != null &&
+               auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+    }
+
     @GetMapping
     public ResponseEntity<List<Reserva>> obtenerTodas(Authentication auth) {
-        boolean isAdmin = auth.getAuthorities()
-                .contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
-
-        if (isAdmin) {
+        if (esAdmin(auth)) {
             return ResponseEntity.ok(reservaService.obtenerTodas());
         }
 
@@ -71,7 +74,41 @@ public class ReservaController {
     }
 
     @PostMapping
-    public ResponseEntity<?> crear(@RequestBody ReservaRequest req) {
+    public ResponseEntity<?> crear(@RequestBody ReservaRequest req, Authentication auth) {
+
+        // Los admins pueden crear reservas para cualquier cliente sin restriccion.
+        // esAdmin() garantiza que el bloque de ownership nunca se ejecute para ROLE_ADMIN.
+        if (!esAdmin(auth) && req.getCustId() != null) {
+            String username = auth.getName();
+            Usuario usuario = usuarioRepository.findByUsername(username).orElse(null);
+
+            boolean custIdPertenece = clienteRepository.findById(req.getCustId())
+                    .map(c -> {
+                        if (c.getNombreCliente() == null) return false;
+
+                        boolean matchUsername = c.getNombreCliente().equalsIgnoreCase(username);
+
+                        boolean matchEmail = usuario != null
+                                && usuario.getEmail() != null
+                                && c.getNombreCliente().equalsIgnoreCase(usuario.getEmail());
+
+                        // Fallback robusto: funciona aunque el cliente fue creado
+                        // manualmente con nombre completo en lugar de username
+                        boolean matchCedula = usuario != null
+                                && usuario.getCedula() != null
+                                && usuario.getCedula().equals(c.getNumeroCliente());
+
+                        return matchUsername || matchEmail || matchCedula;
+                    })
+                    .orElse(false);
+
+            if (!custIdPertenece) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error",
+                                "No puedes crear reservas a nombre de otro cliente."));
+            }
+        }
+
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(reservaService.guardar(req));
         } catch (RuntimeException ex) {

@@ -908,7 +908,7 @@
     <form id="loginForm" class="auth-form active">
       <div class="input-group" style="text-align:left">
         <label>Usuario</label>
-        <input type="text" id="l_user" placeholder="admin" required>
+        <input type="text" id="l_user" placeholder="Usuario" required>
       </div>
       <div class="input-group" style="text-align:left">
         <label>Contraseña</label>
@@ -917,9 +917,7 @@
       <button type="submit" class="btn btn-primary w-full" style="padding:12px;margin-top:8px;font-size:14px">
         Iniciar Sesión
       </button>
-      <p style="font-size:11px;color:var(--c-muted);margin-top:12px">
-        Por defecto: <span style="color:var(--c-gold);font-family:var(--f-mono)">admin / monarca123</span>
-      </p>
+
     </form>
 
     <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)" style="max-height:420px;overflow-y:auto;padding-right:4px">
@@ -962,7 +960,6 @@
     <div class="nav-item" data-view="sucursales" data-rol="ADMIN" onclick="switchView('sucursales', this)">🏢 Cines & Sucursales</div>
     <div class="nav-item" data-view="usuarios" data-rol="ADMIN" onclick="switchView('usuarios', this)">👥 Gestión de Usuarios</div>
     <div style="height: 24px;"></div>
-    <div class="nav-item" data-view="config" onclick="switchView('config', this)">⚙ Configuración API</div>
     <div class="nav-item" style="color: var(--c-red);" onclick="logout()">🚪 Cerrar Sesión</div>
   </nav>
 </aside>
@@ -1270,7 +1267,14 @@
     <!-- CAMBIO 3: se agrega columna Método de Pago en la tabla -->
     <section id="view-reservas" class="view-section">
       <div class="section-header">
-        <div class="section-title"><h2>Historial de Ventas</h2><p>Registro de todas las transacciones y emisiones de tiquetes.</p></div>
+        <div class="section-title">
+          <h2>Historial de Ventas</h2>
+          <p>Registro de todas las transacciones y emisiones de tiquetes.
+            <span style="display:inline-flex;align-items:center;gap:4px;margin-left:8px;background:rgba(245,197,24,0.1);border:1px solid rgba(245,197,24,0.3);border-radius:20px;padding:2px 10px;font-size:10px;font-weight:700;color:var(--c-gold);letter-spacing:0.5px;vertical-align:middle;">
+              🎓 PAGOS SIMULADOS
+            </span>
+          </p>
+        </div>
         <button class="btn" onclick="cargarReservas()">↻ Actualizar</button>
       </div>
       <div class="card mb-3" style="padding:14px 16px;">
@@ -1292,10 +1296,11 @@
             <label>💳 Método Pago</label>
             <select id="filtro-res-metodo" onchange="filtrarReservas()">
               <option value="">— Todos —</option>
-              <option value="TARJETA">Tarjeta</option>
-              <option value="NEQUI">Nequi</option>
-              <option value="PSE">PSE</option>
-              <option value="EFECTIVO">Efectivo</option>
+              <option value="TARJETA_CREDITO">💳 Tarjeta Crédito</option>
+              <option value="TARJETA_DEBITO">💳 Tarjeta Débito</option>
+              <option value="NEQUI">📱 Nequi</option>
+              <option value="PSE">🏦 PSE</option>
+              
             </select>
           </div>
           <div style="display:flex;align-items:flex-end;flex-shrink:0;">
@@ -1430,7 +1435,7 @@
           </div>
           <div class="input-group">
             <label>URL Base</label>
-            <input type="text" id="apiBaseInput" class="mono" placeholder="https://tu-app.up.railway.app">
+            <input type="text" id="apiBaseInput" class="mono" placeholder="https://monarca-e4cfe8dyfvaddhcj.brazilsouth-01.azurewebsites.net">
           </div>
           <p style="color:var(--c-muted);font-size:11px;margin-bottom:18px;line-height:1.6;">
             Sin <code style="background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px;">/api</code> ni <code style="background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px;">/</code> al final.<br>
@@ -1442,40 +1447,88 @@
         </div>
 
         <!-- Tarjeta: Estado y Swagger -->
-        <div class="card">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
-            <div style="width:32px;height:32px;background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">📡</div>
+
+
+
+        <!-- Tarjeta: Autorización JWT -->
+        <div class="card" style="grid-column:1/-1;border-color:rgba(245,197,24,0.2);background:linear-gradient(135deg,rgba(245,197,24,0.04) 0%,transparent 60%);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+            <div style="width:32px;height:32px;background:rgba(245,197,24,0.12);border:1px solid rgba(245,197,24,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🔐</div>
             <div>
-              <div style="font-family:var(--f-head);font-size:18px;letter-spacing:1px;">Estado & Herramientas</div>
-              <div style="font-size:11px;color:var(--c-muted);">Monitoreo y documentación</div>
+              <div style="font-family:var(--f-head);font-size:18px;letter-spacing:1px;">Autorización</div>
+              <div style="font-size:11px;color:var(--c-muted);">Obtener token JWT para Swagger</div>
             </div>
           </div>
 
-          <!-- Estado conexión -->
-          <div style="background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
-            <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
-              <span id="apiStatusDot" class="status-dot offline"></span>
-              <span id="apiStatusText" style="color:var(--c-red);font-weight:500;">API Desconectada</span>
-            </div>
-            <button class="btn btn-sm" onclick="testConexion()" style="font-size:11px;">↻ Verificar</button>
-          </div>
-
-          <!-- URL activa -->
-          <div style="background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;">
-            <div style="font-size:10px;color:var(--c-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">URL activa</div>
-            <div id="cfg_url_display" class="mono" style="font-size:12px;color:var(--c-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</div>
-          </div>
-
-          <!-- Acceso Swagger -->
-          <a id="cfg_swagger_link" href="#" target="_blank" style="display:none;text-decoration:none;">
-            <button class="btn w-full" type="button" style="justify-content:center;gap:8px;border-color:rgba(41,121,255,0.3);color:#7bb3ff;background:rgba(41,121,255,0.06);">
-              📖 Abrir Swagger UI
+          <!-- Tabs -->
+          <div style="display:flex;border-bottom:1px solid var(--c-border);margin-bottom:18px;gap:0;">
+            <button id="auth_tab_login" onclick="switchAuthConfigTab('login')"
+              style="padding:8px 20px;background:var(--c-gold);color:#07070f;border:none;font-family:var(--f-body);font-size:13px;font-weight:700;cursor:pointer;border-radius:6px 6px 0 0;transition:all 0.2s;">
+              🔑 Iniciar Sesión
             </button>
-          </a>
+            <button id="auth_tab_token" onclick="switchAuthConfigTab('token')" disabled
+              style="padding:8px 20px;background:rgba(255,255,255,0.04);color:rgba(238,238,248,0.25);border:none;font-family:var(--f-body);font-size:13px;font-weight:600;cursor:not-allowed;border-radius:6px 6px 0 0;transition:all 0.2s;opacity:0.5;"
+              title="Obtén un token primero">
+              🔒 Mi Token
+            </button>
+          </div>
 
-          <!-- Nota HTTPS -->
-          <div style="margin-top:12px;padding:8px 12px;border-radius:var(--radius-sm);background:rgba(229,57,53,0.06);border:1px solid rgba(229,57,53,0.15);font-size:11px;color:rgba(255,107,107,0.85);line-height:1.5;">
-            ⚠️ Usa siempre <strong>https://</strong> · Ruta Swagger: <code style="font-size:10px;">/swagger-ui/index.html</code>
+          <!-- Panel Login -->
+          <div id="auth_panel_login" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
+            <div class="input-group" style="margin:0;flex:1;min-width:160px;">
+              <label>Usuario</label>
+              <input type="text" id="cfg_auth_user" placeholder="usuario">
+            </div>
+            <div class="input-group" style="margin:0;flex:1;min-width:160px;">
+              <label>Contraseña</label>
+              <input type="password" id="cfg_auth_pass" placeholder="••••••"
+                onkeydown="if(event.key==='Enter') obtenerTokenConfig()">
+            </div>
+            <button class="btn btn-primary" onclick="obtenerTokenConfig()" style="padding:10px 24px;white-space:nowrap;align-self:flex-end;">
+              Obtener Token →
+            </button>
+            <p id="cfg_auth_error" style="width:100%;font-size:12px;color:var(--c-red);display:none;margin:0;"></p>
+          </div>
+
+          <!-- Panel Token -->
+          <div id="auth_panel_token" style="display:none;flex-direction:column;gap:12px;">
+            <!-- Token copiable -->
+            <div style="background:var(--c-card);border:1px solid rgba(245,197,24,0.25);border-radius:var(--radius-sm);padding:12px 14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-size:10px;color:var(--c-gold);text-transform:uppercase;letter-spacing:1px;font-weight:700;">🎫 JWT Token</span>
+                <button class="btn btn-sm" onclick="copiarToken()" style="font-size:11px;padding:3px 10px;">📋 Copiar</button>
+              </div>
+              <div id="cfg_token_display" class="mono"
+                style="font-size:11px;color:var(--c-gold);word-break:break-all;line-height:1.6;max-height:80px;overflow-y:auto;opacity:0.85;">
+                —
+              </div>
+            </div>
+            <!-- Info usuario -->
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <div style="background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius-sm);padding:10px 14px;flex:1;min-width:120px;">
+                <div style="font-size:10px;color:var(--c-muted);margin-bottom:4px;">USUARIO</div>
+                <div id="cfg_token_user" style="font-weight:700;font-size:14px;">—</div>
+              </div>
+              <div style="background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius-sm);padding:10px 14px;flex:1;min-width:100px;">
+                <div style="font-size:10px;color:var(--c-muted);margin-bottom:4px;">ROL</div>
+                <div id="cfg_token_rol" style="font-weight:700;font-size:14px;">—</div>
+              </div>
+              <div style="background:var(--c-card);border:1px solid rgba(0,230,118,0.2);border-radius:var(--radius-sm);padding:10px 14px;flex:1;min-width:100px;">
+                <div style="font-size:10px;color:var(--c-muted);margin-bottom:4px;">ESTADO</div>
+                <div style="font-weight:700;font-size:13px;color:var(--c-green);">✅ Autenticado</div>
+              </div>
+            </div>
+            <!-- Botón Swagger directo -->
+            <a id="cfg_swagger_token_link" href="https://monarca-e4cfe8dyfvaddhcj.brazilsouth-01.azurewebsites.net/swagger-ui/index.html" target="_blank" style="text-decoration:none;">
+              <button class="btn w-full" type="button"
+                style="justify-content:center;gap:8px;border-color:rgba(41,121,255,0.4);color:#7bb3ff;background:rgba(41,121,255,0.08);padding:12px;font-size:14px;">
+                📖 Abrir Swagger UI
+              </button>
+            </a>
+            <div style="padding:8px 12px;border-radius:var(--radius-sm);background:rgba(41,121,255,0.06);border:1px solid rgba(41,121,255,0.15);font-size:11px;color:rgba(150,190,255,0.8);line-height:1.6;">
+              💡 En Swagger haz clic en <strong>Authorize</strong> e ingresa: <code style="font-size:10px;background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px;">Bearer &lt;pega el token aquí&gt;</code>
+            </div>
+            <button class="btn btn-sm" onclick="switchAuthConfigTab('login')" style="align-self:flex-start;font-size:12px;">← Volver</button>
           </div>
         </div>
 
@@ -1689,20 +1742,28 @@
           <div class="leg-item"><div class="leg-box occ"></div> Ocupada</div>
         </div>
       </div>
-      <div style="padding:12px 24px 16px;background:var(--c-surface);border-top:1px solid var(--c-border);display:flex;align-items:center;justify-content:space-between;border-radius:0 0 var(--radius-lg) var(--radius-lg)">
-        <div style="display:flex;flex-direction:column;gap:5px">
-          <div>
-            <span class="text-muted" style="font-size:12px">Seleccionadas (máx 4): </span>
-            <span class="mono text-gold" id="r_sillasSel" style="font-size:14px">Ninguna</span>
+      <div style="padding:12px 24px 16px;background:var(--c-surface);border-top:1px solid var(--c-border);border-radius:0 0 var(--radius-lg) var(--radius-lg)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="display:flex;flex-direction:column;gap:5px">
+            <div>
+              <span class="text-muted" style="font-size:12px">Seleccionadas (máx 4): </span>
+              <span class="mono text-gold" id="r_sillasSel" style="font-size:14px">Ninguna</span>
+            </div>
+            <div id="seat-info-bar" style="display:none;gap:10px;align-items:center;font-size:11px;font-family:var(--f-mono);color:var(--c-muted)">
+              <span id="sib-codigo" style="color:var(--c-gold);font-weight:700;font-size:13px"></span>
+              <span id="sib-vis"></span>
+              <span id="sib-elev" style="color:rgba(255,255,255,0.4)"></span>
+              <span id="sib-bloque" style="color:rgba(245,197,24,0.6)"></span>
+            </div>
           </div>
-          <div id="seat-info-bar" style="display:none;gap:10px;align-items:center;font-size:11px;font-family:var(--f-mono);color:var(--c-muted)">
-            <span id="sib-codigo" style="color:var(--c-gold);font-weight:700;font-size:13px"></span>
-            <span id="sib-vis"></span>
-            <span id="sib-elev" style="color:rgba(255,255,255,0.4)"></span>
-            <span id="sib-bloque" style="color:rgba(245,197,24,0.6)"></span>
-          </div>
+          <button class="btn btn-primary" style="padding:10px 28px;font-size:14px" onclick="irPaso2()">Continuar pago →</button>
         </div>
-        <button class="btn btn-primary" style="padding:10px 28px;font-size:14px" onclick="irPaso2()">Continuar pago →</button>
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(245,197,24,0.07);border:1px solid rgba(245,197,24,0.25);border-radius:8px;padding:8px 12px;">
+          <span style="font-size:15px;">🎓</span>
+          <span style="font-size:11px;color:rgba(238,238,248,0.6);line-height:1.4;">
+            <strong style="color:var(--c-gold);">Entorno académico —</strong> todos los pagos son 100% simulados. No se realizan cobros reales ni se procesan datos financieros.
+          </span>
+        </div>
       </div>
     </div>
 
@@ -1730,10 +1791,35 @@
           </div>
         </div>
 
+        <!-- BANNER PAGOS SIMULADOS -->
+        <div style="grid-column:1/-1">
+          <div style="
+            background: linear-gradient(135deg, rgba(245,197,24,0.08) 0%, rgba(245,197,24,0.03) 100%);
+            border: 1px solid rgba(245,197,24,0.35);
+            border-left: 4px solid var(--c-gold);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+          ">
+            <span style="font-size:20px;flex-shrink:0;margin-top:1px;">🎓</span>
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--c-gold);letter-spacing:0.5px;margin-bottom:3px;">API ESTUDIANTIL — ENTORNO DE PRUEBAS</div>
+              <div style="font-size:12px;color:rgba(238,238,248,0.65);line-height:1.5;">
+                Todos los pagos son <strong style="color:var(--c-gold)">100% simulados</strong>. No se realizan cobros reales.
+                Los datos de tarjeta, Nequi y PSE son ficticios y solo sirven para validar el flujo.
+                La transacción queda registrada en la base de datos con estado <span style="font-family:monospace;font-size:11px;background:rgba(245,197,24,0.12);padding:1px 6px;border-radius:3px;">SIMULADO</span>.
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- MÉTODO DE PAGO -->
         <div style="grid-column:1/-1">
           <div style="font-size:12px;color:var(--c-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">💳 Método de Pago *</div>
-          <div class="pay-methods">
+          <div class="pay-methods" style="grid-template-columns:repeat(3,1fr)">
             <button class="pay-method-btn" data-metodo="TARJETA" onclick="seleccionarMetodoPago(this)">
               <span class="pay-icon">💳</span>
               <span>Tarjeta</span>
@@ -1746,12 +1832,95 @@
               <span class="pay-icon">🏦</span>
               <span>PSE</span>
             </button>
-            <button class="pay-method-btn" data-metodo="EFECTIVO" onclick="seleccionarMetodoPago(this)">
-              <span class="pay-icon">💵</span>
-              <span>Efectivo</span>
-            </button>
           </div>
           <input type="hidden" id="r_metodoPago" value="">
+
+          <!-- TARJETA -->
+          <div id="detalle_TARJETA" style="display:none;background:var(--c-card2,var(--c-surface));border:1.5px solid var(--c-border);border-radius:var(--radius);padding:16px;margin-top:8px;">
+            <div style="font-size:11px;color:var(--c-gold);font-weight:700;text-transform:uppercase;margin-bottom:12px;">💳 Datos de Tarjeta (simulado)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div class="input-group" style="grid-column:1/-1;margin:0">
+                <label>Número de Tarjeta</label>
+                <input type="text" id="t_numero" maxlength="19" placeholder="0000 0000 0000 0000" oninput="formatCardNumber(this)" style="font-family:monospace;letter-spacing:2px;">
+              </div>
+              <div class="input-group" style="margin:0">
+                <label>Titular</label>
+                <input type="text" id="t_titular" placeholder="Nombre en la tarjeta">
+              </div>
+              <div class="input-group" style="margin:0">
+                <label>Tipo</label>
+                <select id="t_tipo">
+                  <option value="CREDITO">Crédito</option>
+                  <option value="DEBITO">Débito</option>
+                </select>
+              </div>
+              <div class="input-group" style="margin:0">
+                <label>Vencimiento</label>
+                <input type="text" id="t_venc" maxlength="5" placeholder="MM/AA" oninput="formatExpiry(this)">
+              </div>
+              <div class="input-group" style="margin:0">
+                <label>CVV</label>
+                <input type="text" id="t_cvv" maxlength="4" placeholder="•••">
+              </div>
+            </div>
+          </div>
+
+          <!-- NEQUI -->
+          <div id="detalle_NEQUI" style="display:none;background:var(--c-card2,var(--c-surface));border:1.5px solid var(--c-border);border-radius:var(--radius);padding:16px;margin-top:8px;">
+            <div style="font-size:11px;color:#8b5cf6;font-weight:700;text-transform:uppercase;margin-bottom:12px;">📱 Pago con Nequi (simulado)</div>
+            <div style="display:grid;gap:10px;">
+              <div class="input-group" style="margin:0">
+                <label>Número de celular Nequi</label>
+                <input type="text" id="n_numero" maxlength="10" placeholder="3XXXXXXXXX" oninput="formatPhone(this)">
+              </div>
+              <div style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.3);border-radius:8px;padding:12px;font-size:12px;color:var(--c-muted);text-align:center;line-height:1.6;">
+                📲 Se enviará notificación al número registrado para aprobar el pago de <strong id="nequi_monto" style="color:#8b5cf6;">$0</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- PSE -->
+          <div id="detalle_PSE" style="display:none;background:var(--c-card2,var(--c-surface));border:1.5px solid var(--c-border);border-radius:var(--radius);padding:16px;margin-top:8px;">
+            <div style="font-size:11px;color:#0ea5e9;font-weight:700;text-transform:uppercase;margin-bottom:12px;">🏦 Pago PSE (simulado)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div class="input-group" style="grid-column:1/-1;margin:0">
+                <label>Banco</label>
+                <select id="p_banco">
+                  <option value="">— Selecciona tu banco —</option>
+                  <option value="BANCOLOMBIA">Bancolombia</option>
+                  <option value="DAVIVIENDA">Davivienda</option>
+                  <option value="BOGOTA">Banco de Bogotá</option>
+                  <option value="BBVA">BBVA</option>
+                  <option value="OCCIDENTE">Banco de Occidente</option>
+                  <option value="POPULAR">Banco Popular</option>
+                  <option value="COLPATRIA">Scotiabank Colpatria</option>
+                  <option value="AV_VILLAS">AV Villas</option>
+                </select>
+              </div>
+              <div class="input-group" style="margin:0">
+                <label>Tipo de Persona</label>
+                <select id="p_tipo_persona">
+                  <option value="NATURAL">Natural</option>
+                  <option value="JURIDICA">Jurídica</option>
+                </select>
+              </div>
+              <div class="input-group" style="margin:0">
+                <label>Tipo de ID</label>
+                <select id="p_tipo_id">
+                  <option value="CC">Cédula</option>
+                  <option value="NIT">NIT</option>
+                  <option value="CE">Cédula Extranjería</option>
+                </select>
+              </div>
+              <div class="input-group" style="grid-column:1/-1;margin:0">
+                <label>Correo electrónico</label>
+                <input type="email" id="p_email" placeholder="correo@ejemplo.com">
+              </div>
+              <div style="grid-column:1/-1;background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.3);border-radius:8px;padding:12px;font-size:12px;color:var(--c-muted);text-align:center;line-height:1.6;">
+                🏦 Serás redirigido al portal de tu banco para completar el pago de <strong id="pse_monto" style="color:#0ea5e9;">$0</strong>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="input-group">
@@ -1786,16 +1955,21 @@
   // de una sesión local anterior, lo ignoramos y usamos el host actual.
   // API_BASE: siempre usa la URL actual del navegador (funciona en cualquier dispositivo)
   // El localStorage solo se usa si el usuario configuró manualmente una URL diferente
-  const _autoBase = window.location.origin;
+  const _AZURE_URL = 'https://monarca-e4cfe8dyfvaddhcj.brazilsouth-01.azurewebsites.net';
+  const _autoBase  = window.location.origin;
   (function() {
     const saved = localStorage.getItem('monarca_api_base');
-    // Limpiar valores inválidos o locales
-    if (!saved || saved.includes('localhost') || saved.includes('127.0.0.1')) {
-      localStorage.removeItem('monarca_api_base');
-    }
+    // Limpiar URLs locales o IPs privadas — no sirven en otros dispositivos
+    const _isLocal = !saved
+      || saved.includes('localhost')
+      || saved.includes('127.0.0.1')
+      || /https?:\/\/(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(saved)
+      || saved.startsWith('http://');
+    if (_isLocal) localStorage.removeItem('monarca_api_base');
   })();
   const _savedBase = localStorage.getItem('monarca_api_base');
-  let API_BASE = (_savedBase && _savedBase !== _autoBase ? _savedBase : _autoBase).replace(/\/api$/, '').replace(/\/$/, '');
+  // Prioridad: 1) guardado manualmente, 2) origin del navegador (Azure), 3) URL Azure fija
+  let API_BASE = (_savedBase || _autoBase || _AZURE_URL).replace(/\/api$/, '').replace(/\/$/, '');
   // FIX: leer token de sessionStorage o localStorage (con verificación de expiración)
   let JWT_TOKEN = (function() {
     const ss = sessionStorage.getItem('monarca_token');
@@ -1808,10 +1982,11 @@
       sessionStorage.setItem('monarca_email', localStorage.getItem('monarca_email') || '');
       sessionStorage.setItem('monarca_rol',   localStorage.getItem('monarca_rol')   || '');
       sessionStorage.setItem('monarca_username', localStorage.getItem('monarca_username') || '');
+      sessionStorage.setItem('monarca_usuarioId', localStorage.getItem('monarca_usuarioId') || '');
       return ls;
     }
     // Token expirado — limpiar
-    ['monarca_token','monarca_token_exp','monarca_email','monarca_rol','monarca_username'].forEach(k => localStorage.removeItem(k));
+    ['monarca_token','monarca_token_exp','monarca_email','monarca_rol','monarca_username','monarca_doc','monarca_usuarioId'].forEach(k => localStorage.removeItem(k));
     return null;
   })();
 
@@ -1833,10 +2008,15 @@
     const toggle = document.getElementById('mobile-nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
 
-    // Limpiar API_BASE de localhost si viene de otro dispositivo
+    // Limpiar API_BASE inválida al iniciar (localhost, IPs privadas, HTTP inseguro)
     (function() {
       const saved = localStorage.getItem('monarca_api_base');
-      if (saved && saved.includes('localhost')) localStorage.removeItem('monarca_api_base');
+      if (saved && (
+        saved.includes('localhost') ||
+        saved.includes('127.0.0.1') ||
+        /https?:\/\/(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(saved) ||
+        saved.startsWith('http://')
+      )) localStorage.removeItem('monarca_api_base');
     })();
 
     function checkMobile() {
@@ -1891,8 +2071,23 @@
         body: body ? JSON.stringify(body) : null
       });
       clearTimeout(timer);
-      if (res.status === 401 || res.status === 403) { logout(); throw new Error("Sesión expirada o sin permisos."); }
-      if (!res.ok) { const t = await res.text(); throw new Error(t || `Error HTTP: ${res.status}`); }
+      // 401 = sesión expirada → logout
+      // 403 = sin permisos para ESA operación (ej: reserva de otro cliente) → NO logout, mostrar error
+      if (res.status === 401) { logout(); throw new Error("Sesión expirada. Inicia sesión de nuevo."); }
+      if (res.status === 403) { const t = await res.text(); throw new Error(t || "No tienes permiso para esta operación."); }
+      if (!res.ok) {
+        const t = await res.text();
+        // GlobalExceptionHandler devuelve JSON {timestamp, error}
+        // Intentar parsear para mostrar solo el campo "error" al usuario
+        try {
+          const errJson = JSON.parse(t);
+          throw new Error(errJson.error || errJson.message || t || `Error HTTP: ${res.status}`);
+        } catch(parseEx) {
+          // Si no es JSON válido (ej: error de Spring sin handler), usar el texto crudo
+          if (parseEx.message && !parseEx.message.startsWith('{')) throw parseEx;
+          throw new Error(t || `Error HTTP: ${res.status}`);
+        }
+      }
       setStatus(true);
       const ct = res.headers.get("content-type");
       return ct && ct.includes("application/json") ? await res.json() : await res.text();
@@ -1953,6 +2148,9 @@
       sessionStorage.setItem('monarca_token', JWT_TOKEN);
       sessionStorage.setItem('monarca_email', data.email || '');
       sessionStorage.setItem('monarca_rol', data.rol || 'USER');
+      // Guardar usuarioId — disponible en LoginResponse (campo real del backend)
+      sessionStorage.setItem('monarca_usuarioId', data.usuarioId ? String(data.usuarioId) : '');
+      localStorage.setItem('monarca_usuarioId', data.usuarioId ? String(data.usuarioId) : '');
       // Sidebar user card
       (function(){
         const uname = data.username || data.email || 'Usuario';
@@ -1980,7 +2178,7 @@
 
   function logout() {
     sessionStorage.clear();
-    ['monarca_token','monarca_token_exp','monarca_email','monarca_rol','monarca_username','monarca_doc'].forEach(k => localStorage.removeItem(k));
+    ['monarca_token','monarca_token_exp','monarca_email','monarca_rol','monarca_username','monarca_doc','monarca_usuarioId'].forEach(k => localStorage.removeItem(k));
     location.reload();
   }
 
@@ -2031,9 +2229,15 @@
       if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || 'Error al registrar'); }
       const data = await res.json();
       JWT_TOKEN = data.token;
+      // Persistir en localStorage con expiración (igual que handleLogin — necesario para Safari móvil)
+      const regExp = Date.now() + 8 * 60 * 60 * 1000;
+      localStorage.setItem('monarca_token', JWT_TOKEN);
+      localStorage.setItem('monarca_token_exp', regExp);
+      localStorage.setItem('monarca_rol', data.rol || 'USER');
+      localStorage.setItem('monarca_username', data.username || '');
       sessionStorage.setItem('monarca_token', JWT_TOKEN);
       sessionStorage.setItem('monarca_rol', data.rol || 'USER');
-        sessionStorage.setItem('monarca_doc', data.cliDoc || data.documento || data.username || '');
+      sessionStorage.setItem('monarca_doc', data.cliDoc || data.documento || data.username || '');
       sessionStorage.setItem('monarca_username', data.username || '');
       document.getElementById('userDisplay').innerText = '@' + data.username;
       document.getElementById('loginScreen').style.opacity = '0';
@@ -2089,6 +2293,9 @@
     list.innerHTML = '<div class="empty-state" style="grid-column:1/-1">Cargando cartelera...</div>';
     try {
       funcionesCache = await api('/funciones');
+      // Filtrar solo funciones de hoy en adelante (doble seguridad con el backend)
+      const hoyStr = new Date().toISOString().split('T')[0];
+      funcionesCache = funcionesCache.filter(f => f.fecha && f.fecha >= hoyStr);
       list.innerHTML = '';
       if (!funcionesCache.length) {
         list.innerHTML = '<div class="empty-state" style="grid-column:1/-1">No hay funciones programadas activas.</div>';
@@ -2565,12 +2772,17 @@
     if (id || modo !== 'rango') {
       const fechaVal = document.getElementById('f_fecha').value;
       if (!fechaVal) { showAlert('Ingresa una fecha y hora.', 'error'); return; }
+      const _fechaSola = fechaVal.split('T')[0];
       const payload = {
         pelicula:     { movieId: peliId },
         sala:         { salaId },
-        fecha:        fechaVal.split('T')[0],
+        fecha:        _fechaSola,
         horaInicio:   fechaVal.split('T')[1]?.substring(0,5) || '00:00',
-        precioBoleto: precio
+        precioBoleto: precio,
+        // Setear rango igual a la fecha de la función — hace estaEnRango() explícito
+        // y evita que queden null en BD (ReservaService acepta null, pero es más limpio)
+        fechaInicio:  _fechaSola,
+        fechaFin:     _fechaSola
       };
       try {
         if (id) { await api(`/funciones/${id}`, 'PUT', payload); showAlert('Función actualizada.'); }
@@ -2661,7 +2873,8 @@
       reservasBaseCache = reservasFiltradas.map(r => {
         const t = transMap[r.resCode];
         if (t) {
-          r.metodoPago  = r.metodoPago  || t.tipoPago;
+          // Prioridad: tipoPago del backend (enum real) sobre cualquier campo previo
+          r.metodoPago  = t.tipoPago || r.metodoPago;
           r.estadoPago  = t.estadoPago;
           r.referencia  = t.referencia;
           r.pagoTotal   = t.pagoTotal;
@@ -2704,7 +2917,7 @@
   }
 
   /* MÉTODOS DE PAGO: iconos y etiquetas */
-  const METODO_LABEL = { TARJETA:'💳 Tarjeta', NEQUI:'📱 Nequi', PSE:'🏦 PSE', EFECTIVO:'💵 Efectivo' };
+  const METODO_LABEL = { TARJETA_CREDITO:'💳 Tarjeta Crédito', TARJETA_DEBITO:'💳 Tarjeta Débito', NEQUI:'📱 Nequi', PSE:'🏦 PSE', EFECTIVO:'💵 Efectivo' };
 
   function renderTablaReservas() {
     const tbody   = document.getElementById('reservasTable');
@@ -2717,7 +2930,7 @@
 
     let lista = reservasBaseCache;
     if (vSuc)    lista = lista.filter(r => String(r.funcion?.sala?.sucursal?.branId) === vSuc);
-    if (vNombre) lista = lista.filter(r => r.funcion?.pelicula?.nombre?.toLowerCase().includes(vNombre));
+    if (vNombre) lista = lista.filter(r => (r.peliculaNombre || r.funcion?.pelicula?.nombre || '').toLowerCase().includes(vNombre));
     if (vGenero) lista = lista.filter(r => r.funcion?.pelicula?.genero === vGenero);
     if (vClasif) lista = lista.filter(r => r.funcion?.pelicula?.clasificacion === vClasif);
     if (vEstado) lista = lista.filter(r => r.estado === vEstado);
@@ -2731,20 +2944,16 @@
       return;
     }
 
-    const _localMetodos = (() => {
-      try { return JSON.parse(localStorage.getItem('monarca_metodos') || '{}'); } catch(_) { return {}; }
-    })();
-
     tbody.innerHTML = lista.map(r => {
       const fecha     = ((r.fecha||'') + ' ' + (r.tiempo||'')).trim();
-      const peli      = r.funcion?.pelicula?.nombre || 'Desconocida';
-      const sala      = r.funcion?.sala?.nombre || '—';
-      const sucNombre = r.funcion?.sala?.sucursal?.branLocation || '—';
+      const peli      = r.peliculaNombre || r.funcion?.pelicula?.nombre || 'Desconocida';
+      const sala      = r.salaNombre     || r.funcion?.sala?.nombre     || '—';
+      const sucNombre = r.funcion?.sala?.sucursal?.branLocation         || '—';
       const cliNombre = r.cliente ? r.cliente.nombreCliente : (r.nombre || '—');
       const cliDoc    = r.cliente ? (r.cliente.numeroCliente || r.cliente.custId || '') : '';
       const badgeCls  = r.estado === 'CONFIRMADA' ? 'badge-green' : r.estado === 'CANCELADA' ? 'badge-red' : 'badge-blue';
-      const _metodo = r.metodoPago || _localMetodos[r.resCode] || null;
-      const MC_COLOR = { TARJETA:'#3b82f6', NEQUI:'#8b5cf6', PSE:'#0ea5e9', EFECTIVO:'#22c55e' };
+      const _metodo = r.metodoPago || null; // dato del backend via /transacciones
+      const MC_COLOR = { TARJETA_CREDITO:'#3b82f6', TARJETA_DEBITO:'#6366f1', NEQUI:'#8b5cf6', PSE:'#0ea5e9', EFECTIVO:'#22c55e' };
       const metodoHtml = _metodo
               ? `<span style="background:${MC_COLOR[_metodo]||'#888'};color:#fff;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:700;white-space:nowrap;">${METODO_LABEL[_metodo]||_metodo}</span>`
               : `<span style="color:var(--c-muted);font-size:12px">—</span>`;
@@ -2814,13 +3023,41 @@
     ['r_cliDoc','r_cliNom','r_cliTel','r_cliDir'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
     document.getElementById('r_metodoPago').value = '';
     document.querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('selected'));
+    ['TARJETA','NEQUI','PSE'].forEach(m => { const el = document.getElementById('detalle_' + m); if(el) el.style.display='none'; });
   }
 
-  /* CAMBIO 2: seleccionar método de pago */
+  /* seleccionar método de pago — muestra panel de detalle y actualiza montos */
   function seleccionarMetodoPago(btn) {
     document.querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
-    document.getElementById('r_metodoPago').value = btn.dataset.metodo;
+    const metodo = btn.dataset.metodo;
+    document.getElementById('r_metodoPago').value = metodo;
+    ['TARJETA','NEQUI','PSE'].forEach(m => {
+      const el = document.getElementById('detalle_' + m);
+      if (el) el.style.display = 'none';
+    });
+    const panel = document.getElementById('detalle_' + metodo);
+    if (panel) {
+      panel.style.display = 'block';
+      const totalText = (document.getElementById('r_total') || {}).textContent || '$0';
+      const nM = document.getElementById('nequi_monto');
+      const pM = document.getElementById('pse_monto');
+      if (nM) nM.textContent = totalText;
+      if (pM) pM.textContent = totalText;
+    }
+  }
+
+  function formatCardNumber(input) {
+    let v = input.value.replace(/\D/g,'').substring(0,16);
+    input.value = v.replace(/(.{4})/g,'$1 ').trim();
+  }
+  function formatExpiry(input) {
+    let v = input.value.replace(/\D/g,'').substring(0,4);
+    if (v.length >= 3) v = v.substring(0,2) + '/' + v.substring(2);
+    input.value = v;
+  }
+  function formatPhone(input) {
+    input.value = input.value.replace(/\D/g,'').substring(0,10);
   }
 
   function dibujarMapa() {
@@ -2979,9 +3216,38 @@
     const doc = document.getElementById('r_cliDoc').value.trim();
     if (!doc) { showAlert('La cédula del cliente es obligatoria.', 'error'); return; }
 
-    // CAMBIO 2: validar método de pago
-    const metodoPago = document.getElementById('r_metodoPago').value;
-    if (!metodoPago) { showAlert('Selecciona un método de pago.', 'error'); return; }
+    // Validar método de pago seleccionado en la UI
+    const metodoPagoUI = document.getElementById('r_metodoPago').value; // TARJETA | NEQUI | PSE
+    if (!metodoPagoUI) { showAlert('Selecciona un método de pago.', 'error'); return; }
+
+    // Mapear al enum del backend: TARJETA_CREDITO | TARJETA_DEBITO | NEQUI | PSE
+    let tipoPagoBackend = metodoPagoUI; // NEQUI y PSE ya coinciden con el enum
+    if (metodoPagoUI === 'TARJETA') {
+      const tipoTarjeta = document.getElementById('t_tipo')?.value || 'CREDITO';
+      tipoPagoBackend = tipoTarjeta === 'DEBITO' ? 'TARJETA_DEBITO' : 'TARJETA_CREDITO';
+    }
+
+    // Validar campos del formulario según el método seleccionado
+    if (metodoPagoUI === 'TARJETA') {
+      const num = (document.getElementById('t_numero')?.value || '').replace(/\s/g,'');
+      if (num.length < 16) { showAlert('Ingresa un número de tarjeta válido (16 dígitos).', 'error'); return; }
+      const titular = (document.getElementById('t_titular')?.value || '').trim();
+      if (!titular) { showAlert('Ingresa el nombre del titular de la tarjeta.', 'error'); return; }
+      const venc = (document.getElementById('t_venc')?.value || '').trim();
+      if (!/^\d{2}\/\d{2}$/.test(venc)) { showAlert('Ingresa una fecha de vencimiento válida (MM/AA).', 'error'); return; }
+      const cvv = (document.getElementById('t_cvv')?.value || '').trim();
+      if (cvv.length < 3) { showAlert('Ingresa el CVV de la tarjeta.', 'error'); return; }
+    }
+    if (metodoPagoUI === 'NEQUI') {
+      const tel = (document.getElementById('n_numero')?.value || '').replace(/\s/g,'');
+      if (tel.length < 10) { showAlert('Ingresa un número de celular Nequi válido (10 dígitos).', 'error'); return; }
+    }
+    if (metodoPagoUI === 'PSE') {
+      const banco = (document.getElementById('p_banco')?.value || '').trim();
+      if (!banco) { showAlert('Selecciona tu banco para continuar con PSE.', 'error'); return; }
+      const email = (document.getElementById('p_email')?.value || '').trim();
+      if (!email || !email.includes('@')) { showAlert('Ingresa un correo electrónico válido para PSE.', 'error'); return; }
+    }
 
     const username     = sessionStorage.getItem('monarca_username') || '';
     const nomFormulario = document.getElementById('r_cliNom').value.trim();
@@ -3006,37 +3272,46 @@
       }
     } catch(_) { showAlert('Error al registrar el cliente.', 'error'); return; }
 
+    // Payload para /reservas — el backend NO acepta metodoPago en este endpoint
     const payload = {
       custId,
-      funcionId:   Number(document.getElementById('r_funcionId').value),
-      sillas:      seleccionActual,
-      fecha:       funcionActual.fecha || '',
-      tiempo:      funcionActual.horaInicio || '',
-      metodoPago   // CAMBIO 2: enviar método al backend
+      funcionId: Number(document.getElementById('r_funcionId').value),
+      sillas:    seleccionActual,
+      fecha:     funcionActual.fecha || '',
+      tiempo:    funcionActual.horaInicio || '',
     };
 
     try {
       const reservaResp = await api('/reservas', 'POST', payload);
-      // Guardar método en localStorage como fallback si el backend no lo persiste
       const rCode = reservaResp?.resCode || reservaResp?.id || null;
-      if (rCode) {
-        try {
-          const cache = JSON.parse(localStorage.getItem('monarca_metodos') || '{}');
-          cache[rCode] = metodoPago;
-          localStorage.setItem('monarca_metodos', JSON.stringify(cache));
-        } catch(_) {}
+
+      // ── Guardar transacción en Aiven ──────────────────────────────────────
+      // POST /api/transacciones?custId=X&resCode=Y  (query params obligatorios)
+      // Body: TipoPago enum correcto del backend
+      if (rCode && custId) {
+        const ultimos4 = metodoPagoUI === 'TARJETA'
+          ? (document.getElementById('t_numero')?.value || '').replace(/\s/g, '').slice(-4)
+          : null;
+        const transBody = {
+          tipoPago:   tipoPagoBackend,
+          pagoTotal:  seleccionActual.length * (funcionActual?.precioBoleto || 0),
+          estadoPago: 'SIMULADO',
+          referencia: 'SIM-' + Date.now(),
+          fechaTrans: new Date().toISOString().split('T')[0],
+          ...(ultimos4 ? { ultimos4 } : {})
+        };
+        api(`/transacciones?custId=${custId}&resCode=${rCode}`, 'POST', transBody)
+          .then(() => console.log('[Monarca] Transaccion persistida en Aiven'))
+          .catch(err => console.warn('[Monarca] Transaccion no guardada:', err.message));
       }
-      // También intentar POST a /transacciones
-      if (rCode) {
-        api('/transacciones', 'POST', {
-          reserva: { resCode: rCode },
-          tipoPago: metodoPago,
-          monto: seleccionActual.length * (funcionActual?.precioBoleto || 0)
-        }).catch(() => {});
-      }
-      showAlert(`¡Pago con ${METODO_LABEL[metodoPago]||metodoPago} aprobado!`);
+
+      showAlert(`¡Pago con ${METODO_LABEL[tipoPagoBackend] || tipoPagoBackend} procesado!`);
       cerrarModal();
       cargarCartelera();
+      if (document.getElementById('section-reservas') &&
+          document.getElementById('section-reservas').style.display !== 'none') {
+        cargarReservas();
+      }
     } catch(e) { showAlert('Error al procesar la reserva: ' + e.message, 'error'); }
   }
 
@@ -3184,7 +3459,9 @@
     const hasta  = document.getElementById('sf_fechaHasta').value;
 
     let funcs = funcionesCache.filter(f => {
+      const hoyStr = new Date().toISOString().split('T')[0];
       if (f.pelicula?.movieId !== _sfMovieId) return false;
+      if (f.fecha && f.fecha < hoyStr) return false;  // excluir funciones pasadas
       if (sucId && String(f.sala?.sucursal?.branId) !== sucId) return false;
       if (tipo  && tipoLabel(f.sala?.tipo) !== tipo) return false;
       if (desde && f.fecha < desde) return false;
@@ -3565,6 +3842,8 @@
     return edad;
   }
 
+  // NOTA: GET /api/usuarios requiere ROLE_ADMIN (SecurityConfig).
+  // No llamar esta función para usuarios con rol USER.
   async function cargarUsuarios() {
     const tbody = document.getElementById('tbl-usuarios');
     tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--c-muted)">Cargando…</td></tr>';
@@ -3967,7 +4246,8 @@
     if (!r) { showAlert('Reserva no encontrada.','error'); return; }
 
     // Cargar usuarios en background para obtener nombre completo
-    if (!usuariosCache || !usuariosCache.length) {
+    const _esAdminVista = (sessionStorage.getItem('monarca_rol') || 'USER') === 'ADMIN';
+    if (_esAdminVista && (!usuariosCache || !usuariosCache.length)) {
       api('/usuarios').then(data => {
         usuariosCache = data;
         // Re-poblar nombre completo si ya está abierto el modal
@@ -3985,13 +4265,17 @@
     document.getElementById('ms_titulo').textContent = 'TK-' + r.resCode;
     document.getElementById('ms_sub').textContent    = ((r.fecha||'')+' '+(r.tiempo||'')).trim() || '—';
 
-    // Función
-    document.getElementById('ms_pelicula').textContent    = r.funcion?.pelicula?.nombre || '—';
+    // Función — usar campos resueltos del backend (live o snapshot)
+    const _peli   = r.peliculaNombre || r.funcion?.pelicula?.nombre || '—';
+    const _sala   = r.salaNombre     || r.funcion?.sala?.nombre     || '';
+    const _tipo   = r.tipoSala       || tipoLabel(r.funcion?.sala?.tipo) || '';
+    const _fecha  = r.funcionFecha   || r.funcion?.fecha            || '';
+    const _hora   = r.funcionHora    || r.funcion?.horaInicio       || '';
+    document.getElementById('ms_pelicula').textContent    = _peli;
     document.getElementById('ms_funcion_info').textContent =
-            [r.funcion?.sala?.nombre, tipoLabel(r.funcion?.sala?.tipo),
-              r.funcion?.fecha, r.funcion?.horaInicio].filter(Boolean).join(' · ') || '—';
+            [_sala, _tipo, _fecha, _hora].filter(Boolean).join(' · ') || '—';
 
-    // Sillas
+    // Sillas — usar campo resuelto del backend (vivas o snapshot)
     const sillas = r.sillasSeleccionadas || [];
     document.getElementById('ms_mapa').innerHTML = sillas.length
             ? sillas.map(s => `
@@ -4033,17 +4317,16 @@
     document.getElementById('ms_cli_dir').textContent     = r.cliente?.direccionCliente || '—';
 
     // Total & estado
-    document.getElementById('ms_total').textContent = '$' + (r.total||0).toLocaleString() + ' COP';
+    const _totalVal = r.pagoTotal || r.snapTotal || r.total || 0;
+    document.getElementById('ms_total').textContent = '$' + Number(_totalVal).toLocaleString('es-CO') + ' COP';
     const estadoMap = { CONFIRMADA:'badge-green', CANCELADA:'badge-red', PENDIENTE:'badge-gold' };
     document.getElementById('ms_estado_wrap').innerHTML =
             `<span class="badge ${estadoMap[r.estado]||'badge-blue'}">${r.estado||'—'}</span>`;
 
     // Método de pago — backend field OR localStorage fallback
-    const MC_C = { TARJETA:'#3b82f6', NEQUI:'#8b5cf6', PSE:'#0ea5e9', EFECTIVO:'#22c55e' };
+    const MC_C = { TARJETA_CREDITO:'#3b82f6', TARJETA_DEBITO:'#6366f1', NEQUI:'#8b5cf6', PSE:'#0ea5e9', EFECTIVO:'#22c55e' };
+    // Método viene del backend (t.tipoPago en cargarReservas) — sin fallback localStorage
     let metodo = r.metodoPago || null;
-    if (!metodo) {
-      try { metodo = JSON.parse(localStorage.getItem('monarca_metodos')||'{}')[r.resCode] || null; } catch(_){}
-    }
     const wrap = document.getElementById('ms_metodo_wrap');
     if (metodo) {
       const c = MC_C[metodo] || '#888';
@@ -4078,7 +4361,7 @@
     await cancelarReserva(resCode);
   }
 
-  /* ══ TOAST ═ */
+  /* ══ TOAST ══ */
   function showAlert(msg, type = 'success') {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
@@ -4088,8 +4371,77 @@
     setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; setTimeout(() => toast.remove(), 300); }, 3000);
   }
 
+  /* ══ CONFIG AUTH ══ */
+  let _cfgToken = null;
+
+  function switchAuthConfigTab(tab) {
+    const isLogin = tab === 'login';
+    const btnL = document.getElementById('auth_tab_login');
+    const btnT = document.getElementById('auth_tab_token');
+    if (btnL) { btnL.style.background = isLogin ? 'var(--c-gold)' : 'transparent'; btnL.style.color = isLogin ? '#07070f' : 'var(--c-muted)'; }
+    if (btnT) { btnT.style.background = !isLogin ? 'var(--c-gold)' : 'transparent'; btnT.style.color = !isLogin ? '#07070f' : 'var(--c-muted)'; }
+    const pL = document.getElementById('auth_panel_login');
+    const pT = document.getElementById('auth_panel_token');
+    if (pL) pL.style.display = isLogin ? 'flex' : 'none';
+    if (pT) pT.style.display = !isLogin ? 'flex' : 'none';
+  }
+
+  async function obtenerTokenConfig() {
+    const user = document.getElementById('cfg_auth_user')?.value.trim();
+    const pass = document.getElementById('cfg_auth_pass')?.value;
+    const errEl = document.getElementById('cfg_auth_error');
+    if (!user || !pass) { errEl.textContent='Completa usuario y contraseña.'; errEl.style.display='block'; return; }
+    errEl.style.display = 'none';
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 10000);
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ username: user, password: pass }),
+        signal: ctrl.signal
+      });
+      clearTimeout(timer);
+      if (!res.ok) { const d = await res.json().catch(()=>({})); throw new Error(d.error || 'Credenciales inválidas'); }
+      const data = await res.json();
+      _cfgToken = data.token;
+      // Desbloquear pestaña Mi Token
+      const btnTok = document.getElementById('auth_tab_token');
+      if (btnTok) {
+        btnTok.disabled = false;
+        btnTok.style.cursor = 'pointer';
+        btnTok.style.opacity = '1';
+        btnTok.style.color = 'var(--c-muted)';
+        btnTok.style.background = 'transparent';
+        btnTok.title = '';
+        btnTok.textContent = '🎫 Mi Token';
+      }
+      // Actualizar panel token
+      const td = document.getElementById('cfg_token_display');
+      if (td) td.textContent = data.token;
+      const tu = document.getElementById('cfg_token_user');
+      if (tu) tu.textContent = data.username || user;
+      const tr = document.getElementById('cfg_token_rol');
+      if (tr) { tr.textContent = data.rol || 'USER'; tr.style.color = data.rol==='ADMIN' ? 'var(--c-red)' : 'var(--c-blue)'; }
+      const swL = document.getElementById('cfg_swagger_token_link');
+      if (swL) swL.href = `${API_BASE}/swagger-ui/index.html`;
+      switchAuthConfigTab('token');
+      showAlert('Token obtenido para ' + (data.username||user));
+    } catch(e) {
+      errEl.textContent = e.name==='AbortError' ? 'Tiempo agotado.' : (e.message || 'Error de conexión');
+      errEl.style.display = 'block';
+    }
+  }
+
+  function copiarToken() {
+    if (!_cfgToken) return;
+    navigator.clipboard.writeText(_cfgToken).then(() => showAlert('Token copiado al portapapeles.')).catch(() => {
+      const el = document.getElementById('cfg_token_display');
+      if (el) { const r = document.createRange(); r.selectNode(el); window.getSelection().removeAllRanges(); window.getSelection().addRange(r); }
+    });
+  }
+
   /* ══ HELPERS ══ */
-  function esc(s) { return (s || '').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+  function esc(s) { return (s || '').replace(/'/g, "\'").replace(/"/g, '&quot;'); }
 
   // Clientes alias (por compatibilidad)
   function cargarClientes() { cargarUsuarios(); }
