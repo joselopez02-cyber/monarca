@@ -1,14 +1,14 @@
 -- =============================================
--- Cinema Monarca — Schema v3 (PostgreSQL)
+-- Cinema Monarca — Schema v4 (PostgreSQL)
 -- =============================================
 
--- Tipos ENUM
-CREATE TYPE rol_usuario AS ENUM ('USER','ADMIN');
-CREATE TYPE tipo_sala AS ENUM ('PRO','TRES_D','DOS_D');
-CREATE TYPE estado_reserva AS ENUM ('PENDIENTE','CONFIRMADA','CANCELADA');
-CREATE TYPE estado_silla AS ENUM ('DISPONIBLE','OCUPADA','RESERVADA');
-CREATE TYPE tipo_pago AS ENUM ('TARJETA_CREDITO','TARJETA_DEBITO','NEQUI','PSE');
-CREATE TYPE estado_pago AS ENUM ('SIMULADO','APROBADO','RECHAZADO');
+-- Tipos ENUM (IF NOT EXISTS para evitar error si ya existen)
+DO $$ BEGIN CREATE TYPE rol_usuario   AS ENUM ('USER','ADMIN');        EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE tipo_sala     AS ENUM ('PRO','TRES_D','DOS_D'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE estado_reserva AS ENUM ('PENDIENTE','CONFIRMADA','CANCELADA'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE estado_silla  AS ENUM ('DISPONIBLE','OCUPADA','RESERVADA');    EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE tipo_pago     AS ENUM ('TARJETA_CREDITO','TARJETA_DEBITO','NEQUI','PSE'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE estado_pago   AS ENUM ('SIMULADO','APROBADO','RECHAZADO');     EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- Usuarios / Auth
 CREATE TABLE IF NOT EXISTS usuario (
@@ -51,12 +51,14 @@ CREATE TABLE IF NOT EXISTS cliente (
     numero_cliente    VARCHAR(50)
 );
 
--- Sala
+-- Sala (✅ filas y columnas agregados)
 CREATE TABLE IF NOT EXISTS sala (
     sala_id     BIGSERIAL PRIMARY KEY,
     nombre      VARCHAR(100) NOT NULL,
     tipo        tipo_sala    NOT NULL,
     capacidad   INT          NOT NULL,
+    filas       INT,
+    columnas    INT,
     sucursal_id BIGINT,
     FOREIGN KEY (sucursal_id) REFERENCES sucursal(bran_id) ON DELETE SET NULL
 );
@@ -71,30 +73,40 @@ CREATE TABLE IF NOT EXISTS pelicula (
     clasificacion VARCHAR(10)
 );
 
--- Funciones (proyecciones)
+-- Funciones (✅ fecha_inicio y fecha_fin agregados)
 CREATE TABLE IF NOT EXISTS funcion (
     funcion_id           BIGSERIAL PRIMARY KEY,
-    movie_id             BIGINT       NOT NULL,
-    sala_id              BIGINT       NOT NULL,
-    fecha                VARCHAR(20)  NOT NULL,
-    hora_inicio          VARCHAR(10)  NOT NULL,
+    movie_id             BIGINT           NOT NULL,
+    sala_id              BIGINT           NOT NULL,
+    fecha                VARCHAR(20)      NOT NULL,
+    hora_inicio          VARCHAR(10)      NOT NULL,
+    fecha_inicio         VARCHAR(20),
+    fecha_fin            VARCHAR(20),
     precio_boleto        DOUBLE PRECISION NOT NULL DEFAULT 16000,
-    capacidad_total      INT          NOT NULL,
-    asientos_disponibles INT          NOT NULL,
+    capacidad_total      INT              NOT NULL,
+    asientos_disponibles INT              NOT NULL,
     FOREIGN KEY (movie_id) REFERENCES pelicula(movie_id) ON DELETE CASCADE,
     FOREIGN KEY (sala_id)  REFERENCES sala(sala_id)      ON DELETE CASCADE
 );
 
--- Reservas
+-- Reservas (✅ campos snapshot agregados)
 CREATE TABLE IF NOT EXISTS reserva (
-    res_code   BIGSERIAL PRIMARY KEY,
-    nombre     VARCHAR(255),
-    tiempo     VARCHAR(50),
-    fecha      VARCHAR(50),
-    cont_num   VARCHAR(100),
-    estado     estado_reserva NOT NULL DEFAULT 'CONFIRMADA',
-    funcion_id BIGINT,
-    cust_id    BIGINT,
+    res_code       BIGSERIAL PRIMARY KEY,
+    nombre         VARCHAR(255),
+    tiempo         VARCHAR(50),
+    fecha          VARCHAR(50),
+    cont_num       VARCHAR(100),
+    estado         estado_reserva   NOT NULL DEFAULT 'CONFIRMADA',
+    funcion_id     BIGINT,
+    cust_id        BIGINT,
+    snap_pelicula  VARCHAR(255),
+    snap_sala      VARCHAR(100),
+    snap_tipo_sala VARCHAR(20),
+    snap_fecha     VARCHAR(20),
+    snap_hora      VARCHAR(10),
+    snap_precio    DOUBLE PRECISION,
+    snap_sillas    VARCHAR(500),
+    snap_total     DOUBLE PRECISION,
     FOREIGN KEY (funcion_id) REFERENCES funcion(funcion_id) ON DELETE SET NULL,
     FOREIGN KEY (cust_id)    REFERENCES cliente(cust_id)    ON DELETE SET NULL
 );
@@ -112,7 +124,7 @@ CREATE TABLE IF NOT EXISTS silla (
     FOREIGN KEY (reserva_id) REFERENCES reserva(res_code)   ON DELETE SET NULL
 );
 
--- Transaccone / Pagos
+-- Transacciones / Pagos
 CREATE TABLE IF NOT EXISTS transaccion (
     trans_no     BIGSERIAL PRIMARY KEY,
     tipo_pago    tipo_pago    NOT NULL,
@@ -128,3 +140,18 @@ CREATE TABLE IF NOT EXISTS transaccion (
     FOREIGN KEY (cust_id)  REFERENCES cliente(cust_id)  ON DELETE SET NULL,
     FOREIGN KEY (res_code) REFERENCES reserva(res_code) ON DELETE SET NULL
 );
+
+-- ✅ ALTER TABLE para tablas ya existentes en Aiven
+-- (IF NOT EXISTS evita error si ya se corrió antes)
+ALTER TABLE funcion  ADD COLUMN IF NOT EXISTS fecha_inicio         VARCHAR(20);
+ALTER TABLE funcion  ADD COLUMN IF NOT EXISTS fecha_fin            VARCHAR(20);
+ALTER TABLE sala     ADD COLUMN IF NOT EXISTS filas                INT;
+ALTER TABLE sala     ADD COLUMN IF NOT EXISTS columnas             INT;
+ALTER TABLE reserva  ADD COLUMN IF NOT EXISTS snap_pelicula        VARCHAR(255);
+ALTER TABLE reserva  ADD COLUMN IF NOT EXISTS snap_sala            VARCHAR(100);
+ALTER TABLE reserva  ADD COLUMN IF NOT EXISTS snap_tipo_sala       VARCHAR(20);
+ALTER TABLE reserva  ADD COLUMN IF NOT EXISTS snap_fecha           VARCHAR(20);
+ALTER TABLE reserva  ADD COLUMN IF NOT EXISTS snap_hora            VARCHAR(10);
+ALTER TABLE reserva  ADD COLUMN IF NOT EXISTS snap_precio          DOUBLE PRECISION;
+ALTER TABLE reserva  ADD COLUMN IF NOT EXISTS snap_sillas          VARCHAR(500);
+ALTER TABLE reserva  ADD COLUMN IF NOT EXISTS snap_total           DOUBLE PRECISION;
