@@ -11,10 +11,6 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Catálogo de películas.
- * Los detalles de proyección (fecha, hora, sala, precio) viven en {@link Funcion}.
- */
 @Entity
 @Table(name = "pelicula")
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
@@ -32,7 +28,6 @@ public class Pelicula {
     @Column(length = 1000)
     private String descripcion;
 
-    /** Duración en minutos */
     @Column(name = "duracion_min")
     private Integer duracionMin;
 
@@ -40,19 +35,17 @@ public class Pelicula {
     public Integer getDuracionMinutos() { return duracionMin; }
     public void setDuracionMinutos(Integer v) { this.duracionMin = v; }
 
-    /** Clasificación: A, B, B15, C */
     @Column(length = 10)
     private String clasificacion;
 
-    /** Género: ACCION, DRAMA, COMEDIA, TERROR, ANIMACION, etc. */
     @Column(length = 50)
     private String genero;
 
     /**
      * Poster en Base64 (data:image/...;base64,...).
-     * Guardado como MEDIUMTEXT en MySQL (~16 MB máx).
+     * ✅ TEXT en PostgreSQL (equivalente a MEDIUMTEXT en MySQL)
      */
-    @Column(name = "poster_url", columnDefinition = "MEDIUMTEXT")
+    @Column(name = "poster_url", columnDefinition = "TEXT")
     private String posterUrl;
 
     @OneToMany(mappedBy = "pelicula", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
