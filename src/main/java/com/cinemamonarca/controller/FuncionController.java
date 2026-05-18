@@ -27,6 +27,12 @@ public class FuncionController {
         return ResponseEntity.ok(funcionService.obtenerTodas());
     }
 
+    /** Lista solo funciones de hoy en adelante (cartelera pública) */
+    @GetMapping("/vigentes")
+    public ResponseEntity<List<Funcion>> listarVigentes() {
+        return ResponseEntity.ok(funcionService.obtenerDesdeHoy());
+    }
+
     /** Obtiene una función por ID */
     @GetMapping("/{id}")
     public ResponseEntity<Funcion> obtener(@PathVariable Long id) {

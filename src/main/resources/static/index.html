@@ -962,7 +962,6 @@
     <div class="nav-item" data-view="sucursales" data-rol="ADMIN" onclick="switchView('sucursales', this)">🏢 Cines & Sucursales</div>
     <div class="nav-item" data-view="usuarios" data-rol="ADMIN" onclick="switchView('usuarios', this)">👥 Gestión de Usuarios</div>
     <div style="height: 24px;"></div>
-    <div class="nav-item" data-view="config" onclick="switchView('config', this)">⚙ Configuración API</div>
     <div class="nav-item" style="color: var(--c-red);" onclick="logout()">🚪 Cerrar Sesión</div>
   </nav>
 </aside>
@@ -1442,42 +1441,7 @@
         </div>
 
         <!-- Tarjeta: Estado y Swagger -->
-        <div class="card">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
-            <div style="width:32px;height:32px;background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">📡</div>
-            <div>
-              <div style="font-family:var(--f-head);font-size:18px;letter-spacing:1px;">Estado & Herramientas</div>
-              <div style="font-size:11px;color:var(--c-muted);">Monitoreo y documentación</div>
-            </div>
-          </div>
 
-          <!-- Estado conexión -->
-          <div style="background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
-            <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
-              <span id="apiStatusDot" class="status-dot offline"></span>
-              <span id="apiStatusText" style="color:var(--c-red);font-weight:500;">API Desconectada</span>
-            </div>
-            <button class="btn btn-sm" onclick="testConexion()" style="font-size:11px;">↻ Verificar</button>
-          </div>
-
-          <!-- URL activa -->
-          <div style="background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;">
-            <div style="font-size:10px;color:var(--c-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">URL activa</div>
-            <div id="cfg_url_display" class="mono" style="font-size:12px;color:var(--c-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</div>
-          </div>
-
-          <!-- Acceso Swagger -->
-          <a id="cfg_swagger_link" href="#" target="_blank" style="display:none;text-decoration:none;">
-            <button class="btn w-full" type="button" style="justify-content:center;gap:8px;border-color:rgba(41,121,255,0.3);color:#7bb3ff;background:rgba(41,121,255,0.06);">
-              📖 Abrir Swagger UI
-            </button>
-          </a>
-
-          <!-- Nota HTTPS -->
-          <div style="margin-top:12px;padding:8px 12px;border-radius:var(--radius-sm);background:rgba(229,57,53,0.06);border:1px solid rgba(229,57,53,0.15);font-size:11px;color:rgba(255,107,107,0.85);line-height:1.5;">
-            ⚠️ Usa siempre <strong>https://</strong> · Ruta Swagger: <code style="font-size:10px;">/swagger-ui/index.html</code>
-          </div>
-        </div>
 
 
         <!-- Tarjeta: Autorización JWT -->
@@ -1496,9 +1460,10 @@
               style="padding:8px 20px;background:var(--c-gold);color:#07070f;border:none;font-family:var(--f-body);font-size:13px;font-weight:700;cursor:pointer;border-radius:6px 6px 0 0;transition:all 0.2s;">
               🔑 Iniciar Sesión
             </button>
-            <button id="auth_tab_token" onclick="switchAuthConfigTab('token')"
-              style="padding:8px 20px;background:transparent;color:var(--c-muted);border:none;font-family:var(--f-body);font-size:13px;font-weight:600;cursor:pointer;border-radius:6px 6px 0 0;transition:all 0.2s;">
-              🎫 Mi Token
+            <button id="auth_tab_token" onclick="switchAuthConfigTab('token')" disabled
+              style="padding:8px 20px;background:rgba(255,255,255,0.04);color:rgba(238,238,248,0.25);border:none;font-family:var(--f-body);font-size:13px;font-weight:600;cursor:not-allowed;border-radius:6px 6px 0 0;transition:all 0.2s;opacity:0.5;"
+              title="Obtén un token primero">
+              🔒 Mi Token
             </button>
           </div>
 
@@ -1506,11 +1471,11 @@
           <div id="auth_panel_login" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
             <div class="input-group" style="margin:0;flex:1;min-width:160px;">
               <label>Usuario</label>
-              <input type="text" id="cfg_auth_user" placeholder="admin" value="1">
+              <input type="text" id="cfg_auth_user" placeholder="usuario">
             </div>
             <div class="input-group" style="margin:0;flex:1;min-width:160px;">
               <label>Contraseña</label>
-              <input type="password" id="cfg_auth_pass" placeholder="••••••" value="111111"
+              <input type="password" id="cfg_auth_pass" placeholder="••••••"
                 onkeydown="if(event.key==='Enter') obtenerTokenConfig()">
             </div>
             <button class="btn btn-primary" onclick="obtenerTokenConfig()" style="padding:10px 24px;white-space:nowrap;align-self:flex-end;">
@@ -1547,11 +1512,11 @@
                 <div style="font-weight:700;font-size:13px;color:var(--c-green);">✅ Autenticado</div>
               </div>
             </div>
-            <!-- Botón Swagger con token -->
-            <a id="cfg_swagger_token_link" href="#" target="_blank" style="text-decoration:none;">
+            <!-- Botón Swagger directo -->
+            <a id="cfg_swagger_token_link" href="https://monarca-e4cfe8dyfvaddhcj.brazilsouth-01.azurewebsites.net/swagger-ui/index.html" target="_blank" style="text-decoration:none;">
               <button class="btn w-full" type="button"
-                style="justify-content:center;gap:8px;border-color:rgba(41,121,255,0.4);color:#7bb3ff;background:rgba(41,121,255,0.08);padding:12px;">
-                📖 Abrir Swagger UI con este Token
+                style="justify-content:center;gap:8px;border-color:rgba(41,121,255,0.4);color:#7bb3ff;background:rgba(41,121,255,0.08);padding:12px;font-size:14px;">
+                📖 Abrir Swagger UI
               </button>
             </a>
             <div style="padding:8px 12px;border-radius:var(--radius-sm);background:rgba(41,121,255,0.06);border:1px solid rgba(41,121,255,0.15);font-size:11px;color:rgba(150,190,255,0.8);line-height:1.6;">
@@ -2171,6 +2136,9 @@
     list.innerHTML = '<div class="empty-state" style="grid-column:1/-1">Cargando cartelera...</div>';
     try {
       funcionesCache = await api('/funciones');
+      // Filtrar solo funciones de hoy en adelante (doble seguridad con el backend)
+      const hoyStr = new Date().toISOString().split('T')[0];
+      funcionesCache = funcionesCache.filter(f => f.fecha && f.fecha >= hoyStr);
       list.innerHTML = '';
       if (!funcionesCache.length) {
         list.innerHTML = '<div class="empty-state" style="grid-column:1/-1">No hay funciones programadas activas.</div>';
@@ -3266,7 +3234,9 @@
     const hasta  = document.getElementById('sf_fechaHasta').value;
 
     let funcs = funcionesCache.filter(f => {
+      const hoyStr = new Date().toISOString().split('T')[0];
       if (f.pelicula?.movieId !== _sfMovieId) return false;
+      if (f.fecha && f.fecha < hoyStr) return false;  // excluir funciones pasadas
       if (sucId && String(f.sala?.sucursal?.branId) !== sucId) return false;
       if (tipo  && tipoLabel(f.sala?.tipo) !== tipo) return false;
       if (desde && f.fecha < desde) return false;
@@ -4203,6 +4173,17 @@
       if (!res.ok) { const d = await res.json().catch(()=>({})); throw new Error(d.error || 'Credenciales inválidas'); }
       const data = await res.json();
       _cfgToken = data.token;
+      // Desbloquear pestaña Mi Token
+      const btnTok = document.getElementById('auth_tab_token');
+      if (btnTok) {
+        btnTok.disabled = false;
+        btnTok.style.cursor = 'pointer';
+        btnTok.style.opacity = '1';
+        btnTok.style.color = 'var(--c-muted)';
+        btnTok.style.background = 'transparent';
+        btnTok.title = '';
+        btnTok.textContent = '🎫 Mi Token';
+      }
       // Actualizar panel token
       const td = document.getElementById('cfg_token_display');
       if (td) td.textContent = data.token;

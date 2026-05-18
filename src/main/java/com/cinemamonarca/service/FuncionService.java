@@ -31,6 +31,12 @@ public class FuncionService {
         return funcionRepo.findAllWithDetails();
     }
 
+    /** Solo funciones de hoy en adelante — para la cartelera pública */
+    public List<Funcion> obtenerDesdeHoy() {
+        String hoy = LocalDate.now().toString(); // yyyy-MM-dd
+        return funcionRepo.findAllDesdeHoy(hoy);
+    }
+
     public Funcion obtenerPorId(Long id) {
         return funcionRepo.findByIdWithDetails(id)
                 .orElseThrow(() -> new RuntimeException("Función no encontrada: " + id));

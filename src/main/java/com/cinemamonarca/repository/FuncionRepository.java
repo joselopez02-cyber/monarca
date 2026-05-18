@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +18,15 @@ public interface FuncionRepository extends JpaRepository<Funcion, Long> {
             "JOIN FETCH f.sala s " +
             "LEFT JOIN FETCH s.sucursal")
     List<Funcion> findAllWithDetails();
+
+    /** Solo funciones de hoy en adelante (para la cartelera pública) */
+    @Query("SELECT DISTINCT f FROM Funcion f " +
+            "JOIN FETCH f.pelicula " +
+            "JOIN FETCH f.sala s " +
+            "LEFT JOIN FETCH s.sucursal " +
+            "WHERE f.fecha >= :hoy " +
+            "ORDER BY f.fecha ASC, f.horaInicio ASC")
+    List<Funcion> findAllDesdeHoy(@Param("hoy") String hoy);
 
     @Query("SELECT f FROM Funcion f " +
             "JOIN FETCH f.pelicula " +
