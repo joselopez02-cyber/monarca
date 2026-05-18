@@ -4,6 +4,7 @@ import com.cinemamonarca.dto.ReservaRequest;
 import com.cinemamonarca.model.Cliente;
 import com.cinemamonarca.model.Funcion;
 import com.cinemamonarca.model.Reserva;
+import com.cinemamonarca.model.Sala;
 import com.cinemamonarca.repository.ClienteRepository;
 import com.cinemamonarca.repository.FuncionRepository;
 import com.cinemamonarca.repository.ReservaRepository;
@@ -40,7 +41,6 @@ public class ReservaService {
         return reservaRepository.findByUsername(username);
     }
 
-    // ── NUEVO: buscar por email del cliente ────────────────────────────────
     public List<Reserva> obtenerPorEmail(String email) {
         return reservaRepository.findByClienteEmail(email);
     }
@@ -73,6 +73,12 @@ public class ReservaService {
         if (req.getSillas() == null || req.getSillas().isEmpty())
             throw new RuntimeException("Debes seleccionar al menos una silla.");
 
+        // Snapshot histórico
+        Sala sala = funcion.getSala();
+        double precioBoleto = funcion.getPrecioBoleto() != null ? funcion.getPrecioBoleto() : 0;
+        double total = precioBoleto * req.getSillas().size();
+        String snapSillas = String.join(",", req.getSillas());
+
         Reserva reserva = Reserva.builder()
                 .nombre(req.getNombre())
                 .contNum(req.getContNum())
@@ -81,6 +87,14 @@ public class ReservaService {
                 .estado(Reserva.Estado.CONFIRMADA)
                 .cliente(cliente)
                 .funcion(funcion)
+                .snapPelicula(funcion.getPelicula() != null ? funcion.getPelicula().getNombre() : null)
+                .snapSala(sala != null ? sala.getNombre() : null)
+                .snapTipoSala(sala != null && sala.getTipo() != null ? sala.getTipo().name() : null)
+                .snapFecha(funcion.getFecha())
+                .snapHora(funcion.getHoraInicio())
+                .snapPrecio(precioBoleto)
+                .snapSillas(snapSillas)
+                .snapTotal(total)
                 .build();
 
         Reserva saved = reservaRepository.save(reserva);

@@ -10,6 +10,7 @@ import java.util.List;
 @Repository
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
+    // LEFT JOIN en funcion — si la función fue borrada, la reserva igual aparece
     @Query("SELECT r FROM Reserva r " +
             "LEFT JOIN FETCH r.cliente " +
             "LEFT JOIN FETCH r.funcion f " +
@@ -20,7 +21,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     List<Reserva> findByCliente_CustId(Long custId);
     List<Reserva> findByFuncion_FuncionId(Long funcionId);
 
-    // ── Para USER: filtra por nombreCliente o numeroCliente ──
     @Query("SELECT r FROM Reserva r " +
             "LEFT JOIN FETCH r.cliente c " +
             "LEFT JOIN FETCH r.funcion f " +
@@ -30,7 +30,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
             "OR LOWER(c.numeroCliente) = LOWER(:username)")
     List<Reserva> findByUsername(@Param("username") String username);
 
-    // ── NUEVO: búsqueda por email del cliente (direccionCliente) ──
     @Query("SELECT r FROM Reserva r " +
             "LEFT JOIN FETCH r.cliente c " +
             "LEFT JOIN FETCH r.funcion f " +

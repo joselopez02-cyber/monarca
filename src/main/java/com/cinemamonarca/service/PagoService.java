@@ -18,9 +18,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Sistema de pago SIMULAO — solo para fines académicos / demo.
+ * Sistema de pago SIMULADO — solo para fines académicos / demo.
  * No se procesa ninguna transacción financiera real.
- * Siempre devuelve APROBADO para tarjetas que no comiencen por "0000".
  */
 @Service
 @RequiredArgsConstructor
@@ -36,7 +35,7 @@ public class PagoService {
     @Transactional
     public PagoResponse procesarPago(PagoRequest req) {
 
-        // ── 1. Validaciones básicas ───────────────────────────────────────
+        // ── 1. Validaciones ───────────────────────────────────────────────
         validarCampos(req);
 
         Cliente cliente = clienteRepo.findById(req.getCustId())
@@ -46,9 +45,8 @@ public class PagoService {
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada: " + req.getResCode()));
 
         // ── 2. Simular aprobación / rechazo ───────────────────────────────
-        //    Tarjeta que empieza en "0000" → rechazada (para pruebas de rechazo)
-        boolean aprobado = true;
-        String motivoRechazo = null;
+        boolean aprobado     = true;
+        String  motivoRechazo = null;
 
         Transaccion.TipoPago tipoPago = parseTipoPago(req.getTipoPago());
 
@@ -59,15 +57,15 @@ public class PagoService {
                     ? req.getNumeroTarjeta().replaceAll("\\s", "") : "";
 
             if (numero.startsWith("0000")) {
-                aprobado = false;
+                aprobado      = false;
                 motivoRechazo = "Tarjeta rechazada por el banco emisor (simulado).";
             } else if (numero.length() < 16) {
-                aprobado = false;
+                aprobado      = false;
                 motivoRechazo = "Número de tarjeta inválido.";
             }
         }
 
-        // ── 3. Generar referencia ─────────────────────────────────────────
+        // ── 3. Generar referencia y metadatos ─────────────────────────────
         String referencia = generarReferencia();
         String ahora      = LocalDateTime.now().format(FMT);
         String ultimos4   = extraerUltimos4(req);
@@ -90,7 +88,7 @@ public class PagoService {
 
         Transaccion saved = transaccionRepo.save(trans);
 
-        // ── 5. Respuesta ──────────────────────────────────────────────────
+        // ── 5. Respuesta completa con todos los datos de la venta ─────────
         return PagoResponse.builder()
                 .aprobado(aprobado)
                 .referencia(referencia)
@@ -101,16 +99,29 @@ public class PagoService {
                 .montoTotal(req.getMontoTotal())
                 .transNo(saved.getTransNo())
                 .ultimos4(ultimos4)
+                .estadoPago(saved.getEstadoPago().name())
+                // ── Datos de la reserva ──
+                .resCode(reserva.getResCode())
+                .nombreCliente(cliente.getNombreCliente())
+                .fechaReserva(reserva.getFecha())
+                // ── Datos de la función (live o snapshot) ──
+                .peliculaNombre(reserva.getPeliculaNombre())
+                .salaNombre(reserva.getSalaNombre())
+                .tipoSala(reserva.getTipoSala())
+                .funcionFecha(reserva.getFuncionFecha())
+                .funcionHora(reserva.getFuncionHora())
+                .sillasReservadas(reserva.getSillasSeleccionadas())
+                .precioBoleto(reserva.getPrecioBoleto())
                 .build();
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────
 
     private void validarCampos(PagoRequest req) {
-        if (req.getCustId()    == null) throw new RuntimeException("custId es requerido.");
-        if (req.getResCode()   == null) throw new RuntimeException("resCode es requerido.");
-        if (req.getTipoPago()  == null) throw new RuntimeException("tipoPago es requerido.");
-        if (req.getMontoTotal()== null || req.getMontoTotal() <= 0)
+        if (req.getCustId()     == null) throw new RuntimeException("custId es requerido.");
+        if (req.getResCode()    == null) throw new RuntimeException("resCode es requerido.");
+        if (req.getTipoPago()   == null) throw new RuntimeException("tipoPago es requerido.");
+        if (req.getMontoTotal() == null || req.getMontoTotal() <= 0)
             throw new RuntimeException("montoTotal debe ser mayor a 0.");
     }
 

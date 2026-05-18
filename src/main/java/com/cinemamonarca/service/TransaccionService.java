@@ -17,29 +17,40 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class TransaccionService {
 
-    private final TransaccionRepository transaccionRepository;
-    private final ClienteRepository     clienteRepository;
-    private final ReservaRepository     reservaRepository;
+    private final TransaccionRepository transaccionRepo;
+    private final ClienteRepository     clienteRepo;
+    private final ReservaRepository     reservaRepo;
 
-    public List<Transaccion> obtenerTodas()              { return transaccionRepository.findAll(); }
-    public List<Transaccion> obtenerPorCliente(Long id)  { return transaccionRepository.findByCliente_CustId(id); }
+    public List<Transaccion> obtenerTodas() {
+        return transaccionRepo.findAllWithDetails();
+    }
 
     public Transaccion obtenerPorId(Long id) {
-        return transaccionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Transacción no encontrada con id: " + id));
+        return transaccionRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transacción no encontrada: " + id));
+    }
+
+    public List<Transaccion> obtenerPorCliente(Long custId) {
+        return transaccionRepo.findByCliente_CustId(custId);
+    }
+
+    public List<Transaccion> obtenerPorReserva(Long resCode) {
+        return transaccionRepo.findByReserva_ResCode(resCode);
     }
 
     @Transactional
     public Transaccion guardar(Transaccion transaccion, Long custId, Long resCode) {
-        Cliente cliente = clienteRepository.findById(custId)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
-        Reserva reserva = reservaRepository.findById(resCode)
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+        Cliente cliente = clienteRepo.findById(custId)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado: " + custId));
+        Reserva reserva = reservaRepo.findById(resCode)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada: " + resCode));
         transaccion.setCliente(cliente);
         transaccion.setReserva(reserva);
-        return transaccionRepository.save(transaccion);
+        return transaccionRepo.save(transaccion);
     }
 
     @Transactional
-    public void eliminar(Long id) { transaccionRepository.deleteById(id); }
+    public void eliminar(Long id) {
+        transaccionRepo.deleteById(id);
+    }
 }

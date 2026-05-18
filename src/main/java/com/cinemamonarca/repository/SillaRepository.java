@@ -18,4 +18,10 @@ public interface SillaRepository extends JpaRepository<Silla, Long> {
 
     @Query("SELECT s FROM Silla s WHERE s.reserva.resCode = :reservaId")
     List<Silla> findByReservaId(@Param("reservaId") Long reservaId);
+
+    @Query("SELECT s FROM Silla s " +
+           "WHERE s.estado IN (com.cinemamonarca.model.Silla.Estado.OCUPADA, " +
+           "                   com.cinemamonarca.model.Silla.Estado.RESERVADA) " +
+           "AND s.reserva IS NULL")
+    List<Silla> findSillasHuerfanas();
 }
